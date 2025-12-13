@@ -1,0 +1,136 @@
+import { useState } from "react";
+
+const questions = [
+  {
+    question: "Quel est ton niveau actuel ?",
+    options: [
+      { text: "Débutant", score: 1 },
+      { text: "Intermédiaire", score: 2 },
+      { text: "Avancé", score: 3 },
+    ],
+  },
+  {
+    question: "Combien de temps par semaine peux-tu t’y consacrer ?",
+    options: [
+      { text: "Moins de 2h", score: 1 },
+      { text: "2 à 5h", score: 2 },
+      { text: "Plus de 5h", score: 3 },
+    ],
+  },
+  {
+    question: "Quel est ton objectif principal ?",
+    options: [
+      { text: "Découvrir", score: 1 },
+      { text: "Progresser sérieusement", score: 2 },
+      { text: "Maîtriser à fond", score: 3 },
+    ],
+  },
+];
+
+export default function App() {
+  const [step, setStep] = useState(0);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  function answer(option) {
+    setScore((s) => s + option.score);
+    if (step + 1 < questions.length) setStep((x) => x + 1);
+    else setFinished(true);
+  }
+
+  function resultText() {
+    if (score <= 4) return "Profil Explorateur 🌱 — commence doucement.";
+    if (score <= 6) return "Profil Bâtisseur 🔨 — tu peux aller loin.";
+    return "Profil Ancien ⚡ — maîtrise avancée recommandée.";
+  }
+
+  return (
+    <div style={styles.page}>
+      <div style={styles.card}>
+        {!finished ? (
+          <>
+            <h2 style={{ margin: 0 }}>{questions[step].question}</h2>
+
+            <div style={styles.options}>
+              {questions[step].options.map((opt, i) => (
+                <button
+                  key={i}
+                  style={styles.button}
+                  onClick={() => answer(opt)}
+                >
+                  {opt.text}
+                </button>
+              ))}
+            </div>
+
+            <p style={styles.progress}>
+              Question {step + 1} / {questions.length}
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 style={{ margin: 0 }}>Résultat</h2>
+            <p style={styles.result}>{resultText()}</p>
+            <p style={{ opacity: 0.8 }}>Score total : {score}</p>
+
+            <button
+              style={{ ...styles.button, background: "#334155" }}
+              onClick={() => {
+                setStep(0);
+                setScore(0);
+                setFinished(false);
+              }}
+            >
+              Refaire le questionnaire
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  page: {
+    minHeight: "100vh",
+    background: "#0f172a",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "white",
+    fontFamily:
+      'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial',
+    padding: 20,
+  },
+  card: {
+    background: "#020617",
+    padding: 28,
+    borderRadius: 16,
+    width: 380,
+    textAlign: "center",
+    boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
+    border: "1px solid rgba(255,255,255,0.08)",
+  },
+  options: {
+    display: "grid",
+    gap: 12,
+    marginTop: 18,
+  },
+  button: {
+    padding: 12,
+    borderRadius: 12,
+    border: "none",
+    background: "#2563eb",
+    color: "white",
+    cursor: "pointer",
+    fontSize: 16,
+  },
+  progress: {
+    marginTop: 18,
+    opacity: 0.7,
+  },
+  result: {
+    fontSize: 20,
+    marginTop: 18,
+  },
+};
