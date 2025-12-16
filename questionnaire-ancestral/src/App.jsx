@@ -1,9 +1,13 @@
 import { useMemo, useState } from "react";
 
 /**
- * ✅ QUESTIONS (communes)
- * Scores : 🟢=4 (top) 🟡=3 🟠=2 🔴=1 (terrain plus fragile)
+ * Scores:
+ * 🟢 = 4 (meilleur)
+ * 🟡 = 3
+ * 🟠 = 2
+ * 🔴 = 1 (pire)
  */
+
 const baseQuestions = [
   {
     question: "Le matin au réveil, tu te sens comment ?",
@@ -62,7 +66,7 @@ const baseQuestions = [
   {
     question: "Tu as besoin de combien de sommeil pour récupérer ?",
     options: [
-      { text: "🟢 5-6h me suffisent", score: 4 },
+      { text: "🟢 5–6h me suffisent", score: 4 },
       { text: "🟡 Il me faut 8h minimum", score: 3 },
       { text: "🟠 Même 9h ne suffisent pas", score: 2 },
       { text: "🔴 Je suis toujours épuisé(e), même avec 10h", score: 1 },
@@ -178,11 +182,10 @@ const baseQuestions = [
   },
   {
     question: "Tu tiens combien de temps sans manger sans te sentir mal ?",
-    options colour?:
     options: [
       { text: "🟢 Plus de 5h sans souci", score: 4 },
       { text: "🟡 3–4h mais j’ai faim", score: 3 },
-      { text: "🟠 Moins de 3h, j’ai vertiges ou irritabilité", score: 2 },
+      { text: "🟠 Moins de 3h, vertiges ou irritabilité", score: 2 },
       { text: "🔴 Moins de 2h, sinon je tremble ou tombe", score: 1 },
     ],
   },
@@ -197,7 +200,7 @@ const baseQuestions = [
   },
   {
     question:
-      "Tu as des réactions digestives ou physiques après certains aliments (produits laitiers, gluten, fruits, légumes…) ?",
+      "Tu as des réactions digestives ou physiques après certains aliments (lait, gluten, fruits, légumes…) ?",
     options: [
       { text: "🟢 Jamais", score: 4 },
       { text: "🟡 Parfois, mais c’est léger", score: 3 },
@@ -207,101 +210,29 @@ const baseQuestions = [
   },
 ];
 
-/** ✅ Question spécifique FEMME */
-const femaleOnlyQuestions = [
-  {
-    question: "Ton cycle menstruel est-il :",
-    options: [
-      { text: "🟢 Régulier, sans douleur ni symptômes", score: 4 },
-      { text: "🟡 Régulier mais avec quelques douleurs ou irritabilité", score: 3 },
-      { text: "🟠 Irrégulier, avec douleurs ou fatigue marquée", score: 2 },
-      { text: "🔴 Très irrégulier, avec acné, gonflements, saignements abondants", score: 1 },
-    ],
-  },
-];
-
-/** ✅ Résultat PERSONNALITÉ (style 16Personalities) basé sur % */
-function personalityResult(score, totalQuestions) {
-  const min = totalQuestions * 1;
-  const max = totalQuestions * 4;
-  const pct = Math.round(((score - min) / (max - min)) * 100); // 0 -> 100
-
-  if (pct <= 25) {
-    return {
-      badge: "🧠 TA PERSONNALITÉ ALIMENTAIRE",
-      title: "🧱 LE SURVIVANT MODERNE",
-      subtitle: "Terrain surchargé",
-      description:
-        "Tu avances au mental et ton corps compense comme il peut. Les signaux (fatigue, digestion, peau, langue, froid, immunité) sont souvent présents.",
-      ancestral:
-        "👉 L’alimentation ancestrale est pour toi une reconstruction. Tu as besoin de revenir au simple pour relancer ton terrain.",
-      pct,
-    };
-  }
-
-  if (pct <= 55) {
-    return {
-      badge: "🧠 TA PERSONNALITÉ ALIMENTAIRE",
-      title: "⚖️ L’ÉQUILIBRISTE",
-      subtitle: "Terrain instable",
-      description:
-        "Tu sens clairement l’impact de ce que tu manges. Tu alternes entre phases OK et phases plus fragiles (coup de mou, inconfort, réactions).",
-      ancestral:
-        "👉 L’alimentation ancestrale est pour toi un outil d’équilibre. Bien cadrée, elle stabilise ton énergie et ton système digestif.",
-      pct,
-    };
-  }
-
-  if (pct <= 80) {
-    return {
-      badge: "🧠 TA PERSONNALITÉ ALIMENTAIRE",
-      title: "🔥 L’OPTIMISEUR",
-      subtitle: "Terrain fonctionnel",
-      description:
-        "Tu comprends ton corps et tu repères vite ce qui te fait du bien ou te perturbe. Ton potentiel est élevé et tu peux encore améliorer la constance.",
-      ancestral:
-        "👉 L’alimentation ancestrale est pour toi un levier de clarté, d’énergie et de performance au quotidien.",
-      pct,
-    };
-  }
-
-  return {
-    badge: "🧠 TA PERSONNALITÉ ALIMENTAIRE",
-    title: "⚡ L’ANCESTRAL",
-    subtitle: "Terrain solide",
-    description:
-      "Tu es stable, résilient et tu récupères bien. Tu as peu d’inflammation chronique et ton énergie est plus constante que la moyenne.",
-    ancestral:
-      "👉 L’alimentation ancestrale est ton mode naturel : simple, cohérent, et aligné avec ta physiologie.",
-    pct,
-  };
-}
+const femaleOnlyQuestion = {
+  question: "Ton cycle menstruel est-il :",
+  options: [
+    { text: "🟢 Régulier, sans douleur ni symptômes", score: 4 },
+    { text: "🟡 Régulier mais avec quelques douleurs ou irritabilité", score: 3 },
+    { text: "🟠 Irrégulier, avec douleurs ou fatigue marquée", score: 2 },
+    { text: "🔴 Très irrégulier, avec acné, gonflements, saignements abondants", score: 1 },
+  ],
+};
 
 export default function App() {
-  const [email, setEmail] = useState("");
-  const [emailOk, setEmailOk] = useState(false);
-
-  const [gender, setGender] = useState(""); // "homme" | "femme"
-  const [started, setStarted] = useState(false);
-
-  const questions = useMemo(() => {
-    if (gender === "femme") return [...baseQuestions, ...femaleOnlyQuestions];
-    return baseQuestions;
-  }, [gender]);
-
+  const [sex, setSex] = useState(""); // "H" | "F"
   const [step, setStep] = useState(0);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
 
-  function resetAll() {
-    setStep(0);
-    setScore(0);
-    setFinished(false);
-    setStarted(false);
-    setGender("");
-    setEmail("");
-    setEmailOk(false);
-  }
+  const questions = useMemo(() => {
+    if (sex === "F") return [...baseQuestions, femaleOnlyQuestion];
+    return baseQuestions;
+  }, [sex]);
+
+  const maxScore = useMemo(() => (sex ? questions.length * 4 : 0), [questions.length, sex]);
+  const minScore = useMemo(() => (sex ? questions.length * 1 : 0), [questions.length, sex]);
 
   function answer(option) {
     setScore((s) => s + option.score);
@@ -309,171 +240,156 @@ export default function App() {
     else setFinished(true);
   }
 
-  const p = finished ? personalityResult(score, questions.length) : null;
+  function reset() {
+    setSex("");
+    setStep(0);
+    setScore(0);
+    setFinished(false);
+  }
+
+  function personality() {
+    if (!sex) {
+      return null;
+    }
+
+    const ratio = (score - minScore) / (maxScore - minScore || 1);
+
+    if (ratio < 0.34) {
+      return {
+        badge: "🧠 TA PERSONNALITÉ ALIMENTAIRE",
+        title: "🧱 LE SURVIVANT",
+        text:
+          "Ton corps encaisse, mais il envoie des signaux : fatigue, froid, langue chargée, digestion sensible, réactions.\n\n" +
+          "👉 Priorité : enlever le bruit (ultra-transformés, sucre, alcool) et reconstruire une base simple, stable et ancestrale.",
+        hint:
+          "L’alimentation ancestrale est pour toi un RESET : simplicité, régularité, et retour au terrain.",
+      };
+    }
+
+    if (ratio < 0.72) {
+      return {
+        badge: "🧠 TA PERSONNALITÉ ALIMENTAIRE",
+        title: "🔄 LE BÂTISSEUR",
+        text:
+          "Tu es en transition : tu ressens les effets de ce que tu manges et tu peux progresser vite.\n\n" +
+          "👉 Stabilise énergie/digestion, réduis les écarts, renforce la récupération et la densité nutritionnelle.",
+        hint:
+          "L’alimentation ancestrale peut te faire passer un cap : clarté, énergie, peau/cheveux plus stables.",
+      };
+    }
+
+    return {
+      badge: "🧠 TA PERSONNALITÉ ALIMENTAIRE",
+      title: "🔥 L’OPTIMISTEUR",
+      text:
+        "Tu cherches à comprendre ton corps et à l’améliorer.\n" +
+        "Tu ressens rapidement les effets de ce que tu manges\n" +
+        "et tu sais que ton potentiel est plus élevé que ce que\n" +
+        "tu exploites aujourd’hui.\n",
+      hint:
+        "👉 L’alimentation ancestrale est pour toi un levier de clarté, d’énergie et de performance.",
+    };
+  }
+
+  const p = personality();
 
   return (
     <div style={styles.page}>
-      {/* 🎥 Vidéo de fond */}
+      {/* Vidéo de fond */}
       <video autoPlay loop muted playsInline style={styles.videoBg}>
         <source src="/forest.mp4" type="video/mp4" />
       </video>
 
-      {/* 🌫️ Overlay sombre */}
+      {/* Overlay */}
       <div style={styles.overlay} />
 
-      {/* 📦 Carte */}
       <div style={styles.card}>
-        {/* 1) Email obligatoire */}
-        {!emailOk ? (
+        {!sex ? (
           <>
-            <div style={styles.kicker}>📩 Avant de commencer</div>
-            <h2 style={{ margin: "6px 0 10px" }}>Entre ton email</h2>
-            <p style={styles.small}>
-              (On l’utilise pour te renvoyer ton résultat et tes recommandations.)
-            </p>
+            <div style={styles.kicker}>🧠 QUESTIONNAIRE</div>
+            <h2 style={styles.question}>Tu es :</h2>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-                if (ok) setEmailOk(true);
-              }}
-              style={{ marginTop: 14, display: "grid", gap: 10 }}
-            >
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tonemail@gmail.com"
-                style={styles.input}
-              />
-              <button style={styles.button} type="submit">
-                Continuer
+            <div style={styles.options}>
+              <button
+                style={styles.button}
+                onClick={() => {
+                  setSex("H");
+                  setStep(0);
+                  setScore(0);
+                  setFinished(false);
+                }}
+              >
+                ♂️ Homme
               </button>
-            </form>
 
-            <button style={styles.linkBtn} onClick={resetAll}>
-              Réinitialiser
-            </button>
+              <button
+                style={styles.button}
+                onClick={() => {
+                  setSex("F");
+                  setStep(0);
+                  setScore(0);
+                  setFinished(false);
+                }}
+              >
+                ♀️ Femme
+              </button>
+            </div>
+
+            <p style={styles.progressText}>
+              (Le questionnaire adapte certaines questions selon le sexe.)
+            </p>
+          </>
+        ) : !finished ? (
+          <>
+            <div style={styles.kicker}>📝 QUESTIONNAIRE</div>
+
+            <h2 style={styles.question}>{questions[step].question}</h2>
+
+            <div style={styles.options}>
+              {questions[step].options.map((opt, i) => (
+                <button key={i} style={styles.button} onClick={() => answer(opt)}>
+                  {opt.text}
+                </button>
+              ))}
+            </div>
+
+            <div style={styles.progressWrap}>
+              <div style={styles.progressLine}>
+                <div
+                  style={{
+                    ...styles.progressFill,
+                    width: `${Math.round(((step + 1) / questions.length) * 100)}%`,
+                  }}
+                />
+              </div>
+              <p style={styles.progressText}>
+                Question {step + 1} / {questions.length}
+              </p>
+            </div>
           </>
         ) : (
           <>
-            {/* 2) Choix sexe */}
-            {!gender ? (
-              <>
-                <div style={styles.kicker}>🧬 Personnalisation</div>
-                <h2 style={{ margin: "6px 0 10px" }}>Tu es :</h2>
-                <div style={styles.options}>
-                  <button
-                    style={styles.button}
-                    onClick={() => setGender("homme")}
-                  >
-                    Homme
-                  </button>
-                  <button
-                    style={styles.button}
-                    onClick={() => setGender("femme")}
-                  >
-                    Femme
-                  </button>
-                </div>
+            <div style={styles.kicker}>{p.badge}</div>
+            <h2 style={styles.resultTitle}>{p.title}</h2>
 
-                <p style={styles.small}>
-                  (Le questionnaire s’adapte : question “cycle” uniquement si femme.)
-                </p>
+            <p style={styles.resultText}>
+              {p.text.split("\n").map((line, idx) => (
+                <span key={idx}>
+                  {line}
+                  <br />
+                </span>
+              ))}
+            </p>
 
-                <button style={styles.linkBtn} onClick={resetAll}>
-                  Changer d’email
-                </button>
-              </>
-            ) : (
-              <>
-                {/* 3) Démarrer */}
-                {!started ? (
-                  <>
-                    <div style={styles.kicker}>✅ Prêt</div>
-                    <h2 style={{ margin: "6px 0 10px" }}>
-                      Questionnaire ({gender})
-                    </h2>
-                    <p style={styles.small}>
-                      Tu vas répondre à {questions.length} questions. Réponds
-                      instinctivement.
-                    </p>
+            <p style={styles.hint}>{p.hint}</p>
 
-                    <button
-                      style={{ ...styles.button, marginTop: 12 }}
-                      onClick={() => setStarted(true)}
-                    >
-                      Commencer
-                    </button>
+            <p style={styles.score}>
+              Score : <b>{score}</b> / {maxScore}
+            </p>
 
-                    <button style={styles.linkBtn} onClick={resetAll}>
-                      Revenir en arrière
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    {/* 4) QCM / Résultat */}
-                    {!finished ? (
-                      <>
-                        <h2 style={{ margin: 0 }}>{questions[step].question}</h2>
-
-                        <div style={styles.options}>
-                          {questions[step].options.map((opt, i) => (
-                            <button
-                              key={i}
-                              style={styles.button}
-                              onClick={() => answer(opt)}
-                            >
-                              {opt.text}
-                            </button>
-                          ))}
-                        </div>
-
-                        <p style={styles.progress}>
-                          Question {step + 1} / {questions.length}
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <div style={styles.kicker}>{p.badge}</div>
-
-                        <div style={{ marginTop: 10 }}>
-                          <div style={styles.personalityTitle}>{p.title}</div>
-                          <div style={styles.personalitySub}>{p.subtitle}</div>
-                        </div>
-
-                        <div style={styles.personalityBody}>
-                          <p style={{ margin: 0 }}>{p.description}</p>
-                          <p style={{ margin: "14px 0 0", opacity: 0.95 }}>
-                            {p.ancestral}
-                          </p>
-                        </div>
-
-                        <p style={styles.small}>
-                          Score : {score} • Profil : {p.pct}%
-                        </p>
-
-                        <button
-                          style={{ ...styles.button, background: "#334155" }}
-                          onClick={() => {
-                            setStep(0);
-                            setScore(0);
-                            setFinished(false);
-                            setStarted(false);
-                          }}
-                        >
-                          Refaire le questionnaire
-                        </button>
-
-                        <button style={styles.linkBtn} onClick={resetAll}>
-                          Tout recommencer (email + sexe)
-                        </button>
-                      </>
-                    )}
-                  </>
-                )}
-              </>
-            )}
+            <button style={styles.secondaryBtn} onClick={reset}>
+              Refaire le questionnaire
+            </button>
           </>
         )}
       </div>
@@ -490,125 +406,126 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    padding: 20,
     color: "white",
     fontFamily:
       'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial',
-    padding: 20,
   },
 
   videoBg: {
     position: "fixed",
-    top: 0,
-    left: 0,
+    inset: 0,
     width: "100vw",
     height: "100vh",
     objectFit: "cover",
     zIndex: -2,
-    filter: "saturate(1.1) contrast(1.05)",
   },
 
   overlay: {
     position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    background:
-      "radial-gradient(800px 500px at 50% 40%, rgba(15,23,42,0.35), rgba(2,6,23,0.78))",
+    inset: 0,
+    background: "rgba(2,6,23,0.70)",
     zIndex: -1,
   },
 
   card: {
-    background: "rgba(2, 6, 23, 0.85)",
-    padding: 26,
-    borderRadius: 18,
-    width: 420,
+    width: 560,
     maxWidth: "92vw",
-    textAlign: "left",
-    boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
-    border: "1px solid rgba(255,255,255,0.10)",
-    backdropFilter: "blur(7px)",
+    background: "rgba(2, 6, 23, 0.80)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 18,
+    padding: 26,
+    boxShadow: "0 30px 80px rgba(0,0,0,0.55)",
+    backdropFilter: "blur(8px)",
   },
 
   kicker: {
     fontSize: 12,
     letterSpacing: 1.2,
+    opacity: 0.9,
+    marginBottom: 10,
     textTransform: "uppercase",
-    opacity: 0.85,
   },
 
-  small: {
-    marginTop: 10,
-    opacity: 0.8,
-    fontSize: 13,
-    lineHeight: 1.35,
+  question: {
+    margin: "0 0 14px 0",
+    fontSize: 22,
+    lineHeight: 1.25,
   },
 
   options: {
     display: "grid",
     gap: 10,
-    marginTop: 16,
+    marginTop: 10,
   },
 
   button: {
-    padding: 12,
+    padding: "12px 14px",
     borderRadius: 12,
-    border: "none",
-    background: "#2563eb",
+    border: "1px solid rgba(255,255,255,0.10)",
+    background: "rgba(37,99,235,0.95)",
     color: "white",
     cursor: "pointer",
     fontSize: 15,
     textAlign: "left",
-    lineHeight: 1.2,
   },
 
-  linkBtn: {
+  progressWrap: {
+    marginTop: 16,
+  },
+
+  progressLine: {
+    height: 8,
+    background: "rgba(255,255,255,0.10)",
+    borderRadius: 999,
+    overflow: "hidden",
+  },
+
+  progressFill: {
+    height: "100%",
+    background: "rgba(56,189,248,0.95)",
+  },
+
+  progressText: {
+    marginTop: 10,
+    opacity: 0.75,
+    fontSize: 13,
+  },
+
+  resultTitle: {
+    margin: "4px 0 12px 0",
+    fontSize: 26,
+  },
+
+  resultText: {
+    margin: 0,
+    opacity: 0.92,
+    lineHeight: 1.55,
+    fontSize: 15.5,
+    whiteSpace: "pre-wrap",
+  },
+
+  hint: {
     marginTop: 14,
-    background: "transparent",
-    border: "none",
-    color: "rgba(255,255,255,0.70)",
-    cursor: "pointer",
-    padding: 0,
-    textDecoration: "underline",
-    fontSize: 12,
+    opacity: 0.95,
+    fontSize: 15,
   },
 
-  input: {
-    width: "100%",
-    padding: 12,
+  score: {
+    marginTop: 14,
+    opacity: 0.8,
+    fontSize: 13,
+  },
+
+  secondaryBtn: {
+    marginTop: 14,
+    padding: "12px 14px",
     borderRadius: 12,
-    border: "1px solid rgba(255,255,255,0.18)",
-    outline: "none",
-    background: "rgba(15,23,42,0.65)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    background: "rgba(51,65,85,0.95)",
     color: "white",
-    fontSize: 14,
-  },
-
-  progress: {
-    marginTop: 14,
-    opacity: 0.75,
-    fontSize: 13,
-  },
-
-  personalityTitle: {
-    fontSize: 18,
-    fontWeight: 800,
-    letterSpacing: 0.2,
-  },
-
-  personalitySub: {
-    marginTop: 4,
-    opacity: 0.75,
-    fontSize: 13,
-  },
-
-  personalityBody: {
-    marginTop: 14,
-    background: "rgba(15,23,42,0.45)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: 14,
-    padding: 14,
-    lineHeight: 1.5,
-    fontSize: 14,
+    cursor: "pointer",
+    fontSize: 15,
+    width: "100%",
   },
 };
