@@ -1,93 +1,307 @@
-import { useState } from "react";
-const [email, setEmail] = useState("");
-const [hasStarted, setHasStarted] = useState(false);
-const questions = [
+import { useMemo, useState } from "react";
+
+/**
+ * ✅ QUESTIONS (communes)
+ * Scores : 🟢=4 (top) 🟡=3 🟠=2 🔴=1 (terrain plus fragile)
+ */
+const baseQuestions = [
   {
-    question: "Ton alimentation est majoritairement composée de :",
+    question: "Le matin au réveil, tu te sens comment ?",
     options: [
-      { text: "Produits transformés / industriels", score: 1 },
-      { text: "Un mélange moderne et maison", score: 2 },
-      { text: "Aliments bruts, simples, ancestraux", score: 3 },
+      { text: "🟢 En pleine forme, prêt à attaquer la journée", score: 4 },
+      { text: "🟡 Il me faut un moment pour me réveiller vraiment", score: 3 },
+      { text: "🟠 Je suis déjà fatigué au lever", score: 2 },
+      { text: "🔴 Je me lève vidé(e), comme si je n’avais pas dormi", score: 1 },
     ],
   },
   {
-    question: "As-tu une langue blanche ou pâteuse au réveil ?",
+    question: "Tes mains et pieds sont :",
     options: [
-      { text: "Souvent", score: 1 },
-      { text: "Par moments", score: 2 },
-      { text: "Rarement / jamais", score: 3 },
+      { text: "🟢 Toujours bien chauds", score: 4 },
+      { text: "🟡 Froids parfois, selon la saison", score: 3 },
+      { text: "🟠 Souvent froids même à l’intérieur", score: 2 },
+      { text: "🔴 Gelés en permanence, même sous la couette", score: 1 },
     ],
   },
   {
-    question: "Après les repas, tu ressens plutôt :",
+    question: "Ta température corporelle au réveil est :",
     options: [
-      { text: "Lourdeur, fatigue, ballonnements", score: 1 },
-      { text: "Ça dépend des aliments", score: 2 },
-      { text: "Clarté et énergie stable", score: 3 },
+      { text: "🟢 Toujours autour de 36,6–37°C", score: 4 },
+      { text: "🟡 Parfois un peu basse", score: 3 },
+      { text: "🟠 Souvent autour de 36°C", score: 2 },
+      { text: "🔴 Toujours en dessous de 36°C", score: 1 },
     ],
   },
   {
-    question: "Ta digestion est :",
+    question: "Ton niveau d’énergie en journée est :",
     options: [
-      { text: "Irrégulière et imprévisible", score: 1 },
-      { text: "Correcte avec des écarts", score: 2 },
-      { text: "Fluide et régulière", score: 3 },
+      { text: "🟢 Stable du matin au soir", score: 4 },
+      { text: "🟡 Variable mais gérable", score: 3 },
+      { text: "🟠 En dents de scie, avec des coups de mou", score: 2 },
+      { text: "🔴 Épuisement constant, même sans effort", score: 1 },
     ],
   },
   {
-    question: "Concernant tes cheveux et ta peau :",
+    question: "Tu as souvent besoin de café, sucre ou stimulant pour fonctionner ?",
     options: [
-      { text: "Chute, cheveux fins, peau terne", score: 1 },
-      { text: "Quelques signes faibles", score: 2 },
-      { text: "Cheveux denses, peau nette", score: 3 },
+      { text: "🟢 Jamais", score: 4 },
+      { text: "🟡 De temps en temps", score: 3 },
+      { text: "🟠 Tous les jours", score: 2 },
+      { text: "🔴 Plusieurs fois par jour sinon je “tombe”", score: 1 },
     ],
   },
   {
-    question: "Ton niveau de fatigue au quotidien est :",
+    question: "Tu dors :",
     options: [
-      { text: "Quasi constant", score: 1 },
-      { text: "Présent à certains moments", score: 2 },
-      { text: "Faible ou inexistant", score: 3 },
+      { text: "🟢 Profondément et sans réveils", score: 4 },
+      { text: "🟡 Légèrement, je me réveille parfois", score: 3 },
+      { text: "🟠 Je me réveille plusieurs fois", score: 2 },
+      { text: "🔴 Je dors très mal ou j’ai de l’insomnie", score: 1 },
     ],
   },
   {
-    question: "Ta consommation de sucre, alcool ou café est :",
+    question: "Tu as besoin de combien de sommeil pour récupérer ?",
     options: [
-      { text: "Fréquente", score: 1 },
-      { text: "Occasionnelle", score: 2 },
-      { text: "Rare ou maîtrisée", score: 3 },
+      { text: "🟢 5-6h me suffisent", score: 4 },
+      { text: "🟡 Il me faut 8h minimum", score: 3 },
+      { text: "🟠 Même 9h ne suffisent pas", score: 2 },
+      { text: "🔴 Je suis toujours épuisé(e), même avec 10h", score: 1 },
     ],
   },
   {
-    question: "Certains aliments te provoquent des réactions ?",
+    question: "Tu ressens des ballonnements ou gaz :",
     options: [
-      { text: "Oui, clairement", score: 1 },
-      { text: "Légèrement", score: 2 },
-      { text: "Non", score: 3 },
+      { text: "🟢 Jamais", score: 4 },
+      { text: "🟡 Parfois, après certains plats", score: 3 },
+      { text: "🟠 Quasiment tous les jours", score: 2 },
+      { text: "🔴 Constamment, avec douleurs", score: 1 },
     ],
   },
   {
-    question: "Ton mode de vie est plutôt :",
+    question: "Ta langue le matin est :",
     options: [
-      { text: "Stressé et sédentaire", score: 1 },
-      { text: "Actif mais irrégulier", score: 2 },
-      { text: "Mouvement + récupération", score: 3 },
+      { text: "🟢 Rose et propre", score: 4 },
+      { text: "🟡 Un peu blanche parfois", score: 3 },
+      { text: "🟠 Blanche quasi tout le temps", score: 2 },
+      { text: "🔴 Épaisse, pâteuse, chargée tous les jours", score: 1 },
     ],
   },
   {
-    question: "Ton ressenti global est :",
+    question: "Tu es tombé malade combien de fois cette année (rhume, fièvre…) ?",
     options: [
-      { text: "Quelque chose est bloqué", score: 1 },
-      { text: "Terrain fragile mais améliorable", score: 2 },
-      { text: "Corps clair et stable", score: 3 },
+      { text: "🟢 Jamais", score: 4 },
+      { text: "🟡 1 ou 2 fois", score: 3 },
+      { text: "🟠 Plus de 3 fois", score: 2 },
+      { text: "🔴 Constamment, ou infections longues", score: 1 },
+    ],
+  },
+  {
+    question: "Quand tu es malade, tu guéris en :",
+    options: [
+      { text: "🟢 2–3 jours", score: 4 },
+      { text: "🟡 5–6 jours", score: 3 },
+      { text: "🟠 1 à 2 semaines", score: 2 },
+      { text: "🔴 Ça traîne toujours, je rechute souvent", score: 1 },
+    ],
+  },
+  {
+    question: "Tu as des douleurs articulaires ou musculaires :",
+    options: [
+      { text: "🟢 Jamais", score: 4 },
+      { text: "🟡 Rarement", score: 3 },
+      { text: "🟠 Régulièrement", score: 2 },
+      { text: "🔴 Tous les jours ou invalidantes", score: 1 },
+    ],
+  },
+  {
+    question: "Tu as des allergies, eczéma, urticaire ou réactions cutanées ?",
+    options: [
+      { text: "🟢 Non", score: 4 },
+      { text: "🟡 Un peu, saisonnièrement", score: 3 },
+      { text: "🟠 Régulièrement dans l’année", score: 2 },
+      { text: "🔴 Quasi en permanence", score: 1 },
+    ],
+  },
+  {
+    question: "Tes blessures (coupures, bleus) cicatrisent :",
+    options: [
+      { text: "🟢 Rapidement", score: 4 },
+      { text: "🟡 Un peu lentement", score: 3 },
+      { text: "🟠 Lentement et mal", score: 2 },
+      { text: "🔴 Très lentement, infections fréquentes", score: 1 },
+    ],
+  },
+  {
+    question: "Tes dents et gencives vont comment ?",
+    options: [
+      { text: "🟢 Solides, jamais de caries ou saignement", score: 4 },
+      { text: "🟡 Quelques saignements ou caries récentes", score: 3 },
+      { text: "🟠 Caries fréquentes, gencives sensibles", score: 2 },
+      { text: "🔴 Douleurs dentaires ou dents qui se déchaussent", score: 1 },
+    ],
+  },
+  {
+    question: "Tes ongles sont :",
+    options: [
+      { text: "🟢 Durs, lisses", score: 4 },
+      { text: "🟡 Cassants ou striés", score: 3 },
+      { text: "🟠 Qui se dédoublent souvent", score: 2 },
+      { text: "🔴 Très mous, avec tâches ou anomalies", score: 1 },
+    ],
+  },
+  {
+    question: "Ta peau est :",
+    options: [
+      { text: "🟢 Souple, hydratée", score: 4 },
+      { text: "🟡 Sèche parfois", score: 3 },
+      { text: "🟠 Très sèche, qui pèle", score: 2 },
+      { text: "🔴 Acné, eczéma ou inflammation chronique", score: 1 },
+    ],
+  },
+  {
+    question: "Tu remarques une perte de cheveux, poils, cils ?",
+    options: [
+      { text: "🟢 Non", score: 4 },
+      { text: "🟡 Légère, périodique", score: 3 },
+      { text: "🟠 Oui, depuis plusieurs mois", score: 2 },
+      { text: "🔴 Chute constante, zones dégarnies", score: 1 },
+    ],
+  },
+  {
+    question: "Tu as des fringales sucrées ou salées hors repas ?",
+    options: [
+      { text: "🟢 Jamais", score: 4 },
+      { text: "🟡 De temps en temps", score: 3 },
+      { text: "🟠 Tous les jours", score: 2 },
+      { text: "🔴 Plusieurs fois par jour, besoin urgent", score: 1 },
+    ],
+  },
+  {
+    question: "Tu tiens combien de temps sans manger sans te sentir mal ?",
+    options colour?:
+    options: [
+      { text: "🟢 Plus de 5h sans souci", score: 4 },
+      { text: "🟡 3–4h mais j’ai faim", score: 3 },
+      { text: "🟠 Moins de 3h, j’ai vertiges ou irritabilité", score: 2 },
+      { text: "🔴 Moins de 2h, sinon je tremble ou tombe", score: 1 },
+    ],
+  },
+  {
+    question: "Tu as des boutons, acné ou kystes sous-cutanés ?",
+    options: [
+      { text: "🟢 Jamais, peau toujours nette", score: 4 },
+      { text: "🟡 Quelques-uns occasionnellement", score: 3 },
+      { text: "🟠 Fréquemment, selon stress ou alimentation", score: 2 },
+      { text: "🔴 Constamment, peau inflammée ou douloureuse", score: 1 },
+    ],
+  },
+  {
+    question:
+      "Tu as des réactions digestives ou physiques après certains aliments (produits laitiers, gluten, fruits, légumes…) ?",
+    options: [
+      { text: "🟢 Jamais", score: 4 },
+      { text: "🟡 Parfois, mais c’est léger", score: 3 },
+      { text: "🟠 Oui, j’évite certains aliments pour ça", score: 2 },
+      { text: "🔴 Oui, plusieurs groupes d’aliments me rendent mal", score: 1 },
     ],
   },
 ];
 
+/** ✅ Question spécifique FEMME */
+const femaleOnlyQuestions = [
+  {
+    question: "Ton cycle menstruel est-il :",
+    options: [
+      { text: "🟢 Régulier, sans douleur ni symptômes", score: 4 },
+      { text: "🟡 Régulier mais avec quelques douleurs ou irritabilité", score: 3 },
+      { text: "🟠 Irrégulier, avec douleurs ou fatigue marquée", score: 2 },
+      { text: "🔴 Très irrégulier, avec acné, gonflements, saignements abondants", score: 1 },
+    ],
+  },
+];
+
+/** ✅ Résultat PERSONNALITÉ (style 16Personalities) basé sur % */
+function personalityResult(score, totalQuestions) {
+  const min = totalQuestions * 1;
+  const max = totalQuestions * 4;
+  const pct = Math.round(((score - min) / (max - min)) * 100); // 0 -> 100
+
+  if (pct <= 25) {
+    return {
+      badge: "🧠 TA PERSONNALITÉ ALIMENTAIRE",
+      title: "🧱 LE SURVIVANT MODERNE",
+      subtitle: "Terrain surchargé",
+      description:
+        "Tu avances au mental et ton corps compense comme il peut. Les signaux (fatigue, digestion, peau, langue, froid, immunité) sont souvent présents.",
+      ancestral:
+        "👉 L’alimentation ancestrale est pour toi une reconstruction. Tu as besoin de revenir au simple pour relancer ton terrain.",
+      pct,
+    };
+  }
+
+  if (pct <= 55) {
+    return {
+      badge: "🧠 TA PERSONNALITÉ ALIMENTAIRE",
+      title: "⚖️ L’ÉQUILIBRISTE",
+      subtitle: "Terrain instable",
+      description:
+        "Tu sens clairement l’impact de ce que tu manges. Tu alternes entre phases OK et phases plus fragiles (coup de mou, inconfort, réactions).",
+      ancestral:
+        "👉 L’alimentation ancestrale est pour toi un outil d’équilibre. Bien cadrée, elle stabilise ton énergie et ton système digestif.",
+      pct,
+    };
+  }
+
+  if (pct <= 80) {
+    return {
+      badge: "🧠 TA PERSONNALITÉ ALIMENTAIRE",
+      title: "🔥 L’OPTIMISEUR",
+      subtitle: "Terrain fonctionnel",
+      description:
+        "Tu comprends ton corps et tu repères vite ce qui te fait du bien ou te perturbe. Ton potentiel est élevé et tu peux encore améliorer la constance.",
+      ancestral:
+        "👉 L’alimentation ancestrale est pour toi un levier de clarté, d’énergie et de performance au quotidien.",
+      pct,
+    };
+  }
+
+  return {
+    badge: "🧠 TA PERSONNALITÉ ALIMENTAIRE",
+    title: "⚡ L’ANCESTRAL",
+    subtitle: "Terrain solide",
+    description:
+      "Tu es stable, résilient et tu récupères bien. Tu as peu d’inflammation chronique et ton énergie est plus constante que la moyenne.",
+    ancestral:
+      "👉 L’alimentation ancestrale est ton mode naturel : simple, cohérent, et aligné avec ta physiologie.",
+    pct,
+  };
+}
+
 export default function App() {
+  const [email, setEmail] = useState("");
+  const [emailOk, setEmailOk] = useState(false);
+
+  const [gender, setGender] = useState(""); // "homme" | "femme"
+  const [started, setStarted] = useState(false);
+
+  const questions = useMemo(() => {
+    if (gender === "femme") return [...baseQuestions, ...femaleOnlyQuestions];
+    return baseQuestions;
+  }, [gender]);
+
   const [step, setStep] = useState(0);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+
+  function resetAll() {
+    setStep(0);
+    setScore(0);
+    setFinished(false);
+    setStarted(false);
+    setGender("");
+    setEmail("");
+    setEmailOk(false);
+  }
 
   function answer(option) {
     setScore((s) => s + option.score);
@@ -95,28 +309,12 @@ export default function App() {
     else setFinished(true);
   }
 
-  function resultText() {
-    if (score <= 12) {
-      return "Terrain engorgé 🧱 — digestion lente, surcharge interne probable (foie / intestins). Un retour aux bases est nécessaire.";
-    }
-    if (score <= 20) {
-      return "Terrain en transition 🔄 — le corps s’adapte, mais reste fragile. L’alimentation ancestrale peut faire la différence.";
-    }
-    return "Terrain clair & ancestral ⚡ — digestion solide, énergie stable, terrain favorable.";
-  }
+  const p = finished ? personalityResult(score, questions.length) : null;
 
   return (
     <div style={styles.page}>
       {/* 🎥 Vidéo de fond */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        style={styles.videoBg}
-      >
-        {/* IMPORTANT: le fichier doit être dans /public et s'appeler exactement forest.mp4 */}
+      <video autoPlay loop muted playsInline style={styles.videoBg}>
         <source src="/forest.mp4" type="video/mp4" />
       </video>
 
@@ -125,42 +323,157 @@ export default function App() {
 
       {/* 📦 Carte */}
       <div style={styles.card}>
-        {!finished ? (
+        {/* 1) Email obligatoire */}
+        {!emailOk ? (
           <>
-            <h2 style={styles.title}>{questions[step].question}</h2>
-
-            <div style={styles.options}>
-              {questions[step].options.map((opt, i) => (
-                <button
-                  key={i}
-                  style={styles.button}
-                  onClick={() => answer(opt)}
-                >
-                  {opt.text}
-                </button>
-              ))}
-            </div>
-
-            <p style={styles.progress}>
-              Question {step + 1} / {questions.length}
+            <div style={styles.kicker}>📩 Avant de commencer</div>
+            <h2 style={{ margin: "6px 0 10px" }}>Entre ton email</h2>
+            <p style={styles.small}>
+              (On l’utilise pour te renvoyer ton résultat et tes recommandations.)
             </p>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+                if (ok) setEmailOk(true);
+              }}
+              style={{ marginTop: 14, display: "grid", gap: 10 }}
+            >
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tonemail@gmail.com"
+                style={styles.input}
+              />
+              <button style={styles.button} type="submit">
+                Continuer
+              </button>
+            </form>
+
+            <button style={styles.linkBtn} onClick={resetAll}>
+              Réinitialiser
+            </button>
           </>
         ) : (
           <>
-            <h2 style={styles.title}>Résultat</h2>
-            <p style={styles.result}>{resultText()}</p>
-            <p style={styles.score}>Score total : {score}</p>
+            {/* 2) Choix sexe */}
+            {!gender ? (
+              <>
+                <div style={styles.kicker}>🧬 Personnalisation</div>
+                <h2 style={{ margin: "6px 0 10px" }}>Tu es :</h2>
+                <div style={styles.options}>
+                  <button
+                    style={styles.button}
+                    onClick={() => setGender("homme")}
+                  >
+                    Homme
+                  </button>
+                  <button
+                    style={styles.button}
+                    onClick={() => setGender("femme")}
+                  >
+                    Femme
+                  </button>
+                </div>
 
-            <button
-              style={{ ...styles.button, background: "#334155" }}
-              onClick={() => {
-                setStep(0);
-                setScore(0);
-                setFinished(false);
-              }}
-            >
-              Refaire le questionnaire
-            </button>
+                <p style={styles.small}>
+                  (Le questionnaire s’adapte : question “cycle” uniquement si femme.)
+                </p>
+
+                <button style={styles.linkBtn} onClick={resetAll}>
+                  Changer d’email
+                </button>
+              </>
+            ) : (
+              <>
+                {/* 3) Démarrer */}
+                {!started ? (
+                  <>
+                    <div style={styles.kicker}>✅ Prêt</div>
+                    <h2 style={{ margin: "6px 0 10px" }}>
+                      Questionnaire ({gender})
+                    </h2>
+                    <p style={styles.small}>
+                      Tu vas répondre à {questions.length} questions. Réponds
+                      instinctivement.
+                    </p>
+
+                    <button
+                      style={{ ...styles.button, marginTop: 12 }}
+                      onClick={() => setStarted(true)}
+                    >
+                      Commencer
+                    </button>
+
+                    <button style={styles.linkBtn} onClick={resetAll}>
+                      Revenir en arrière
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {/* 4) QCM / Résultat */}
+                    {!finished ? (
+                      <>
+                        <h2 style={{ margin: 0 }}>{questions[step].question}</h2>
+
+                        <div style={styles.options}>
+                          {questions[step].options.map((opt, i) => (
+                            <button
+                              key={i}
+                              style={styles.button}
+                              onClick={() => answer(opt)}
+                            >
+                              {opt.text}
+                            </button>
+                          ))}
+                        </div>
+
+                        <p style={styles.progress}>
+                          Question {step + 1} / {questions.length}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <div style={styles.kicker}>{p.badge}</div>
+
+                        <div style={{ marginTop: 10 }}>
+                          <div style={styles.personalityTitle}>{p.title}</div>
+                          <div style={styles.personalitySub}>{p.subtitle}</div>
+                        </div>
+
+                        <div style={styles.personalityBody}>
+                          <p style={{ margin: 0 }}>{p.description}</p>
+                          <p style={{ margin: "14px 0 0", opacity: 0.95 }}>
+                            {p.ancestral}
+                          </p>
+                        </div>
+
+                        <p style={styles.small}>
+                          Score : {score} • Profil : {p.pct}%
+                        </p>
+
+                        <button
+                          style={{ ...styles.button, background: "#334155" }}
+                          onClick={() => {
+                            setStep(0);
+                            setScore(0);
+                            setFinished(false);
+                            setStarted(false);
+                          }}
+                        >
+                          Refaire le questionnaire
+                        </button>
+
+                        <button style={styles.linkBtn} onClick={resetAll}>
+                          Tout recommencer (email + sexe)
+                        </button>
+                      </>
+                    )}
+                  </>
+                )}
+              </>
+            )}
           </>
         )}
       </div>
@@ -185,44 +498,56 @@ const styles = {
 
   videoBg: {
     position: "fixed",
-    inset: 0, // top/left/right/bottom = 0
-    width: "100%",
-    height: "100%",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
     objectFit: "cover",
-    zIndex: 0,
+    zIndex: -2,
+    filter: "saturate(1.1) contrast(1.05)",
   },
 
   overlay: {
     position: "fixed",
-    inset: 0,
-    background: "rgba(2,6,23,0.65)",
-    zIndex: 1,
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    background:
+      "radial-gradient(800px 500px at 50% 40%, rgba(15,23,42,0.35), rgba(2,6,23,0.78))",
+    zIndex: -1,
   },
 
   card: {
-    position: "relative",
-    zIndex: 2,
     background: "rgba(2, 6, 23, 0.85)",
-    padding: 28,
-    borderRadius: 16,
+    padding: 26,
+    borderRadius: 18,
     width: 420,
     maxWidth: "92vw",
-    textAlign: "center",
-    boxShadow: "0 20px 40px rgba(0,0,0,0.6)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    backdropFilter: "blur(6px)",
+    textAlign: "left",
+    boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
+    border: "1px solid rgba(255,255,255,0.10)",
+    backdropFilter: "blur(7px)",
   },
 
-  title: {
-    margin: 0,
-    fontSize: 22,
-    lineHeight: 1.2,
+  kicker: {
+    fontSize: 12,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+    opacity: 0.85,
+  },
+
+  small: {
+    marginTop: 10,
+    opacity: 0.8,
+    fontSize: 13,
+    lineHeight: 1.35,
   },
 
   options: {
     display: "grid",
-    gap: 12,
-    marginTop: 18,
+    gap: 10,
+    marginTop: 16,
   },
 
   button: {
@@ -232,21 +557,58 @@ const styles = {
     background: "#2563eb",
     color: "white",
     cursor: "pointer",
-    fontSize: 16,
+    fontSize: 15,
+    textAlign: "left",
+    lineHeight: 1.2,
+  },
+
+  linkBtn: {
+    marginTop: 14,
+    background: "transparent",
+    border: "none",
+    color: "rgba(255,255,255,0.70)",
+    cursor: "pointer",
+    padding: 0,
+    textDecoration: "underline",
+    fontSize: 12,
+  },
+
+  input: {
+    width: "100%",
+    padding: 12,
+    borderRadius: 12,
+    border: "1px solid rgba(255,255,255,0.18)",
+    outline: "none",
+    background: "rgba(15,23,42,0.65)",
+    color: "white",
+    fontSize: 14,
   },
 
   progress: {
-    marginTop: 18,
+    marginTop: 14,
     opacity: 0.75,
+    fontSize: 13,
   },
 
-  result: {
+  personalityTitle: {
     fontSize: 18,
-    marginTop: 18,
-    lineHeight: 1.35,
+    fontWeight: 800,
+    letterSpacing: 0.2,
   },
 
-  score: {
-    opacity: 0.85,
+  personalitySub: {
+    marginTop: 4,
+    opacity: 0.75,
+    fontSize: 13,
+  },
+
+  personalityBody: {
+    marginTop: 14,
+    background: "rgba(15,23,42,0.45)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 14,
+    padding: 14,
+    lineHeight: 1.5,
+    fontSize: 14,
   },
 };
