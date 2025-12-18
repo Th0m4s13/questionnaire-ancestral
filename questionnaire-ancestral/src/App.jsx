@@ -778,7 +778,7 @@ const styles = {
 
   // Petit avatar dans la carte, au-dessus du titre
   inlineAvatar: {
-    width: 120,
+    width: 140,
     aspectRatio: "469 / 532",
   },
 
