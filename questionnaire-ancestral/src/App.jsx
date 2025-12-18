@@ -771,15 +771,16 @@ const styles = {
     marginTop: 16,
     textAlign: "left",
     display: "grid",
-    gridTemplateColumns: "90px 1fr",
+    gridTemplateColumns: "110px 1fr",
     gap: 14,
     alignItems: "center",
   },
 
   // Petit avatar dans la carte, au-dessus du titre
   inlineAvatar: {
-    width: 140,
+    width: 150,
     aspectRatio: "469 / 532",
+    justifySelf: "center",
   },
 
   smallIntro: {
