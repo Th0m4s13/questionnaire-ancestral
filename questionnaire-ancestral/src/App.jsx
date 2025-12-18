@@ -288,6 +288,8 @@ export default function App() {
 
     const pct = score / maxScore;
     const prenom = name.trim() || "toi";
+    const isFemme = sex === "femme";
+    const g = (masc, fem) => (isFemme ? fem : masc); // helper pour accords
 
     const common = {
       intro: `Ok ${prenom} — voilà ce que ton terrain raconte.`,
@@ -298,9 +300,12 @@ export default function App() {
     if (pct <= 0.45) {
       return {
         themeKey: "brume",
-        label: "🧱 LE SÉDIMENTÉ",
-        title: "Le Survivant Moderne",
-        subtitle: "Terrain chargé / récupération difficile",
+        label: g("🧱 LE SÉDIMENTÉ", "🧱 LA SÉDIMENTÉE"),
+        title: g("Le Survivant Moderne", "La Survivante Moderne"),
+        subtitle: g(
+          "Terrain chargé / récupération difficile",
+          "Terrain chargée / récupération difficile"
+        ),
         story:
           `${common.intro} Tu avances, mais tu sens que le corps “tire le frein”. ` +
           `Fatigue au réveil, digestion lente, réactions… ` +
@@ -327,9 +332,12 @@ export default function App() {
     if (pct <= 0.70) {
       return {
         themeKey: "aube",
-        label: "🔄 LE TRANSITIONNEL",
-        title: "L’Optimiseur",
-        subtitle: "Le corps s’adapte, mais manque de constance",
+        label: g("🔄 LE TRANSITIONNEL", "🔄 LA TRANSITIONNELLE"),
+        title: g("L’Optimiseur", "L’Optimisatrice"),
+        subtitle: g(
+          "Le corps s’adapte, mais manque de constance",
+          "Le corps s’adapte, mais manque de constance"
+        ),
         story:
           `${common.intro} Tu as du potentiel : des jours où tu te sens vraiment bien… et d’autres où ça retombe. ` +
           `Ton terrain peut monter vite si tu verrouilles 2–3 leviers clés.`,
@@ -354,9 +362,12 @@ export default function App() {
 
     return {
       themeKey: "solaire",
-      label: "⚡ L’ANCIEN",
-      title: "Le Stratège Ancestral",
-      subtitle: "Terrain stable / bonne tolérance",
+      label: g("⚡ L’ANCIEN", "⚡ L’ANCIENNE"),
+      title: g("Le Stratège Ancestral", "La Stratège Ancestrale"),
+      subtitle: g(
+        "Terrain stable / bonne tolérance",
+        "Terrain stable / bonne tolérance"
+      ),
       story:
         `${common.intro} Tu as déjà une base solide : meilleure résilience, digestion plus stable, énergie plus régulière. ` +
         `Tu n’es pas dans la réparation — tu es dans l’optimisation.`,
@@ -502,16 +513,6 @@ export default function App() {
           <>
             {/* Résultat */}
             <div style={styles.kicker}>🧠 TA PERSONNALITÉ ALIMENTAIRE</div>
-
-            <div
-              style={{
-                ...styles.profileChip,
-                borderColor: theme.blockBorder,
-                background: theme.chipBg,
-              }}
-            >
-              ✨ Profil détecté : <b>{theme.name}</b>
-            </div>
 
             {/* Avatar compact au-dessus du titre */}
             <div style={styles.resultHeader}>
@@ -777,7 +778,7 @@ const styles = {
 
   // Petit avatar dans la carte, au-dessus du titre
   inlineAvatar: {
-    width: 100,
+    width: 120,
     aspectRatio: "469 / 532",
   },
 
