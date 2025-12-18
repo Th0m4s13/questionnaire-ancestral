@@ -973,20 +973,7 @@ const THEME_PRESETS = {
     mantraBorder: "rgba(167, 139, 250, 0.40)",
     tipText: "rgba(230, 210, 255, 0.95)",
   },
-};
-
-// On fusionne le “theme pastel avatar” + thème UI
-function getTheme(profileKey) {
-  const avatarTheme = (() => {
-    const common = {
-      skin: "#F2C7A5",
-      hair: "#2B2B33",
-      hair2: "#3A2A27",
-      outfit1: "#6B7280",
-      outfit2: "#60A5FA",
-      outfit3: "#A78BFA",
-    };
-
+}
     if (profileKey === "sedimente") {
       return {
         ...common,
@@ -1018,8 +1005,8 @@ function getTheme(profileKey) {
       outfit2: "#F472B6",
       outfit3: "#8B5CF6",
     };
-  })();
+  };
 
   const ui = THEME_PRESETS[profileKey] || THEME_PRESETS.transitionnel;
   return { ...avatarTheme, ...ui };
-}
+};
