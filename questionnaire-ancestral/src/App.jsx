@@ -2,154 +2,6 @@ import { useMemo, useState } from "react";
 
 const BG_IMAGE = "/BG_IMAGE.jpg"; // dans /public
 
-// =====================
-// Avatar (SVG illustré)
-// =====================
-function Avatar16({ sex, profileKey, theme }) {
-  // petite variation selon sexe/profil
-  const isFemale = sex === "femme";
-  const hair = isFemale ? theme.hair2 : theme.hair;
-  const outfit = profileKey === "ancien" ? theme.outfit3 : profileKey === "transitionnel" ? theme.outfit2 : theme.outfit1;
-
-  // “attitude” différente selon profil
-  const eyeY = profileKey === "sedimente" ? 46 : profileKey === "transitionnel" ? 45 : 44;
-  const mouth = profileKey === "sedimente" ? "M44 58 Q50 56 56 58" : profileKey === "transitionnel" ? "M44 58 Q50 60 56 58" : "M44 58 Q50 62 56 58";
-
-  return (
-    <svg viewBox="0 0 120 120" width="92" height="92" role="img" aria-label="Avatar">
-      {/* halo pastel */}
-      <defs>
-        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor={theme.halo1} />
-          <stop offset="1" stopColor={theme.halo2} />
-        </linearGradient>
-        <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="10" stdDeviation="10" floodColor="rgba(0,0,0,0.45)" />
-        </filter>
-      </defs>
-
-      <rect x="6" y="6" width="108" height="108" rx="22" fill="url(#bg)" opacity="0.35" />
-      <rect x="10" y="10" width="100" height="100" rx="20" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.16)" />
-
-      {/* personnage */}
-      <g filter="url(#soft)">
-        {/* corps */}
-        <path
-          d="M32 100 Q60 74 88 100 Z"
-          fill={outfit}
-          stroke="rgba(255,255,255,0.15)"
-        />
-        {/* col */}
-        <path d="M52 78 Q60 86 68 78" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="3" />
-        {/* tête */}
-        <path
-          d="M60 26
-             C45 26 36 38 36 52
-             C36 69 46 82 60 82
-             C74 82 84 69 84 52
-             C84 38 75 26 60 26 Z"
-          fill={theme.skin}
-        />
-        {/* cheveux */}
-        <path
-          d="M36 52
-             C36 34 47 22 62 22
-             C75 22 86 31 87 46
-             C84 41 79 39 74 39
-             C68 39 64 42 60 42
-             C54 42 49 39 45 40
-             C41 41 38 46 36 52 Z"
-          fill={hair}
-        />
-
-        {/* oreilles */}
-        <circle cx="36" cy="56" r="5" fill={theme.skin} opacity="0.95" />
-        <circle cx="84" cy="56" r="5" fill={theme.skin} opacity="0.95" />
-
-        {/* yeux */}
-        <circle cx="50" cy={eyeY} r="2.6" fill="rgba(10,10,20,0.85)" />
-        <circle cx="70" cy={eyeY} r="2.6" fill="rgba(10,10,20,0.85)" />
-        {/* sourcils */}
-        <path d="M45 40 Q50 37 55 40" fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M65 40 Q70 37 75 40" fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="2.5" strokeLinecap="round" />
-
-        {/* nez */}
-        <path d="M60 46 Q58 54 61 56" fill="none" stroke="rgba(0,0,0,0.22)" strokeWidth="2" strokeLinecap="round" />
-
-        {/* bouche */}
-        <path d={mouth} fill="none" stroke="rgba(120,40,60,0.55)" strokeWidth="2.6" strokeLinecap="round" />
-
-        {/* accessoire “signature” */}
-        {profileKey === "ancien" ? (
-          // petite “étoile/éclair” discret
-          <path
-            d="M90 28 L96 26 L94 32 L100 34 L93 36 L92 42 L88 36 L82 34 L88 32 Z"
-            fill={theme.accent}
-            opacity="0.95"
-          />
-        ) : profileKey === "transitionnel" ? (
-          // petit cercle “transition”
-          <circle cx="92" cy="32" r="7" fill="none" stroke={theme.accent} strokeWidth="3" opacity="0.9" />
-        ) : (
-          // petit “point” lourd
-          <circle cx="92" cy="34" r="6" fill={theme.accent} opacity="0.9" />
-        )}
-      </g>
-    </svg>
-  );
-}
-
-// =====================
-// Thèmes pastels profils
-// =====================
-function getTheme(profileKey) {
-  // palette pastel “16P-ish”
-  const common = {
-    skin: "#F2C7A5",
-    hair: "#2B2B33",
-    hair2: "#3A2A27",
-    outfit1: "#6B7280",
-    outfit2: "#60A5FA",
-    outfit3: "#A78BFA",
-  };
-
-  if (profileKey === "sedimente") {
-    return {
-      ...common,
-      halo1: "#FDE68A",
-      halo2: "#FCA5A5",
-      accent: "#F59E0B",
-      outfit1: "#64748B",
-      outfit2: "#94A3B8",
-      outfit3: "#A3A3A3",
-    };
-  }
-  if (profileKey === "transitionnel") {
-    return {
-      ...common,
-      halo1: "#A7F3D0",
-      halo2: "#93C5FD",
-      accent: "#22C55E",
-      outfit1: "#60A5FA",
-      outfit2: "#34D399",
-      outfit3: "#93C5FD",
-    };
-  }
-  // ancien
-  return {
-    ...common,
-    halo1: "#C4B5FD",
-    halo2: "#FBCFE8",
-    accent: "#A78BFA",
-    outfit1: "#A78BFA",
-    outfit2: "#F472B6",
-    outfit3: "#8B5CF6",
-  };
-}
-
-// =====================
-// App
-// =====================
 export default function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -392,7 +244,9 @@ export default function App() {
   const maxScore = useMemo(() => questions.length * 4, [questions.length]);
 
   const canStart =
-    name.trim().length >= 2 && email.trim().includes("@") && (sex === "homme" || sex === "femme");
+    name.trim().length >= 2 &&
+    email.trim().includes("@") &&
+    (sex === "homme" || sex === "femme");
 
   function answer(option) {
     setScore((s) => s + option.score);
@@ -400,7 +254,35 @@ export default function App() {
     else setFinished(true);
   }
 
-  // ✅ Personnalité “WOW” + key (sedimente/transitionnel/ancien)
+  // 🎨 Thèmes pastels style 16personalities
+  const THEME_PRESETS = {
+    brume: {
+      name: "Brume Terre",
+      halo1: "#D7F2E3",
+      halo2: "#FDE6D8",
+      accent: "#F4A261",
+      chipBg: "rgba(244,162,97,0.14)",
+      blockBorder: "rgba(244,162,97,0.35)",
+    },
+    aube: {
+      name: "Aube Fluide",
+      halo1: "#E6F0FF",
+      halo2: "#FDE2F3",
+      accent: "#7C9DFF",
+      chipBg: "rgba(124,157,255,0.14)",
+      blockBorder: "rgba(124,157,255,0.35)",
+    },
+    solaire: {
+      name: "Solaire Clair",
+      halo1: "#FFF1C7",
+      halo2: "#D7F7F2",
+      accent: "#2A9D8F",
+      chipBg: "rgba(42,157,143,0.14)",
+      blockBorder: "rgba(42,157,143,0.35)",
+    },
+  };
+
+  // ✅ Personnalité “WOW”
   function personality() {
     if (!questions.length) return null;
 
@@ -409,32 +291,33 @@ export default function App() {
 
     const common = {
       intro: `Ok ${prenom} — voilà ce que ton terrain raconte.`,
-      footer: `⚡ Objectif : énergie stable + digestion calme + peau/cheveux qui suivent.`,
+      footer:
+        "⚡ Objectif : énergie stable + digestion calme + peau/cheveux qui suivent.",
     };
 
     if (pct <= 0.45) {
       return {
-        key: "sedimente",
+        themeKey: "brume",
         label: "🧱 LE SÉDIMENTÉ",
-        badge: "Profil détecté : Brume Terre",
         title: "Le Survivant Moderne",
         subtitle: "Terrain chargé / récupération difficile",
         story:
           `${common.intro} Tu avances, mais tu sens que le corps “tire le frein”. ` +
-          `Fatigue au réveil, langue chargée, digestion lente, réactions… ` +
-          `Ça ressemble à un terrain saturé (foie/intestins + énergie en montagnes russes).`,
+          `Fatigue au réveil, digestion lente, réactions… ` +
+          `C’est typiquement un terrain saturé (foie / intestins / glycémie instable).`,
         highlights: [
           "Énergie instable (coups de mou, besoin de café/sucre)",
           "Ballonnements / transit capricieux / lourdeurs",
           "Peau/cheveux plus sensibles, tolérance alimentaire fragile",
         ],
-        mantra: "👉 “Je reviens aux bases. Je simplifie. Je reconstruis.”",
         plan: [
           "Assiette simple : vrais aliments, peu d’irritants",
           "Stabiliser sucre/café (éviter les montagnes russes)",
           "Rythme + digestion : sommeil, repas posés, régularité",
         ],
-        trap: "Piège : vouloir tout optimiser d’un coup. Ici, c’est RESET + constance.",
+        mantra: "👉 “Je reviens aux bases. Je simplifie. Je reconstruis.”",
+        trap:
+          "Piège : vouloir tout optimiser d’un coup. Ici, c’est RESET + constance.",
         tip:
           "🔥 L’alimentation ancestrale est ton bouton “calme interne” : moins d’inflammation, plus de nutriments, plus de stabilité.",
         ...common,
@@ -443,26 +326,26 @@ export default function App() {
 
     if (pct <= 0.70) {
       return {
-        key: "transitionnel",
+        themeKey: "aube",
         label: "🔄 LE TRANSITIONNEL",
-        badge: "Profil détecté : Clair-Obscur",
         title: "L’Optimiseur",
         subtitle: "Le corps s’adapte, mais manque de constance",
         story:
           `${common.intro} Tu as du potentiel : des jours où tu te sens vraiment bien… et d’autres où ça retombe. ` +
-          `Ton terrain peut monter vite si tu verrouilles 2–3 leviers simples (sommeil, digestion, qualité).`,
+          `Ton terrain peut monter vite si tu verrouilles 2–3 leviers clés.`,
         highlights: [
           "Bon potentiel mais irrégulier (stress, sommeil, écarts)",
           "Réactions selon les aliments (sensibilité modulable)",
           "Digestion “OK” mais parfois fragile",
         ],
-        mantra: "👉 “Je rends mon énergie prévisible.”",
         plan: [
-          "Repérer tes déclencheurs (laitiers/gluten/sucre…)",
+          "Identifier tes déclencheurs (laitiers/gluten/sucre…)",
           "Construire un socle ancestral simple et répétable",
           "Sommeil + récupération : ton multiplicateur n°1",
         ],
-        trap: "Piège : être strict 3 jours puis craquer 4 jours. Mieux vaut stable que parfait.",
+        mantra: "👉 “Je rends mon énergie prévisible.”",
+        trap:
+          "Piège : être strict 3 jours puis craquer 4 jours. Mieux vaut stable que parfait.",
         tip:
           "🔥 L’alimentation ancestrale te fait passer un cap : énergie plus stable, moins de réactions, meilleure peau/cheveux.",
         ...common,
@@ -470,9 +353,8 @@ export default function App() {
     }
 
     return {
-      key: "ancien",
+      themeKey: "solaire",
       label: "⚡ L’ANCIEN",
-      badge: "Profil détecté : Or Serein",
       title: "Le Stratège Ancestral",
       subtitle: "Terrain stable / bonne tolérance",
       story:
@@ -483,13 +365,14 @@ export default function App() {
         "Digestion plus solide / moins de réactions",
         "Meilleure récupération globale",
       ],
-      mantra: "👉 “Je joue la constance et la précision.”",
       plan: [
         "Qualité des aliments (origine, cuisson, variété)",
         "Timing intelligent (repas / jeûne léger si ça te réussit)",
         "Garder ton socle même en vie sociale",
       ],
-      trap: "Piège : se disperser en “hacks”. Tu gagnes plus avec simplicité + régularité.",
+      mantra: "👉 “Je joue la constance et la précision.”",
+      trap:
+        "Piège : se disperser en “hacks”. Tu gagnes plus avec simplicité + régularité.",
       tip:
         "🔥 L’alimentation ancestrale est ton levier performance : clarté mentale, stabilité, peau/cheveux, énergie.",
       ...common,
@@ -497,7 +380,7 @@ export default function App() {
   }
 
   const prof = personality();
-  const theme = getTheme(prof?.key || "transitionnel");
+  const theme = prof ? THEME_PRESETS[prof.themeKey] : THEME_PRESETS.aube;
 
   function resetAll() {
     setStep(0);
@@ -517,239 +400,260 @@ export default function App() {
   return (
     <div style={styles.page}>
       {/* Background */}
-      <div style={{ ...styles.bg, backgroundImage: `url(${BG_IMAGE})` }} />
+      <div style={{ ...styles.bgPhoto, backgroundImage: `url(${BG_IMAGE})` }} />
+      <div
+        style={{
+          ...styles.bgGlow,
+          background: `radial-gradient(900px 600px at 20% 20%, ${theme.halo1} 0%, transparent 60%),
+                       radial-gradient(900px 600px at 80% 30%, ${theme.halo2} 0%, transparent 60%),
+                       linear-gradient(180deg, rgba(2,6,23,0.55), rgba(2,6,23,0.78))`,
+        }}
+      />
       <div style={styles.overlay} />
 
-      {/* Important: wrapper centré + scroll safe */}
-      <div style={styles.shell}>
-        <div style={styles.card}>
-          {/* Écran start */}
-          {!canStart ? (
-            <>
-              <div style={styles.kicker}>🧠 TON PROFIL ALIMENTAIRE</div>
-              <h2 style={{ margin: "8px 0 0" }}>Avant de commencer</h2>
+      <div style={styles.card}>
+        {/* Écran start */}
+        {!canStart ? (
+          <>
+            <div style={styles.kicker}>🧠 TON PROFIL ALIMENTAIRE</div>
+            <h2 style={{ margin: "8px 0 0" }}>Avant de commencer</h2>
 
-              <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
-                <input
-                  style={styles.input}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ton prénom (ou pseudo)"
-                  type="text"
-                  autoComplete="name"
-                />
+            <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
+              <input
+                style={styles.input}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ton prénom (ou pseudo)"
+                type="text"
+                autoComplete="name"
+              />
 
-                <input
-                  style={styles.input}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Ton email"
-                  type="email"
-                  autoComplete="email"
-                />
+              <input
+                style={styles.input}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Ton email"
+                type="email"
+                autoComplete="email"
+              />
 
-                <div style={styles.sexRow}>
-                  <button
-                    type="button"
-                    onClick={() => setSex("homme")}
-                    style={{
-                      ...styles.sexBtn,
-                      ...(sex === "homme" ? styles.sexBtnActive : null),
-                    }}
-                  >
-                    Homme
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSex("femme")}
-                    style={{
-                      ...styles.sexBtn,
-                      ...(sex === "femme" ? styles.sexBtnActive : null),
-                    }}
-                  >
-                    Femme
-                  </button>
-                </div>
-
-                <p style={styles.note}>
-                  Tu dois remplir <b>prénom + email</b> et choisir <b>Homme/Femme</b>.
-                </p>
-              </div>
-            </>
-          ) : !finished ? (
-            <>
-              {/* Questionnaire */}
-              <div style={styles.kicker}>🧠 TA PERSONNALITÉ ALIMENTAIRE</div>
-
-              <div style={styles.headerRow}>
-                <div style={styles.miniPill}>
-                  {name.trim()} • {sex}
-                </div>
+              <div style={styles.sexRow}>
                 <button
                   type="button"
-                  onClick={restartFromStart}
-                  style={styles.linkBtn}
-                  title="Modifier prénom/email/sex"
+                  onClick={() => setSex("homme")}
+                  style={{
+                    ...styles.sexBtn,
+                    ...(sex === "homme" ? styles.sexBtnActive : null),
+                  }}
                 >
-                  Modifier
+                  Homme
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSex("femme")}
+                  style={{
+                    ...styles.sexBtn,
+                    ...(sex === "femme" ? styles.sexBtnActive : null),
+                  }}
+                >
+                  Femme
                 </button>
               </div>
 
-              <h2 style={{ margin: "10px 0 0" }}>{questions[step]?.question}</h2>
-
-              <div style={styles.options}>
-                {questions[step]?.options?.map((opt, i) => (
-                  <button
-                    key={i}
-                    style={{
-                      ...styles.button,
-                      background: theme.btn,
-                    }}
-                    onClick={() => answer(opt)}
-                  >
-                    {opt.text}
-                  </button>
-                ))}
-              </div>
-
-              <p style={styles.progress}>
-                Question {step + 1} / {questions.length}
+              <p style={styles.note}>
+                Tu dois remplir <b>prénom + email</b> et choisir <b>Homme/Femme</b>.
               </p>
-            </>
-          ) : (
-            <>
-              {/* Résultat */}
-              <div style={styles.kicker}>🧠 TA PERSONNALITÉ ALIMENTAIRE</div>
+            </div>
+          </>
+        ) : !finished ? (
+          <>
+            {/* Questionnaire */}
+            <div style={styles.kicker}>🧠 TA PERSONNALITÉ ALIMENTAIRE</div>
 
-              {/* badge pastel */}
-              <div
-                style={{
-                  ...styles.badge,
-                  borderColor: theme.badgeBorder,
-                  background: theme.badgeBg,
-                  color: theme.badgeText,
-                }}
+            <div style={styles.headerRow}>
+              <div style={styles.miniPill}>
+                {name.trim()} • {sex}
+              </div>
+              <button
+                type="button"
+                onClick={restartFromStart}
+                style={styles.linkBtn}
+                title="Modifier prénom/email/sex"
               >
-                ✨ {prof?.badge}
-              </div>
+                Modifier
+              </button>
+            </div>
 
-              <div style={styles.resultHeader}>
-                <div style={{ display: "grid", placeItems: "center" }}>
-                  <Avatar16 sex={sex} profileKey={prof?.key} theme={theme} />
-                </div>
+            <h2 style={{ margin: "10px 0 0" }}>{questions[step]?.question}</h2>
 
-                <div style={{ textAlign: "left" }}>
-                  <div style={styles.smallIntro}>{prof?.intro}</div>
-                  <h2 style={{ margin: "6px 0 0" }}>{prof?.label}</h2>
-                  <p style={styles.subtitle}>
-                    <b>{prof?.title}</b> — {prof?.subtitle}
-                  </p>
-                </div>
-              </div>
-
-              <p style={styles.resultText}>{prof?.story}</p>
-
-              <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
-                <div style={styles.blockTitle}>✅ Signes typiques</div>
-                <ul style={styles.ul}>
-                  {prof?.highlights?.map((x, idx) => (
-                    <li key={idx} style={styles.li}>
-                      {x}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
-                <div style={styles.blockTitle}>🎯 3 priorités</div>
-                <ul style={styles.ul}>
-                  {prof?.plan?.map((x, idx) => (
-                    <li key={idx} style={styles.li}>
-                      {x}
-                    </li>
-                  ))}
-                </ul>
-                <div style={{ ...styles.mantra, borderColor: theme.mantraBorder }}>
-                  {prof?.mantra}
-                </div>
-                <div style={styles.trap}>⚠️ {prof?.trap}</div>
-              </div>
-
-              <p style={{ ...styles.tip, color: theme.tipText }}>{prof?.tip}</p>
-              <p style={styles.footer}>{prof?.footer}</p>
-
-              <p style={{ opacity: 0.82, marginTop: 10 }}>
-                Score : <b>{score}</b> / {maxScore}
-              </p>
-
-              <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
-                <button style={{ ...styles.button, background: "#334155" }} onClick={resetAll}>
-                  Refaire le questionnaire
+            <div style={styles.options}>
+              {questions[step]?.options?.map((opt, i) => (
+                <button key={i} style={styles.button} onClick={() => answer(opt)}>
+                  {opt.text}
                 </button>
-                <button style={{ ...styles.button, background: "rgba(15,23,42,0.75)" }} onClick={restartFromStart}>
-                  Changer prénom / email / sexe
-                </button>
+              ))}
+            </div>
+
+            <p style={styles.progress}>
+              Question {step + 1} / {questions.length}
+            </p>
+          </>
+        ) : (
+          <>
+            {/* Résultat */}
+            <div style={styles.kicker}>🧠 TA PERSONNALITÉ ALIMENTAIRE</div>
+
+            <div
+              style={{
+                ...styles.profileChip,
+                borderColor: theme.blockBorder,
+                background: theme.chipBg,
+              }}
+            >
+              ✨ Profil détecté : <b>{theme.name}</b>
+            </div>
+
+            {/* Avatar compact au-dessus du titre */}
+            <div style={styles.resultHeader}>
+              <div style={styles.inlineAvatar}>
+                <Avatar sex={sex} variant={prof?.themeKey} />
               </div>
-            </>
-          )}
-        </div>
+
+              <div style={{ textAlign: "left" }}>
+                <div style={styles.smallIntro}>{prof?.intro}</div>
+                <h2 style={{ margin: "6px 0 0" }}>{prof?.label}</h2>
+                <p style={styles.subtitle}>
+                  <b>{prof?.title}</b> — {prof?.subtitle}
+                </p>
+              </div>
+            </div>
+
+            <p style={styles.resultText}>{prof?.story}</p>
+
+            <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
+              <div style={styles.blockTitle}>✅ Signes typiques</div>
+              <ul style={styles.ul}>
+                {prof?.highlights?.map((x, idx) => (
+                  <li key={idx} style={styles.li}>
+                    {x}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
+              <div style={styles.blockTitle}>🎯 3 priorités</div>
+              <ul style={styles.ul}>
+                {prof?.plan?.map((x, idx) => (
+                  <li key={idx} style={styles.li}>
+                    {x}
+                  </li>
+                ))}
+              </ul>
+              <div style={styles.mantra}>{prof?.mantra}</div>
+              <div style={styles.trap}>⚠️ {prof?.trap}</div>
+            </div>
+
+            <p style={styles.tip}>{prof?.tip}</p>
+            <p style={styles.footer}>{prof?.footer}</p>
+
+            <p style={{ opacity: 0.82, marginTop: 10 }}>
+              Score : <b>{score}</b> / {maxScore}
+            </p>
+
+            <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
+              <button style={{ ...styles.button, background: "#334155" }} onClick={resetAll}>
+                Refaire le questionnaire
+              </button>
+              <button style={{ ...styles.button, background: "#0f172a" }} onClick={restartFromStart}>
+                Changer prénom / email / sexe
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-// =====================
-// Styles (mobile safe)
-// =====================
+/** Avatar illustré plein pied via image PNG (avec pieds visibles) */
+function Avatar({ sex, variant = "solaire" }) {
+  const base = sex === "femme" ? "femme" : "homme";
+
+  // map les variantes de terrain vers tes fichiers
+  let suffix = "ancien";
+  if (variant === "aube") suffix = "transitionnel";
+  if (variant === "brume") suffix = "sedimente";
+
+  const src = `/avatars/${base}-${suffix}.png`;
+
+  return (
+    <img
+      src={src}
+      alt="Avatar"
+      style={{
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
+        objectPosition: "bottom center", // ancré en bas pour bien voir les pieds
+        display: "block",
+      }}
+    />
+  );
+}
+
 const styles = {
   page: {
     minHeight: "100dvh",
     width: "100vw",
     position: "relative",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
     overflow: "hidden",
     fontFamily: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial',
-    color: "white",
   },
 
-  // background fixed
-  bg: {
+  bgPhoto: {
     position: "fixed",
     inset: 0,
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
+    zIndex: -3,
+    transform: "scale(1.03)",
+    filter: "saturate(1.05) contrast(1.02)",
+  },
+
+  bgGlow: {
+    position: "fixed",
+    inset: 0,
     zIndex: -2,
-    transform: "scale(1.02)",
   },
 
   overlay: {
     position: "fixed",
     inset: 0,
-    background: "rgba(2,6,23,0.62)",
+    background: "rgba(2,6,23,0.45)",
     zIndex: -1,
   },
 
-  // ✅ centre + évite “haut invisible”
-  shell: {
-    minHeight: "100dvh",
-    width: "100vw",
-    display: "grid",
-    placeItems: "center",
-    padding: 16,
-  },
-
-  // ✅ carte scrollable si contenu long (mobile)
   card: {
+    position: "relative",
+    zIndex: 1,
     width: "min(460px, 92vw)",
-    maxHeight: "92dvh",
+    maxHeight: "calc(100dvh - 32px)",
     overflowY: "auto",
-    background: "rgba(2, 6, 23, 0.84)",
+    WebkitOverflowScrolling: "touch",
+    background: "rgba(2, 6, 23, 0.78)",
     padding: 22,
     borderRadius: 18,
     textAlign: "center",
     boxShadow: "0 22px 60px rgba(0,0,0,0.65)",
-    border: "1px solid rgba(255,255,255,0.10)",
-    backdropFilter: "blur(10px)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    backdropFilter: "blur(12px)",
+    color: "white",
   },
 
   kicker: {
@@ -802,6 +706,7 @@ const styles = {
     padding: "12px 14px",
     borderRadius: 14,
     border: "none",
+    background: "#2563eb",
     color: "white",
     cursor: "pointer",
     fontSize: 15,
@@ -852,25 +757,28 @@ const styles = {
     lineHeight: 1.35,
   },
 
-  // Résultat
-  badge: {
+  profileChip: {
     marginTop: 12,
     padding: "10px 12px",
     borderRadius: 14,
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(15,23,42,0.35)",
+    border: "1px solid rgba(255,255,255,0.18)",
     textAlign: "left",
-    fontSize: 13,
-    fontWeight: 700,
   },
 
+  // Résultat
   resultHeader: {
+    marginTop: 16,
+    textAlign: "left",
     display: "grid",
-    gridTemplateColumns: "100px 1fr",
+    gridTemplateColumns: "90px 1fr",
     gap: 14,
     alignItems: "center",
-    marginTop: 12,
-    textAlign: "left",
+  },
+
+  // Petit avatar dans la carte, au-dessus du titre
+  inlineAvatar: {
+    width: 100,
+    aspectRatio: "469 / 532",
   },
 
   smallIntro: {
@@ -890,13 +798,13 @@ const styles = {
     marginTop: 14,
     padding: 14,
     borderRadius: 16,
-    border: "1px solid rgba(255,255,255,0.10)",
-    background: "rgba(15,23,42,0.22)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    background: "rgba(15,23,42,0.25)",
     textAlign: "left",
   },
 
   blockTitle: {
-    fontWeight: 900,
+    fontWeight: 800,
     marginBottom: 8,
   },
 
@@ -913,17 +821,13 @@ const styles = {
 
   mantra: {
     marginTop: 10,
-    opacity: 1,
-    fontWeight: 800,
-    padding: "10px 12px",
-    borderRadius: 14,
-    border: "1px dashed rgba(255,255,255,0.16)",
-    background: "rgba(255,255,255,0.04)",
+    opacity: 0.98,
+    fontWeight: 700,
   },
 
   trap: {
     marginTop: 10,
-    opacity: 0.92,
+    opacity: 0.9,
   },
 
   tip: {
@@ -931,7 +835,7 @@ const styles = {
     lineHeight: 1.5,
     opacity: 0.98,
     textAlign: "left",
-    fontWeight: 800,
+    fontWeight: 700,
   },
 
   footer: {
@@ -940,73 +844,4 @@ const styles = {
     textAlign: "left",
     lineHeight: 1.4,
   },
-};
-
-// =====================
-// Ajouts de thème (btn etc.)
-// =====================
-const THEME_PRESETS = {
-  sedimente: {
-    btn: "#F59E0B",
-    badgeBg: "rgba(245, 158, 11, 0.12)",
-    badgeBorder: "rgba(245, 158, 11, 0.35)",
-    badgeText: "rgba(255,255,255,0.92)",
-    blockBorder: "rgba(245, 158, 11, 0.22)",
-    mantraBorder: "rgba(245, 158, 11, 0.35)",
-    tipText: "rgba(255, 230, 180, 0.95)",
-  },
-  transitionnel: {
-    btn: "#22C55E",
-    badgeBg: "rgba(34, 197, 94, 0.12)",
-    badgeBorder: "rgba(34, 197, 94, 0.35)",
-    badgeText: "rgba(255,255,255,0.92)",
-    blockBorder: "rgba(34, 197, 94, 0.22)",
-    mantraBorder: "rgba(34, 197, 94, 0.35)",
-    tipText: "rgba(190, 255, 220, 0.95)",
-  },
-  ancien: {
-    btn: "#A78BFA",
-    badgeBg: "rgba(167, 139, 250, 0.14)",
-    badgeBorder: "rgba(167, 139, 250, 0.36)",
-    badgeText: "rgba(255,255,255,0.92)",
-    blockBorder: "rgba(167, 139, 250, 0.24)",
-    mantraBorder: "rgba(167, 139, 250, 0.40)",
-    tipText: "rgba(230, 210, 255, 0.95)",
-  },
-}
-    if (profileKey === "sedimente") {
-      return {
-        ...common,
-        halo1: "#FDE68A",
-        halo2: "#FCA5A5",
-        accent: "#F59E0B",
-        outfit1: "#64748B",
-        outfit2: "#94A3B8",
-        outfit3: "#A3A3A3",
-      };
-    }
-    if (profileKey === "transitionnel") {
-      return {
-        ...common,
-        halo1: "#A7F3D0",
-        halo2: "#93C5FD",
-        accent: "#22C55E",
-        outfit1: "#60A5FA",
-        outfit2: "#34D399",
-        outfit3: "#93C5FD",
-      };
-    }
-    return {
-      ...common,
-      halo1: "#C4B5FD",
-      halo2: "#FBCFE8",
-      accent: "#A78BFA",
-      outfit1: "#A78BFA",
-      outfit2: "#F472B6",
-      outfit3: "#8B5CF6",
-    };
-  };
-
-  const ui = THEME_PRESETS[profileKey] || THEME_PRESETS.transitionnel;
-  return { ...avatarTheme, ...ui };
 };
