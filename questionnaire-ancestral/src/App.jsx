@@ -10,7 +10,7 @@ export default function App() {
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
 
-  // ✅ TOUTES TES QUESTIONS (base)
+  // Questions (base)
   const baseQuestions = useMemo(
     () => [
       {
@@ -207,7 +207,7 @@ export default function App() {
     []
   );
 
-  // ✅ Question Femme seulement
+  // Question Femme seulement
   const femaleOnly = useMemo(
     () => [
       {
@@ -245,7 +245,7 @@ export default function App() {
     else setFinished(true);
   }
 
-  // 🎨 Thèmes pastels style 16personalities
+  // Thèmes
   const THEME_PRESETS = {
     brume: {
       name: "Brume Terre",
@@ -273,21 +273,19 @@ export default function App() {
     },
   };
 
-  // ✅ Personnalité “WOW”
   function personality() {
     if (!questions.length) return null;
 
     const pct = score / maxScore;
     const prenom = name.trim() || "toi";
     const isFemme = sex === "femme";
-    const g = (masc, fem) => (isFemme ? fem : masc); // helper pour accords
+    const g = (masc, fem) => (isFemme ? fem : masc);
 
-    // Archetypes spécifiques homme / femme (Nomade, Bâtisseur, Cyclique, Vivante)
     const archetype =
       sex === "homme"
         ? pct <= 0.6
           ? {
-              label: "🧭 LE NOMADE",
+              label: "LE NOMADE",
               title: "L’adaptable instinctif",
               color: "bleu sable / turquoise doux",
               story:
@@ -301,10 +299,10 @@ export default function App() {
               ],
               food:
                 "L’alimentation ancestrale t’aide à recréer un socle, même quand ton mode de vie bouge.",
-              mantra: "« Je stabilise mes bases, même quand je bouge. »",
+              mantra: "Je stabilise mes bases, même quand je bouge.",
             }
           : {
-              label: "🗿 LE BÂTISSEUR",
+              label: "LE BÂTISSEUR",
               title: "La force qui se construit dans le temps",
               color: "ocre / brun clair",
               story:
@@ -318,12 +316,12 @@ export default function App() {
               ],
               food:
                 "L’alimentation ancestrale te permet de construire un terrain durable, pas juste d’aller mieux quelques jours.",
-              mantra: "« Je construis lentement, mais profondément. »",
+              mantra: "Je construis lentement, mais profondément.",
             }
         : sex === "femme"
         ? pct <= 0.6
           ? {
-              label: "🔥 LA VIVANTE",
+              label: "LA VIVANTE",
               title: "L’intense expressive",
               color: "corail / pêche",
               story:
@@ -336,10 +334,10 @@ export default function App() {
               ],
               food:
                 "L’alimentation ancestrale agit comme un régulateur : elle calme sans éteindre.",
-              mantra: "« Je garde ma flamme sans me brûler. »",
+              mantra: "Je garde ma flamme sans me brûler.",
             }
           : {
-              label: "🌙 LA CYCLIQUE",
+              label: "LA CYCLIQUE",
               title: "L’intuitive hormonale",
               color: "lilas / rose poudré",
               story:
@@ -352,22 +350,20 @@ export default function App() {
               ],
               food:
                 "L’alimentation ancestrale t’aide à respecter ton rythme, plutôt que lutter contre lui.",
-              mantra: "« Je m’aligne avec mes cycles au lieu de les combattre. »",
+              mantra: "Je m’aligne avec mes cycles au lieu de les combattre.",
             }
         : null;
 
     const common = {
       intro: `Ok ${prenom} — voilà ce que ton terrain raconte.`,
       footer:
-        "⚡ Objectif : énergie stable + digestion calme + peau/cheveux qui suivent.",
+        "Objectif : énergie stable, digestion calme, peau/cheveux qui suivent.",
     };
 
-    // 🔢 Nouveau découpage des profils en 5 niveaux
-    // 1) Sédimenté : ≤ 40%
     if (pct <= 0.4) {
       return {
         themeKey: "brume",
-        label: g("🧱 LE SÉDIMENTÉ", "🧱 LA SÉDIMENTÉE"),
+        label: g("LE SÉDIMENTÉ", "LA SÉDIMENTÉE"),
         title: g("Le Sédimenté", "La Sédimentée"),
         subtitle: "Terrain saturé / récupération difficile",
         story:
@@ -384,21 +380,20 @@ export default function App() {
           "Stabiliser sucre/café (éviter les montagnes russes)",
           "Rythme + digestion : sommeil, repas posés, régularité",
         ],
-        mantra: "👉 “Je reviens aux bases. Je simplifie. Je reconstruis.”",
+        mantra: "Je reviens aux bases. Je simplifie. Je reconstruis.",
         trap:
-          "Piège : vouloir tout optimiser d’un coup. Ici, c’est RESET + constance.",
+          "Piège : vouloir tout optimiser d’un coup. Ici, c’est reset + constance.",
         tip:
-          "🔥 L’alimentation ancestrale est ton bouton “calme interne” : moins d’inflammation, plus de nutriments, plus de stabilité.",
+          "L’alimentation ancestrale est ton bouton “calme interne” : moins d’inflammation, plus de nutriments, plus de stabilité.",
         ...common,
         archetype,
       };
     }
 
-    // 2) Brume : 41% – 52%
     if (pct <= 0.52) {
       return {
         themeKey: "brume",
-        label: "🌫 LA BRUME",
+        label: "LA BRUME",
         title: "Terrain chargé mais encore mobile",
         subtitle: "Le corps avance, mais “dans le brouillard”",
         story:
@@ -414,26 +409,22 @@ export default function App() {
           "Installer un rythme (repas + sommeil) même si la vie est chargée",
           "Commencer à alléger le “brouillard” plutôt que viser la perfection",
         ],
-        mantra: "👉 “Je sors du brouillard, une base à la fois.”",
+        mantra: "Je sors du brouillard, une base à la fois.",
         trap:
           "Piège : croire que “ce n’est pas si grave” et laisser le brouillard s’installer.",
         tip:
-          "🔥 L’alimentation ancestrale t’aide à dégager la brume : moins de charge, plus de clarté et de récupération.",
+          "L’alimentation ancestrale t’aide à dégager la brume : moins de charge, plus de clarté et de récupération.",
         ...common,
         archetype,
       };
     }
 
-    // 3) Transitionnel : 53% – 68%
     if (pct <= 0.68) {
       return {
         themeKey: "aube",
-        label: g("🔄 LE TRANSITIONNEL", "🔄 LA TRANSITIONNELLE"),
+        label: g("LE TRANSITIONNEL", "LA TRANSITIONNELLE"),
         title: g("L’Optimiseur", "L’Optimisatrice"),
-        subtitle: g(
-          "Le corps s’adapte, mais manque de constance",
-          "Le corps s’adapte, mais manque de constance"
-        ),
+        subtitle: "Le corps s’adapte, mais manque de constance",
         story:
           `${common.intro} Tu as du potentiel : des jours où tu te sens vraiment bien… et d’autres où ça retombe. ` +
           `Ton terrain peut monter vite si tu verrouilles 2–3 leviers clés.`,
@@ -447,21 +438,20 @@ export default function App() {
           "Construire un socle ancestral simple et répétable",
           "Sommeil + récupération : ton multiplicateur n°1",
         ],
-        mantra: "👉 “Je rends mon énergie prévisible.”",
+        mantra: "Je rends mon énergie prévisible.",
         trap:
           "Piège : être strict 3 jours puis craquer 4 jours. Mieux vaut stable que parfait.",
         tip:
-          "🔥 L’alimentation ancestrale te fait passer un cap : énergie plus stable, moins de réactions, meilleure peau/cheveux.",
+          "L’alimentation ancestrale te fait passer un cap : énergie plus stable, moins de réactions, meilleure peau/cheveux.",
         ...common,
         archetype,
       };
     }
 
-    // 4) Équilibré·e : 69% – 78%
     if (pct <= 0.78) {
       return {
         themeKey: "aube",
-        label: g("🌱 L’ÉQUILIBRÉ", "🌱 L’ÉQUILIBRÉE"),
+        label: g("L’ÉQUILIBRÉ", "L’ÉQUILIBRÉE"),
         title: "Bon terrain, mais encore sensible",
         subtitle: "Entre Transitionnel et Ancien·ne",
         story:
@@ -477,25 +467,21 @@ export default function App() {
           "Affiner ce qui reste fragile (certains aliments, timing, charge mentale)",
           "Jouer la constance plutôt que les gros changements ponctuels",
         ],
-        mantra: "👉 “Je transforme mon bon terrain en terrain solide.”",
+        mantra: "Je transforme mon bon terrain en terrain solide.",
         trap:
           "Piège : se dire que “ça va” et ne pas profiter de ton potentiel pour aller vers plus de solidité.",
         tip:
-          "🔥 L’alimentation ancestrale est ton levier pour passer d’un terrain correct à un terrain vraiment résilient.",
+          "L’alimentation ancestrale est ton levier pour passer d’un terrain correct à un terrain vraiment résilient.",
         ...common,
         archetype,
       };
     }
 
-    // 5) Ancien·ne : ≥ 79%
     return {
       themeKey: "solaire",
-      label: g("⚡ L’ANCIEN", "⚡ L’ANCIENNE"),
+      label: g("L’ANCIEN", "L’ANCIENNE"),
       title: g("Le Stratège Ancestral", "La Stratège Ancestrale"),
-      subtitle: g(
-        "Terrain stable / bonne tolérance",
-        "Terrain stable / bonne tolérance"
-      ),
+      subtitle: "Terrain stable / bonne tolérance",
       story:
         `${common.intro} Tu as déjà une base solide : meilleure résilience, digestion plus stable, énergie plus régulière. ` +
         `Tu n’es pas dans la réparation — tu es dans l’optimisation.`,
@@ -509,11 +495,11 @@ export default function App() {
         "Timing intelligent (repas / jeûne léger si ça te réussit)",
         "Garder ton socle même en vie sociale",
       ],
-      mantra: "👉 “Je joue la constance et la précision.”",
+      mantra: "Je joue la constance et la précision.",
       trap:
         "Piège : se disperser en “hacks”. Tu gagnes plus avec simplicité + régularité.",
       tip:
-        "🔥 L’alimentation ancestrale est ton levier performance : clarté mentale, stabilité, peau/cheveux, énergie.",
+        "L’alimentation ancestrale est ton levier performance : clarté mentale, stabilité, peau/cheveux, énergie.",
       ...common,
       archetype,
     };
@@ -552,10 +538,9 @@ export default function App() {
       <div style={styles.overlay} />
 
       <div style={styles.card}>
-        {/* Écran start */}
         {!canStart ? (
           <>
-            <div style={styles.kicker}>🧠 TON PROFIL ALIMENTAIRE</div>
+            <div style={styles.kicker}>TON PROFIL ALIMENTAIRE</div>
             <h2 style={{ margin: "8px 0 0" }}>Avant de commencer</h2>
 
             <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
@@ -607,8 +592,7 @@ export default function App() {
           </>
         ) : !finished ? (
           <>
-            {/* Questionnaire */}
-            <div style={styles.kicker}>🧠 TA PERSONNALITÉ ALIMENTAIRE</div>
+            <div style={styles.kicker}>TA PERSONNALITÉ ALIMENTAIRE</div>
 
             <div style={styles.headerRow}>
               <div style={styles.miniPill}>
@@ -640,10 +624,8 @@ export default function App() {
           </>
         ) : (
           <>
-            {/* Résultat */}
-            <div style={styles.kicker}>🧠 TA PERSONNALITÉ ALIMENTAIRE</div>
+            <div style={styles.kicker}>TA PERSONNALITÉ ALIMENTAIRE</div>
 
-            {/* Avatar compact au-dessus du titre */}
             <div style={styles.resultHeader}>
               <div style={styles.inlineAvatar}>
                 <Avatar sex={sex} variant={prof?.themeKey} />
@@ -660,7 +642,6 @@ export default function App() {
 
             <p style={styles.resultText}>{prof?.story}</p>
 
-            {/* Archetype homme/femme */}
             {prof?.archetype && (
               <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
                 <div style={styles.blockTitle}>{prof.archetype.label}</div>
@@ -678,7 +659,7 @@ export default function App() {
             )}
 
             <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
-              <div style={styles.blockTitle}>✅ Signes typiques</div>
+              <div style={styles.blockTitle}>Signes typiques</div>
               <ul style={styles.ul}>
                 {prof?.highlights?.map((x, idx) => (
                   <li key={idx} style={styles.li}>
@@ -689,7 +670,7 @@ export default function App() {
             </div>
 
             <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
-              <div style={styles.blockTitle}>🎯 3 priorités</div>
+              <div style={styles.blockTitle}>3 priorités</div>
               <ul style={styles.ul}>
                 {prof?.plan?.map((x, idx) => (
                   <li key={idx} style={styles.li}>
@@ -698,7 +679,7 @@ export default function App() {
                 ))}
               </ul>
               <div style={styles.mantra}>{prof?.mantra}</div>
-              <div style={styles.trap}>⚠️ {prof?.trap}</div>
+              <div style={styles.trap}>Attention : {prof?.trap}</div>
             </div>
 
             <p style={styles.tip}>{prof?.tip}</p>
@@ -709,10 +690,16 @@ export default function App() {
             </p>
 
             <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
-              <button style={{ ...styles.button, background: "#334155" }} onClick={resetAll}>
+              <button
+                style={{ ...styles.button, background: "#334155" }}
+                onClick={resetAll}
+              >
                 Refaire le questionnaire
               </button>
-              <button style={{ ...styles.button, background: "#0f172a" }} onClick={restartFromStart}>
+              <button
+                style={{ ...styles.button, background: "#0f172a" }}
+                onClick={restartFromStart}
+              >
                 Changer prénom / email / sexe
               </button>
             </div>
@@ -723,11 +710,10 @@ export default function App() {
   );
 }
 
-/** Avatar illustré plein pied via image PNG (avec pieds visibles) */
+/** Avatar via image PNG */
 function Avatar({ sex, variant = "solaire" }) {
   const base = sex === "femme" ? "femme" : "homme";
 
-  // map les variantes de terrain vers tes fichiers
   let suffix = "ancien";
   if (variant === "aube") suffix = "transitionnel";
   if (variant === "brume") suffix = "sedimente";
@@ -742,7 +728,7 @@ function Avatar({ sex, variant = "solaire" }) {
         width: "100%",
         height: "100%",
         objectFit: "contain",
-        objectPosition: "bottom center", // ancré en bas pour bien voir les pieds
+        objectPosition: "bottom center",
         display: "block",
       }}
     />
@@ -759,7 +745,8 @@ const styles = {
     justifyContent: "center",
     padding: 16,
     overflow: "hidden",
-    fontFamily: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial',
+    fontFamily:
+      "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial",
   },
 
   bgPhoto: {
@@ -848,12 +835,13 @@ const styles = {
     marginTop: 16,
   },
 
+  // Couleur plus sobre/pro (remplace le bleu clair)
   button: {
     width: "100%",
     padding: "12px 14px",
     borderRadius: 14,
-    border: "none",
-    background: "#2563eb",
+    border: "1px solid rgba(255,255,255,0.10)",
+    background: "#334155", // slate
     color: "white",
     cursor: "pointer",
     fontSize: 15,
@@ -893,7 +881,7 @@ const styles = {
   },
 
   sexBtnActive: {
-    background: "rgba(37,99,235,0.85)",
+    background: "#475569", // slate plus sobre
     border: "1px solid rgba(255,255,255,0.18)",
   },
 
@@ -904,25 +892,15 @@ const styles = {
     lineHeight: 1.35,
   },
 
-  profileChip: {
-    marginTop: 12,
-    padding: "10px 12px",
-    borderRadius: 14,
-    border: "1px solid rgba(255,255,255,0.18)",
-    textAlign: "left",
-  },
-
-  // Résultat
   resultHeader: {
     marginTop: 16,
     textAlign: "left",
     display: "grid",
-    gridTemplateColumns: "170px 1fr", // grande colonne pour bien séparer avatar et texte
+    gridTemplateColumns: "170px 1fr",
     gap: 18,
     alignItems: "center",
   },
 
-  // Petit avatar dans la carte, au-dessus du titre
   inlineAvatar: {
     width: 150,
     aspectRatio: "469 / 532",
@@ -993,3 +971,4 @@ const styles = {
     lineHeight: 1.4,
   },
 };
+
