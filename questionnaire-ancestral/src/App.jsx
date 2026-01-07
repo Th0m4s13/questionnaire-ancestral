@@ -41,7 +41,7 @@ export default function App() {
         ],
       },
       {
-        question: "Tu as souvent besoin de café, sucre ou stimulant pour fonctionner ?",
+        question: "Tu as souvent besoin de café ou thé pour fonctionner ?",
         options: [
           { text: " Jamais", score: 4 },
           { text: " De temps en temps", score: 3 },
@@ -158,7 +158,7 @@ export default function App() {
         ],
       },
       {
-        question: "Tu remarques une perte de cheveux, poils, cils ?",
+        question: "Tu remarques une perte de cheveux ?",
         options: [
           { text: " Non", score: 4 },
           { text: " Légère, périodique", score: 3 },
@@ -167,21 +167,12 @@ export default function App() {
         ],
       },
       {
-        question: "Tu as des fringales sucrées ou salées hors repas ?",
+        question: "Es-tu attiré(e) par le sucre ?",
         options: [
           { text: " Jamais", score: 4 },
           { text: " De temps en temps", score: 3 },
           { text: " Tous les jours", score: 2 },
           { text: " Plusieurs fois par jour, besoin urgent", score: 1 },
-        ],
-      },
-      {
-        question: "Tu tiens combien de temps sans manger sans te sentir mal ?",
-        options: [
-          { text: " Plus de 5h sans souci", score: 4 },
-          { text: " 3–4h mais j’ai faim", score: 3 },
-          { text: " Moins de 3h : vertiges/irritabilité", score: 2 },
-          { text: " Moins de 2h : tremblements / je “tombe”", score: 1 },
         ],
       },
       {
@@ -220,6 +211,7 @@ export default function App() {
             text: " Très irrégulier, avec acné, gonflements, saignements abondants",
             score: 1,
           },
+          { text: " Pas de règles du tout", score: 1 },
         ],
       },
     ],
@@ -281,79 +273,6 @@ export default function App() {
     const isFemme = sex === "femme";
     const g = (masc, fem) => (isFemme ? fem : masc);
 
-    const archetype =
-      sex === "homme"
-        ? pct <= 0.6
-          ? {
-              label: "LE NOMADE",
-              title: "L’adaptable instinctif",
-              color: "bleu sable / turquoise doux",
-              story:
-                "Tu fonctionnes par phases. Quand tout est aligné, tu te sens solide, fluide, efficace. " +
-                "Mais dès que le rythme se dérègle (stress, voyages, horaires, écarts), ton énergie devient imprévisible. " +
-                "Tu n’es ni fragile, ni totalement stable : tu es hautement adaptable, mais sensible au contexte.",
-              highlights: [
-                "Bonne énergie… quand le cadre est bon",
-                "Digestion correcte mais réactive aux changements",
-                "Corps intelligent, mais vite désynchronisé",
-              ],
-              food:
-                "L’alimentation ancestrale t’aide à recréer un socle, même quand ton mode de vie bouge.",
-              mantra: "Je stabilise mes bases, même quand je bouge.",
-            }
-          : {
-              label: "LE BÂTISSEUR",
-              title: "La force qui se construit dans le temps",
-              color: "ocre / brun clair",
-              story:
-                "Tu as un corps solide, mais parfois lent à répondre. Tu n’es pas explosif — tu es endurant. " +
-                "Quand tu prends soin de toi sur la durée, tu deviens extrêmement robuste. " +
-                "Tu progresses moins vite que d’autres… mais tu rechutes beaucoup moins.",
-              highlights: [
-                "Bonne résistance globale",
-                "Énergie parfois “lourde” mais stable",
-                "Digestion qui aime la régularité",
-              ],
-              food:
-                "L’alimentation ancestrale te permet de construire un terrain durable, pas juste d’aller mieux quelques jours.",
-              mantra: "Je construis lentement, mais profondément.",
-            }
-        : sex === "femme"
-        ? pct <= 0.6
-          ? {
-              label: "LA VIVANTE",
-              title: "L’intense expressive",
-              color: "corail / pêche",
-              story:
-                "Tu ressens tout plus fort que la moyenne : énergie, émotions, faim, réactions alimentaires. " +
-                "Tu peux être très haute… ou très basse. Ton défi n’est pas la vitalité — c’est la stabilité.",
-              highlights: [
-                "Pics d’énergie suivis de creux",
-                "Fringales, réactions rapides aux aliments",
-                "Corps très réactif, très expressif",
-              ],
-              food:
-                "L’alimentation ancestrale agit comme un régulateur : elle calme sans éteindre.",
-              mantra: "Je garde ma flamme sans me brûler.",
-            }
-          : {
-              label: "LA CYCLIQUE",
-              title: "L’intuitive hormonale",
-              color: "lilas / rose poudré",
-              story:
-                "Ton corps parle fort — surtout à travers tes cycles. Tu ressens très vite ce qui te fait du bien ou non, " +
-                "mais ton énergie varie naturellement selon les périodes. Quand tu l’écoutes, tu es puissante. Quand tu forces, tout se dérègle.",
-              highlights: [
-                "Énergie fluctuante mais cohérente avec le cycle",
-                "Digestion sensible au stress / émotions",
-                "Forte intuition corporelle",
-              ],
-              food:
-                "L’alimentation ancestrale t’aide à respecter ton rythme, plutôt que lutter contre lui.",
-              mantra: "Je m’aligne avec mes cycles au lieu de les combattre.",
-            }
-        : null;
-
     const common = {
       intro: `Ok ${prenom} — voilà ce que ton terrain raconte.`,
       footer:
@@ -366,56 +285,21 @@ export default function App() {
         label: g("LE SÉDIMENTÉ", "LA SÉDIMENTÉE"),
         title: g("Le Sédimenté", "La Sédimentée"),
         subtitle: "Terrain saturé / récupération difficile",
-        story:
-          `${common.intro} Tu avances, mais tu sens que le corps “tire le frein”. ` +
-          `Fatigue au réveil, digestion lente, énergie fragile, signaux rouges fréquents. ` +
-          `C’est typiquement un terrain saturé (foie / intestins / glycémie instable).`,
-        highlights: [
-          "Énergie instable (coups de mou, besoin de café/sucre)",
-          "Digestion lente, lourdeurs, ballonnements fréquents",
-          "Beaucoup de signaux rouges clairs sur plusieurs systèmes",
-        ],
-        plan: [
-          "Assiette simple : vrais aliments, peu d’irritants",
-          "Stabiliser sucre/café (éviter les montagnes russes)",
-          "Rythme + digestion : sommeil, repas posés, régularité",
-        ],
-        mantra: "Je reviens aux bases. Je simplifie. Je reconstruis.",
-        trap:
-          "Piège : vouloir tout optimiser d’un coup. Ici, c’est reset + constance.",
-        tip:
-          "L’alimentation ancestrale est ton bouton “calme interne” : moins d’inflammation, plus de nutriments, plus de stabilité.",
+        story: isFemme
+          ? `La situation est préoccupante. À court terme, des problèmes de santé peuvent déjà apparaître ou s'installer progressivement. Ton corps envoie souvent des signaux clairs, mais lorsqu'ils sont ignorés, les déséquilibres s'aggravent.\n\n` +
+            `À moyen terme, sans changement réel, l'aggravation est quasi inévitable. Les troubles s'installent, les fonctions essentielles de ton organisme se dégradent et les symptômes deviennent plus fréquents et plus difficiles à corriger.\n\n` +
+            `Sur le long terme, cela peut mener à des années de souffrance évitables : fatigue chronique, douleurs persistantes, troubles métaboliques et forte baisse de ta qualité de vie. Plus tu attends, plus le retour à l'équilibre devient complexe.\n\n` +
+            `Agir maintenant est indispensable. La solution la plus efficace est de prendre directement un appel avec notre équipe afin d'analyser ta situation et mettre en place un plan clair pour stopper cette trajectoire avant qu'elle ne devienne irréversible :\nhttps://app.iclosed.io/e/maobrut/cheveux`
+          : `La situation est préoccupante. À court terme, des problèmes de santé peuvent déjà apparaître ou s'installer progressivement. Le corps envoie souvent des signaux clairs, mais lorsqu'ils sont ignorés, les déséquilibres s'aggravent.\n\n` +
+            `À moyen terme, sans changement réel, l'aggravation est quasi inévitable. Les troubles s'installent, les fonctions essentielles de l'organisme se dégradent et les symptômes deviennent plus fréquents et plus difficiles à corriger.\n\n` +
+            `Sur le long terme, cela peut mener à des années de souffrance évitables : fatigue chronique, douleurs persistantes, troubles métaboliques et forte baisse de la qualité de vie. Plus on attend, plus le retour à l'équilibre devient complexe.\n\n` +
+            `Agir maintenant est indispensable. La solution la plus efficace est de prendre directement un appel avec notre équipe afin d'analyser la situation et mettre en place un plan clair pour stopper cette trajectoire avant qu'elle ne devienne irréversible :\nhttps://app.iclosed.io/e/maobrut/cheveux`,
+        highlights: [],
+        plan: [],
+        mantra: "",
+        trap: "",
+        tip: "",
         ...common,
-        archetype,
-      };
-    }
-
-    if (pct <= 0.52) {
-      return {
-        themeKey: "brume",
-        label: "LA BRUME",
-        title: "Terrain chargé mais encore mobile",
-        subtitle: "Le corps avance, mais “dans le brouillard”",
-        story:
-          `${common.intro} Tu n’es pas effondré·e, mais jamais vraiment clair·e. ` +
-          `Fatigue mentale, lenteur, digestion irrégulière : le terrain est chargé mais encore modulable.`,
-        highlights: [
-          "Énergie qui monte par moments, puis retombe rapidement",
-          "Digestion irrégulière, sensible aux périodes de stress",
-          "Sensation de brouillard mental, difficulté à récupérer pleinement",
-        ],
-        plan: [
-          "Clarifier l’assiette (moins d’ultra-transformés, plus de repères stables)",
-          "Installer un rythme (repas + sommeil) même si la vie est chargée",
-          "Commencer à alléger le “brouillard” plutôt que viser la perfection",
-        ],
-        mantra: "Je sors du brouillard, une base à la fois.",
-        trap:
-          "Piège : croire que “ce n’est pas si grave” et laisser le brouillard s’installer.",
-        tip:
-          "L’alimentation ancestrale t’aide à dégager la brume : moins de charge, plus de clarté et de récupération.",
-        ...common,
-        archetype,
       };
     }
 
@@ -423,85 +307,70 @@ export default function App() {
       return {
         themeKey: "aube",
         label: g("LE TRANSITIONNEL", "LA TRANSITIONNELLE"),
-        title: g("L’Optimiseur", "L’Optimisatrice"),
-        subtitle: "Le corps s’adapte, mais manque de constance",
-        story:
-          `${common.intro} Tu as du potentiel : des jours où tu te sens vraiment bien… et d’autres où ça retombe. ` +
-          `Ton terrain peut monter vite si tu verrouilles 2–3 leviers clés.`,
-        highlights: [
-          "Bon potentiel mais irrégulier (stress, sommeil, écarts)",
-          "Réactions selon les aliments (sensibilité modulable)",
-          "Digestion “OK” mais parfois fragile",
-        ],
-        plan: [
-          "Identifier tes déclencheurs (laitiers/gluten/sucre…)",
-          "Construire un socle ancestral simple et répétable",
-          "Sommeil + récupération : ton multiplicateur n°1",
-        ],
-        mantra: "Je rends mon énergie prévisible.",
-        trap:
-          "Piège : être strict 3 jours puis craquer 4 jours. Mieux vaut stable que parfait.",
-        tip:
-          "L’alimentation ancestrale te fait passer un cap : énergie plus stable, moins de réactions, meilleure peau/cheveux.",
+        title: g("L'Optimiseur", "L'Optimisatrice"),
+        subtitle: "Le corps s'adapte, mais manque de constance",
+        story: isFemme
+          ? `Ton alimentation actuelle doit être améliorée. Sans ajustement, tu t'exposes à des problèmes de santé à moyen terme. Ton corps compense encore, mais certains signaux commencent généralement à apparaître quand l'équilibre n'est plus respecté, notamment une digestion lourde, de la fatigue après les repas ou une baisse d'énergie générale.\n\n` +
+            `Il est nécessaire de revenir à une alimentation plus traditionnelle, plus simple et plus adaptée au fonctionnement naturel de ton corps. Ton foie est particulièrement concerné : s'il est surchargé, tout le reste suit. Le soutenir et le nettoyer correctement n'est pas une option, c'est une étape clé pour éviter une dégradation progressive de ta santé.\n\n` +
+            `Sans correction réelle de tes habitudes alimentaires, le risque de troubles métaboliques, digestifs ou inflammatoires augmente clairement à moyen terme. Ce n'est pas une question de « si », mais de « quand ».\n\n` +
+            `Pour éviter cela, il est fortement recommandé de suivre la formation proposée afin de comprendre concrètement quoi manger, comment préparer les aliments et comment soutenir tes organes clés. Un appel avec l'équipe est également conseillé pour identifier rapidement tes erreurs et mettre en place un plan adapté à ta situation.\n\n` +
+            `Agir maintenant te permet d'éviter des complications futures. Attendre, c'est prendre le risque de devoir gérer des problèmes plus lourds plus tard. Le plus efficace reste de prendre directement un appel avec l'équipe via ce lien afin d'agir immédiatement et éviter que ta situation ne se dégrade : https://app.iclosed.io/e/maobrut/cheveux`
+          : `Ton alimentation actuelle doit être améliorée. Sans ajustement, tu t'exposes à des problèmes de santé à moyen terme. Le corps compense encore, mais certains signaux commencent généralement à apparaître quand l'équilibre n'est plus respecté, notamment une digestion lourde, de la fatigue après les repas ou une baisse d'énergie générale.\n\n` +
+            `Il est nécessaire de revenir à une alimentation plus traditionnelle, plus simple et plus adaptée au fonctionnement naturel du corps. Le foie est particulièrement concerné : s'il est surchargé, tout le reste suit. Le soutenir et le nettoyer correctement n'est pas une option, c'est une étape clé pour éviter une dégradation progressive de la santé.\n\n` +
+            `Sans correction réelle des habitudes alimentaires, le risque de troubles métaboliques, digestifs ou inflammatoires augmente clairement à moyen terme. Ce n'est pas une question de « si », mais de « quand ».\n\n` +
+            `Pour éviter cela, il est fortement recommandé de suivre la formation proposée afin de comprendre concrètement quoi manger, comment préparer les aliments et comment soutenir les organes clés. Un appel avec l'équipe est également conseillé pour identifier rapidement les erreurs et mettre en place un plan adapté à ta situation.\n\n` +
+            `Agir maintenant te permet d'éviter des complications futures. Attendre, c'est prendre le risque de devoir gérer des problèmes plus lourds plus tard. Le plus efficace reste de prendre directement un appel avec l'équipe via ce lien afin d'agir immédiatement et éviter que la situation ne se dégrade : https://app.iclosed.io/e/maobrut/cheveux`,
+        highlights: [],
+        plan: [],
+        mantra: "",
+        trap: "",
+        tip: "",
         ...common,
-        archetype,
       };
     }
 
     if (pct <= 0.78) {
       return {
         themeKey: "aube",
-        label: g("L’ÉQUILIBRÉ", "L’ÉQUILIBRÉE"),
+        label: g("L'ÉQUILIBRÉ", "L'ÉQUILIBRÉE"),
         title: "Bon terrain, mais encore sensible",
         subtitle: "Entre Transitionnel et Ancien·ne",
-        story:
-          `${common.intro} Tu as déjà un bon socle physiologique : énergie correcte, digestion globalement stable, meilleure tolérance. ` +
-          `Il reste quelques fragilités digestives ou hormonales, mais tu peux passer un cap vers un terrain d’Ancien·ne avec de la constance.`,
-        highlights: [
-          "Bonne base globale, sans signaux rouges majeurs",
-          "Quelques zones sensibles (digestion, hormones, sommeil) selon les périodes",
-          "Bonne capacité de récupération quand tu respectes ton rythme",
-        ],
-        plan: [
-          "Consolider ce qui marche déjà (repas, sommeil, gestion du stress)",
-          "Affiner ce qui reste fragile (certains aliments, timing, charge mentale)",
-          "Jouer la constance plutôt que les gros changements ponctuels",
-        ],
-        mantra: "Je transforme mon bon terrain en terrain solide.",
-        trap:
-          "Piège : se dire que “ça va” et ne pas profiter de ton potentiel pour aller vers plus de solidité.",
-        tip:
-          "L’alimentation ancestrale est ton levier pour passer d’un terrain correct à un terrain vraiment résilient.",
+        story: isFemme
+          ? `Sur le long terme, continuer à améliorer ton alimentation est toujours bénéfique, même si cela demande parfois un peu plus de temps ou d'investissement. Penser à intégrer, de temps en temps, des plantes traditionnelles de ton pays peut être un vrai plus (en France par exemple : ortie, persil, etc.). L'objectif reste de privilégier des aliments à haute qualité nutritionnelle.\n\n` +
+            `Si certains points ne sont pas encore totalement clairs, il est possible de t'appuyer sur une formation dédiée (lien à ajouter) afin de mieux comprendre et faire les bons choix. En cas de fatigue après les repas ou d'apparition de premiers signes de déséquilibre, il peut être utile d'ajuster ton alimentation et d'ajouter des plantes médicinales adaptées.\n\n` +
+            `Si besoin, te former ou te faire accompagner est une très bonne option : avec les bons outils, tout se mettra en place progressivement. Ne pas maintenir cet équilibre pourrait, à long terme, augmenter le risque de problèmes de santé. L'important est donc d'agir dès maintenant pour préserver ta santé sur la durée.\n\n` +
+            `Globalement, ta situation est presque parfaite, avec seulement quelques petits points à améliorer, comme une meilleure organisation (liste de courses) et, si besoin, ne pas hésiter à suivre la formation proposée.`
+          : `Sur le long terme, continuer à améliorer son alimentation est toujours bénéfique, même si cela demande parfois un peu plus de temps ou d'investissement. Penser à intégrer, de temps en temps, des plantes traditionnelles de ton pays peut être un vrai plus (en France par exemple : ortie, persil, etc.). L'objectif reste de privilégier des aliments à haute qualité nutritionnelle.\n\n` +
+            `Si certains points ne sont pas encore totalement clairs, il est possible de s'appuyer sur une formation dédiée (lien à ajouter) afin de mieux comprendre et faire les bons choix. En cas de fatigue après les repas ou d'apparition de premiers signes de déséquilibre, il peut être utile d'ajuster l'alimentation et d'ajouter des plantes médicinales adaptées.\n\n` +
+            `Si besoin, se former ou se faire accompagner est une très bonne option : avec les bons outils, tout se mettra en place progressivement. Ne pas maintenir cet équilibre pourrait, à long terme, augmenter le risque de problèmes de santé. L'important est donc d'agir dès maintenant pour préserver sa santé sur la durée.\n\n` +
+            `Globalement, la situation est presque parfaite, avec seulement quelques petits points à améliorer, comme une meilleure organisation (liste de courses) et, si besoin, ne pas hésiter à suivre la formation proposée.`,
+        highlights: [],
+        plan: [],
+        mantra: "",
+        trap: "",
+        tip: "",
         ...common,
-        archetype,
       };
     }
 
     return {
       themeKey: "solaire",
-      label: g("L’ANCIEN", "L’ANCIENNE"),
+      label: g("L'ANCIEN", "L'ANCIENNE"),
       title: g("Le Stratège Ancestral", "La Stratège Ancestrale"),
       subtitle: "Terrain stable / bonne tolérance",
-      story:
-        `${common.intro} Tu as déjà une base solide : meilleure résilience, digestion plus stable, énergie plus régulière. ` +
-        `Tu n’es pas dans la réparation — tu es dans l’optimisation.`,
-      highlights: [
-        "Énergie plus stable + bonne résistance",
-        "Digestion plus solide / moins de réactions",
-        "Meilleure récupération globale",
-      ],
-      plan: [
-        "Qualité des aliments (origine, cuisson, variété)",
-        "Timing intelligent (repas / jeûne léger si ça te réussit)",
-        "Garder ton socle même en vie sociale",
-      ],
-      mantra: "Je joue la constance et la précision.",
-      trap:
-        "Piège : se disperser en “hacks”. Tu gagnes plus avec simplicité + régularité.",
-      tip:
-        "L’alimentation ancestrale est ton levier performance : clarté mentale, stabilité, peau/cheveux, énergie.",
+      story: isFemme
+        ? `Globalement, tout est très positif et il n'y a rien de particulier à changer. Tes habitudes alimentaires sont bonnes, basées sur une alimentation plutôt traditionnelle et régulière. Une vraie attention est portée à la préparation de tes repas ainsi qu'à la qualité des aliments, ce qui te permet d'avoir une alimentation riche en nutriments.\n\n` +
+          `Continuer de cette manière est clairement la bonne option : cela te permet de rester en bonne santé, sans prise de poids, et de te projeter sur le long terme avec une bonne qualité de vie, sans handicap. L'essentiel est donc de conserver ces bonnes habitudes et de ne pas relâcher les acquis.\n\n` +
+          `À court et moyen terme, tout est au vert, avec une très bonne évaluation. Il reste toujours possible d'améliorer quelques petits détails, par exemple en t'organisant mieux avec une liste de courses, mais dans l'ensemble, ta situation est très satisfaisante.`
+        : `Globalement, tout est très positif et il n'y a rien de particulier à changer. Les habitudes alimentaires sont bonnes, basées sur une alimentation plutôt traditionnelle et régulière. Une vraie attention est portée à la préparation des repas ainsi qu'à la qualité des aliments, ce qui permet d'avoir une alimentation riche en nutriments.\n\n` +
+          `Continuer de cette manière est clairement la bonne option : cela permet de rester en bonne santé, sans prise de poids, et de se projeter sur le long terme avec une bonne qualité de vie, sans handicap. L'essentiel est donc de conserver ces bonnes habitudes et de ne pas relâcher les acquis.\n\n` +
+          `À court et moyen terme, tout est au vert, avec une très bonne évaluation. Il reste toujours possible d'améliorer quelques petits détails, par exemple en s'organisant mieux avec une liste de courses, mais dans l'ensemble, la situation est très satisfaisante.`,
+      highlights: [],
+      plan: [],
+      mantra: "",
+      trap: "",
+      tip: "",
       ...common,
-      archetype,
     };
   }
 
@@ -642,47 +511,35 @@ export default function App() {
 
             <p style={styles.resultText}>{prof?.story}</p>
 
-            {prof?.archetype && (
+            {prof?.highlights && prof.highlights.length > 0 && (
               <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
-                <div style={styles.blockTitle}>{prof.archetype.label}</div>
-                <p style={styles.resultText}>{prof.archetype.story}</p>
+                <div style={styles.blockTitle}>Signes typiques</div>
                 <ul style={styles.ul}>
-                  {prof.archetype.highlights?.map((x, idx) => (
+                  {prof.highlights.map((x, idx) => (
                     <li key={idx} style={styles.li}>
                       {x}
                     </li>
                   ))}
                 </ul>
-                <p style={styles.tip}>{prof.archetype.food}</p>
-                <div style={styles.mantra}>{prof.archetype.mantra}</div>
               </div>
             )}
 
-            <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
-              <div style={styles.blockTitle}>Signes typiques</div>
-              <ul style={styles.ul}>
-                {prof?.highlights?.map((x, idx) => (
-                  <li key={idx} style={styles.li}>
-                    {x}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {prof?.plan && prof.plan.length > 0 && (
+              <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
+                <div style={styles.blockTitle}>3 priorités</div>
+                <ul style={styles.ul}>
+                  {prof.plan.map((x, idx) => (
+                    <li key={idx} style={styles.li}>
+                      {x}
+                    </li>
+                  ))}
+                </ul>
+                {prof?.mantra && <div style={styles.mantra}>{prof.mantra}</div>}
+                {prof?.trap && <div style={styles.trap}>Attention : {prof.trap}</div>}
+              </div>
+            )}
 
-            <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
-              <div style={styles.blockTitle}>3 priorités</div>
-              <ul style={styles.ul}>
-                {prof?.plan?.map((x, idx) => (
-                  <li key={idx} style={styles.li}>
-                    {x}
-                  </li>
-                ))}
-              </ul>
-              <div style={styles.mantra}>{prof?.mantra}</div>
-              <div style={styles.trap}>Attention : {prof?.trap}</div>
-            </div>
-
-            <p style={styles.tip}>{prof?.tip}</p>
+            {prof?.tip && <p style={styles.tip}>{prof.tip}</p>}
             <p style={styles.footer}>{prof?.footer}</p>
 
             <p style={{ opacity: 0.82, marginTop: 10 }}>
@@ -918,6 +775,7 @@ const styles = {
     lineHeight: 1.5,
     opacity: 0.96,
     textAlign: "left",
+    whiteSpace: "pre-line",
   },
 
   block: {
