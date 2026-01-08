@@ -303,7 +303,7 @@ export default function App() {
       };
     }
 
-    if (pct <= 0.68) {
+    if (pct <= 0.55) {
       return {
         themeKey: "aube",
         label: g("LE TRANSITIONNEL", "LA TRANSITIONNELLE"),
@@ -329,7 +329,7 @@ export default function App() {
       };
     }
 
-    if (pct <= 0.78) {
+    if (pct <= 0.84) {
       return {
         themeKey: "aube",
         label: g("L'ÉQUILIBRÉ", "L'ÉQUILIBRÉE"),
@@ -497,7 +497,7 @@ export default function App() {
 
             <div style={styles.resultHeader}>
               <div style={styles.inlineAvatar}>
-                <Avatar sex={sex} variant={prof?.themeKey} />
+                <Avatar sex={sex} variant={prof?.themeKey} label={prof?.label} />
               </div>
 
               <div style={{ textAlign: "left" }}>
@@ -568,12 +568,19 @@ export default function App() {
 }
 
 /** Avatar via image PNG */
-function Avatar({ sex, variant = "solaire" }) {
+function Avatar({ sex, variant = "solaire", label }) {
   const base = sex === "femme" ? "femme" : "homme";
 
   let suffix = "ancien";
-  if (variant === "aube") suffix = "transitionnel";
   if (variant === "brume") suffix = "sedimente";
+  // Distinguer entre Transitionnel et Équilibré (tous deux ont themeKey "aube")
+  if (variant === "aube") {
+    if (label && (label.includes("ÉQUILIBRÉ") || label.includes("ÉQUILIBRÉE"))) {
+      suffix = "equilibre"; // Les anciens avatars transitionnel (à renommer en equilibre)
+    } else {
+      suffix = "transitionnel"; // Nouveaux avatars pour transitionnel
+    }
+  }
 
   const src = `/avatars/${base}-${suffix}.png`;
 
