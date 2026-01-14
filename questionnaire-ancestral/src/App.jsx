@@ -1169,7 +1169,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "16px 0",
+    padding: "8px 0",
     margin: 0,
     overflow: "hidden",
     fontFamily:
@@ -1202,13 +1202,11 @@ const styles = {
   },
 
   card: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
+    position: "relative",
     zIndex: 1,
     width: "min(460px, 96vw)",
-    maxHeight: "calc(100dvh - 16px)",
+    maxHeight: "calc(100dvh - 32px)",
+    margin: "auto",
     overflowY: "auto",
     WebkitOverflowScrolling: "touch",
     background: "rgba(2, 6, 23, 0.78)",
