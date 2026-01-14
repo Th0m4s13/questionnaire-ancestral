@@ -410,7 +410,7 @@ export default function App() {
         setQuestionTransitioning(false);
         setClickedOptionIndex(null); // Réinitialiser l'animation
       }
-    }, 400); // Transition rapide
+    }, 700); // Délai pour voir l'animation
   }
 
   function goBack() {
