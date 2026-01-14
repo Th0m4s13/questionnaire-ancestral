@@ -473,7 +473,6 @@ export default function App() {
       if (WEBHOOK_URL) {
         await fetch(WEBHOOK_URL, {
           method: 'POST',
-          mode: 'no-cors',
           headers: {
             'Content-Type': 'application/json',
           },
