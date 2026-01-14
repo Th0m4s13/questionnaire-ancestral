@@ -87,7 +87,7 @@ export default function App() {
         ],
       },
       {
-        question: "Tu as besoin de combien de sommeil pour récupérer ?",
+        question: "Combien d'heures de sommeil te faut-il pour récupérer ?",
         category: "sommeil",
         options: [
           { text: " 5–6h me suffisent", score: 4 },
