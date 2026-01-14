@@ -1291,7 +1291,7 @@ const styles = {
     background: "rgba(15,23,42,0.55)",
     color: "white",
     outline: "none",
-    fontSize: 14,
+    fontSize: 16,
   },
 
   sexRow: {
