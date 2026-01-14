@@ -27,6 +27,7 @@ export default function App() {
   const [questionTransitioning, setQuestionTransitioning] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [clickedOptionIndex, setClickedOptionIndex] = useState(null);
 
   // Questions (base)
   const baseQuestions = useMemo(
@@ -354,7 +355,7 @@ export default function App() {
     }
   }
 
-  function answer(option, event) {
+  function answer(option, optionIndex, event) {
     const currentQuestion = questions[step];
     setScore((s) => s + option.score);
     setAnswers((prev) => [...prev, {
@@ -362,6 +363,9 @@ export default function App() {
       score: option.score,
       question: currentQuestion.question,
     }]);
+    
+    // Marquer le bouton comme cliqué pour l'animation grisée
+    setClickedOptionIndex(optionIndex);
     
     // Animation de transition
     setQuestionTransitioning(true);
@@ -371,10 +375,12 @@ export default function App() {
         // Passe à la question suivante
         setStep((x) => x + 1);
         setQuestionTransitioning(false);
+        setClickedOptionIndex(null); // Réinitialiser l'animation
       } else {
         // Dernière question : afficher le message "Questionnaire terminé"
         setShowCompleted(true);
         setQuestionTransitioning(false);
+        setClickedOptionIndex(null); // Réinitialiser l'animation
       }
     }, 400); // Transition rapide
   }
@@ -389,6 +395,7 @@ export default function App() {
       }
       // Revenir à la question précédente
       setStep((x) => x - 1);
+      setClickedOptionIndex(null); // Réinitialiser l'animation
     }
   }
 
@@ -848,7 +855,20 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
 
             <div style={styles.options}>
               {questions[step]?.options?.map((opt, i) => (
-                <button key={i} style={styles.button} onClick={(e) => answer(opt, e)}>
+                <button 
+                  key={i} 
+                  style={{
+                    ...styles.button,
+                    ...(clickedOptionIndex === i ? {
+                      background: "rgba(100, 116, 139, 0.4)",
+                      opacity: 0.6,
+                      transform: "scale(0.98)",
+                      cursor: "default",
+                    } : {})
+                  }} 
+                  onClick={(e) => answer(opt, i, e)}
+                  disabled={clickedOptionIndex !== null}
+                >
                   {opt.text}
                 </button>
               ))}
@@ -1260,6 +1280,7 @@ const styles = {
     lineHeight: 1.2,
     position: "relative",
     overflow: "hidden",
+    transition: "all 0.2s ease",
   },
 
   progress: {
