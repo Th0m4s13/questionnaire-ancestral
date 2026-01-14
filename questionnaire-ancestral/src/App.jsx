@@ -596,7 +596,7 @@ Agir maintenant est non négociable. La solution la plus directe est de prendre 
         trap: "",
         tip: "",
         hasIclosedLink: true,
-        iclosedUrl: "https://app.iclosed.io/e/maobrut/cheveux",
+        iclosedUrl: "https://app.iclosed.io/e/maobrut/ancestral",
         ...common,
       };
     }
@@ -624,7 +624,7 @@ Agir maintenant t'évite des complications futures. Attendre, c'est laisser la d
         trap: "",
         tip: "",
         hasIclosedLink: true,
-        iclosedUrl: "https://app.iclosed.io/e/maobrut/cheveux",
+        iclosedUrl: "https://app.iclosed.io/e/maobrut/ancestral",
         ...common,
       };
     }
@@ -648,7 +648,7 @@ Se former ou se faire accompagner, c'est accélérer le processus. Avec les bons
         trap: "",
         tip: "",
         hasIclosedLink: true,
-        iclosedUrl: "https://app.iclosed.io/e/maobrut/cheveux",
+        iclosedUrl: "https://app.iclosed.io/e/maobrut/ancestral",
         ...common,
       };
     }
