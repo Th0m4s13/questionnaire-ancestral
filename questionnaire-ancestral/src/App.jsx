@@ -31,6 +31,7 @@ export default function App() {
   const [initialFormAnimating, setInitialFormAnimating] = useState(false);
   const [showConsentPage, setShowConsentPage] = useState(false);
   const [phoneError, setPhoneError] = useState("");
+  const [phoneValidationAttempted, setPhoneValidationAttempted] = useState(false);
 
   // Questions (base)
   const baseQuestions = useMemo(
@@ -281,14 +282,14 @@ export default function App() {
     isPhoneValid &&
     (sex === "homme" || sex === "femme");
 
-  // Validation du téléphone
+  // Validation du téléphone (seulement après tentative)
   useEffect(() => {
-    if (phone.length > 0 && phoneDigits.length > 0 && phoneDigits.length !== 10) {
+    if (phoneValidationAttempted && phone.length > 0 && phoneDigits.length > 0 && phoneDigits.length !== 10) {
       setPhoneError(`Le numéro doit contenir 10 chiffres (actuellement : ${phoneDigits.length})`);
     } else {
       setPhoneError("");
     }
-  }, [phone, phoneDigits.length]);
+  }, [phone, phoneDigits.length, phoneValidationAttempted]);
 
   // Animation de transition quand le formulaire initial est complété
   useEffect(() => {
@@ -755,17 +756,29 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
               />
 
               <div>
-              <input
+                <input
                   style={{
                     ...styles.input,
                     ...(phoneError ? { border: "1px solid #ef4444" } : {})
                   }}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Ton numéro de téléphone"
-                type="tel"
-                autoComplete="tel"
-              />
+                  value={phone}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    // Réinitialiser la validation si l'utilisateur modifie
+                    if (phoneValidationAttempted && e.target.value.replace(/\D/g, '').length === 10) {
+                      setPhoneValidationAttempted(false);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      setPhoneValidationAttempted(true);
+                    }
+                  }}
+                  placeholder="Ton numéro de téléphone"
+                  type="tel"
+                  autoComplete="tel"
+                />
                 {phoneError && (
                   <p style={{
                     color: "#ef4444",
