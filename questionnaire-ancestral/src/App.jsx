@@ -28,6 +28,8 @@ export default function App() {
   const [showCompleted, setShowCompleted] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [clickedOptionIndex, setClickedOptionIndex] = useState(null);
+  const [initialFormAnimating, setInitialFormAnimating] = useState(false);
+  const [showConsentPage, setShowConsentPage] = useState(false);
 
   // Questions (base)
   const baseQuestions = useMemo(
@@ -273,6 +275,17 @@ export default function App() {
     name.trim().length >= 2 &&
     phone.trim().length >= 10 &&
     (sex === "homme" || sex === "femme");
+
+  // Animation de transition quand le formulaire initial est complété
+  useEffect(() => {
+    if (canStart && !showConsentPage && !consentGiven) {
+      setInitialFormAnimating(true);
+      setTimeout(() => {
+        setShowConsentPage(true);
+        setInitialFormAnimating(false);
+      }, 400);
+    }
+  }, [canStart, showConsentPage, consentGiven]);
 
   // Auto-progression de la barre de chargement
   useEffect(() => {
@@ -707,8 +720,8 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
       <div style={{ ...styles.overlay, background: "rgba(0,0,0,0.3)" }} />
 
       <div style={styles.card}>
-        {!canStart ? (
-          <>
+        {!showConsentPage ? (
+          <div className={initialFormAnimating ? "question-fade-out" : ""}>
             <div style={styles.kicker}>TON PROFIL ALIMENTAIRE</div>
             <h2 style={{ margin: "8px 0 0" }}>Avant de commencer</h2>
 
@@ -758,9 +771,9 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
                 Tu dois remplir <b>prénom + téléphone</b> et choisir <b>Homme/Femme</b>.
               </p>
             </div>
-          </>
+          </div>
         ) : !consentGiven ? (
-          <div className={consentAnimating ? "consent-fade-out" : ""}>
+          <div className={consentAnimating ? "consent-fade-out" : "questionnaire-fade-in"}>
             <div style={styles.kicker}>AVANT DE CONTINUER...</div>
             <h2 style={{ margin: "12px 0 0", fontSize: 20 }}>Avant de continuer...</h2>
 
