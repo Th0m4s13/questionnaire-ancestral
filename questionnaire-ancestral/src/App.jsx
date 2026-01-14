@@ -423,6 +423,11 @@ export default function App() {
       // Revenir à la question précédente
       setStep((x) => x - 1);
       setClickedOptionIndex(null); // Réinitialiser l'animation
+    } else if (step === 0) {
+      // Revenir à la page de consentement
+      setConsentGiven(false);
+      setShowConsentPage(false);
+      setClickedOptionIndex(null);
     }
   }
 
@@ -679,7 +684,7 @@ Se former ou se faire accompagner, c'est accélérer le processus. Avec les bons
         ...common,
       };
     }
-
+    
     return {
       themeKey: "solaire",
       label: "TERRAIN ANCESTRAL",
@@ -750,17 +755,17 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
               />
 
               <div>
-                <input
+              <input
                   style={{
                     ...styles.input,
                     ...(phoneError ? { border: "1px solid #ef4444" } : {})
                   }}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Ton numéro de téléphone"
-                  type="tel"
-                  autoComplete="tel"
-                />
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Ton numéro de téléphone"
+                type="tel"
+                autoComplete="tel"
+              />
                 {phoneError && (
                   <p style={{
                     color: "#ef4444",
@@ -820,12 +825,12 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
                 onClick={() => {
                   setConsentChoice('yes');
                   setTimeout(() => {
-                    setConsentAnimating(true);
-                    setTimeout(() => {
-                      setConsentGiven(true);
-                      setConsentAnimating(false);
+                  setConsentAnimating(true);
+                  setTimeout(() => {
+                    setConsentGiven(true);
+                    setConsentAnimating(false);
                       setConsentChoice(null);
-                    }, 300);
+                  }, 300);
                   }, 800);
                 }}
                 disabled={consentChoice !== null}
@@ -845,7 +850,7 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
                   setConsentChoice('no');
                   setTimeout(() => {
                     alert("Merci pour ta visite. Prends soin de toi !");
-                    restartFromStart();
+                  restartFromStart();
                   }, 800);
                 }}
                 disabled={consentChoice !== null}
@@ -927,19 +932,17 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
             </div>
 
             <div style={{ position: 'relative', marginTop: 16 }}>
-              <p style={styles.progress}>
-                Question {step + 1} / {questions.length}
-              </p>
+            <p style={styles.progress}>
+              Question {step + 1} / {questions.length}
+            </p>
               
-              {step > 0 && (
-                <button
-                  onClick={goBack}
-                  style={styles.backButton}
-                  title="Retour à la question précédente"
-                >
-                  ← Retour
-                </button>
-              )}
+              <button
+                onClick={goBack}
+                style={styles.backButton}
+                title={step === 0 ? "Retour au consentement" : "Retour à la question précédente"}
+              >
+                ← Retour
+              </button>
             </div>
           </div>
         ) : (
@@ -1100,10 +1103,10 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
             {/* Numéro WhatsApp pour les profils avec lien iClosed */}
             {prof?.hasIclosedLink && (
               <>
-                <p style={{ 
-                  marginTop: 16, 
-                  opacity: 0.85, 
-                  textAlign: "center",
+              <p style={{ 
+                marginTop: 16, 
+                opacity: 0.85, 
+                textAlign: "center",
                   fontSize: 13,
                   fontWeight: 500,
                   marginBottom: 6
@@ -1115,9 +1118,9 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
                   opacity: 0.85, 
                   textAlign: "center",
                   fontSize: 13,
-                  lineHeight: 1.5
-                }}>
-                  Numéro WhatsApp de Mao :{" "}
+                lineHeight: 1.5
+              }}>
+                Numéro WhatsApp de Mao :{" "}
                 <a 
                   href="https://wa.me/33756984875"
                   target="_blank"
