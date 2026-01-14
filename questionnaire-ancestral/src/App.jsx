@@ -919,25 +919,12 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
                   key={i} 
                   style={{
                     ...styles.button,
-                    ...(clickedOptionIndex === i ? {
-                      background: "linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(22, 163, 74, 0.3) 100%)",
-                      border: "1px solid rgba(34, 197, 94, 0.6)",
-                      transform: "scale(1.02)",
-                      cursor: "default",
-                    } : {})
                   }} 
                   onClick={(e) => answer(opt, i, e)}
                   disabled={clickedOptionIndex !== null}
                 >
                   {clickedOptionIndex === i && (
-                    <span style={{
-                      marginRight: 8,
-                      fontSize: 18,
-                      fontWeight: 'bold',
-                      color: '#22c55e',
-                    }}>
-                      ✓
-                    </span>
+                    <div className="button-sweep-overlay" />
                   )}
                   {opt.text}
                 </button>
