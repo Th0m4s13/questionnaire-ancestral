@@ -30,6 +30,7 @@ export default function App() {
   const [clickedOptionIndex, setClickedOptionIndex] = useState(null);
   const [initialFormAnimating, setInitialFormAnimating] = useState(false);
   const [showConsentPage, setShowConsentPage] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
 
   // Questions (base)
   const baseQuestions = useMemo(
@@ -271,10 +272,23 @@ export default function App() {
 
   const maxScore = useMemo(() => questions.length * 4, [questions.length]);
 
+  // Validation du numéro de téléphone (seulement les chiffres)
+  const phoneDigits = phone.replace(/\D/g, ''); // Enlever tout sauf les chiffres
+  const isPhoneValid = phoneDigits.length === 10;
+
   const canStart =
     name.trim().length >= 2 &&
-    phone.trim().length >= 10 &&
+    isPhoneValid &&
     (sex === "homme" || sex === "femme");
+
+  // Validation du téléphone
+  useEffect(() => {
+    if (phone.length > 0 && phoneDigits.length > 0 && phoneDigits.length !== 10) {
+      setPhoneError(`Le numéro doit contenir 10 chiffres (actuellement : ${phoneDigits.length})`);
+    } else {
+      setPhoneError("");
+    }
+  }, [phone, phoneDigits.length]);
 
   // Animation de transition quand le formulaire initial est complété
   useEffect(() => {
@@ -735,14 +749,29 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
                 autoComplete="name"
               />
 
-              <input
-                style={styles.input}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Ton numéro de téléphone"
-                type="tel"
-                autoComplete="tel"
-              />
+              <div>
+                <input
+                  style={{
+                    ...styles.input,
+                    ...(phoneError ? { border: "1px solid #ef4444" } : {})
+                  }}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Ton numéro de téléphone"
+                  type="tel"
+                  autoComplete="tel"
+                />
+                {phoneError && (
+                  <p style={{
+                    color: "#ef4444",
+                    fontSize: 13,
+                    margin: "6px 0 0 0",
+                    textAlign: "left",
+                  }}>
+                    ⚠️ {phoneError}
+                  </p>
+                )}
+              </div>
 
               <div style={styles.sexRow}>
                 <button
@@ -873,15 +902,25 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
                   style={{
                     ...styles.button,
                     ...(clickedOptionIndex === i ? {
-                      background: "rgba(100, 116, 139, 0.4)",
-                      opacity: 0.6,
-                      transform: "scale(0.98)",
+                      background: "linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(22, 163, 74, 0.3) 100%)",
+                      border: "1px solid rgba(34, 197, 94, 0.6)",
+                      transform: "scale(1.02)",
                       cursor: "default",
                     } : {})
                   }} 
                   onClick={(e) => answer(opt, i, e)}
                   disabled={clickedOptionIndex !== null}
                 >
+                  {clickedOptionIndex === i && (
+                    <span style={{
+                      marginRight: 8,
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                      color: '#22c55e',
+                    }}>
+                      ✓
+                    </span>
+                  )}
                   {opt.text}
                 </button>
               ))}
