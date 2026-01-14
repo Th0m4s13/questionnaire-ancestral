@@ -1187,7 +1187,7 @@ const styles = {
     left: "50%",
     transform: "translate(-50%, -50%)",
     zIndex: 1,
-    width: "min(460px, 100vw)",
+    width: "min(460px, 96vw)",
     maxHeight: "calc(100dvh - 40px)",
     overflowY: "auto",
     WebkitOverflowScrolling: "touch",
