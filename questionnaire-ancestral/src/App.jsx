@@ -1164,12 +1164,13 @@ function Avatar({ sex, variant = "solaire", label }) {
 const styles = {
   page: {
     minHeight: "100dvh",
+    height: "100dvh",
     width: "100%",
     position: "relative",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "8px 0",
+    padding: 0,
     margin: 0,
     overflow: "hidden",
     fontFamily:
@@ -1204,13 +1205,13 @@ const styles = {
   card: {
     position: "relative",
     zIndex: 1,
-    width: "min(460px, 96vw)",
-    maxHeight: "calc(100dvh - 32px)",
+    width: "clamp(320px, 96vw, 460px)",
+    maxHeight: "96dvh",
     margin: "auto",
     overflowY: "auto",
     WebkitOverflowScrolling: "touch",
     background: "rgba(2, 6, 23, 0.78)",
-    padding: "clamp(14px, 4vw, 20px)",
+    padding: "clamp(16px, 4vw, 22px)",
     borderRadius: 18,
     textAlign: "center",
     boxShadow: "0 22px 60px rgba(0,0,0,0.65)",
