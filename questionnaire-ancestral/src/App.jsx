@@ -395,8 +395,11 @@ export default function App() {
     // Marquer le bouton comme cliqué pour l'animation grisée
     setClickedOptionIndex(optionIndex);
     
-    // Animation de transition
-    setQuestionTransitioning(true);
+    // Attendre que l'animation du bouton soit visible (500ms)
+    setTimeout(() => {
+      // Puis lancer le fade-out de la question
+      setQuestionTransitioning(true);
+    }, 500);
     
     setTimeout(() => {
       if (step + 1 < questions.length) {
@@ -410,7 +413,7 @@ export default function App() {
         setQuestionTransitioning(false);
         setClickedOptionIndex(null); // Réinitialiser l'animation
       }
-    }, 1000); // Délai pour voir l'animation
+    }, 900); // Délai total pour la transition
   }
 
   function goBack() {
