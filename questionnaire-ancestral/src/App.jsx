@@ -697,7 +697,7 @@ Pas demain. Maintenant.`,
       label: "TERRAIN AVANCÉ",
       title: "",
       subtitle: "",
-        story: `Ce que tu fais fonctionne. Tu manges dense, tu choisis bien, tu prépares toi-même. C'est simple à dire, mais presque personne ne le fait vraiment.
+      story: `Ce que tu fais fonctionne. Tu manges dense, tu choisis bien, tu prépares toi-même. C'est simple à dire, mais presque personne ne le fait vraiment.
 Résultat : ton corps tourne. Pas de fatigue qui traîne, pas de digestion compliquée, pas de prise de poids qui sort de nulle part. Tu ne subis pas, tu construis.
 Il reste peut-être des détails à affiner. Pas forcément manger plus ou différemment, mais mieux comprendre pourquoi ça marche. Savoir quoi ajuster si un jour ton corps réagit autrement. La formation t'aide à avoir cette clarté.
 Continue comme ça. Ce genre d'habitudes, ça se perd vite si on relâche. Ce que tu as mis en place, ça vaut la peine de le garder.`,
@@ -706,6 +706,8 @@ Continue comme ça. Ce genre d'habitudes, ça se perd vite si on relâche. Ce qu
       mantra: "",
       trap: "",
       tip: "",
+      hasIclosedLink: true,
+      iclosedUrl: "https://app.iclosed.io/e/maobrut/ancestral",
       ...common,
     };
   }
