@@ -675,15 +675,12 @@ Et si tu veux aller à l'essentiel, un appel avec l'équipe permet d'analyser ta
         label: "TERRAIN STABLE",
         title: "",
         subtitle: "",
-        story: `Tu as déjà bâti des fondations solides : des habitudes, une direction, une compréhension de ton corps. C'est plus que ce que la plupart osent initier. Mais au fond, tu le sais, il manque encore un étage. Cette vitalité stable, franche, nourrissante. Celle qui ne vacille pas après les repas. Celle qui reconstruit au lieu d'épuiser.
-
-Nos ancêtres ne comptaient pas les calories. Ils mangeaient dense. Chaque repas servait à réparer, à bâtir : bouillons d'os riches en collagène et en minéraux, abats chargés en cofacteurs bioactifs, plantes sauvages amères aux vertus digestives et hormonales. Ils mangeaient ce que le corps reconnaissait. Et le corps répondait.
-
-Si aujourd'hui tu sens des baisses d'énergie après les repas, un brouillard, des inconforts diffus… ce n'est pas normal. Ce sont des signaux. Des appels précis de ton métabolisme. Il ne demande pas plus d'effort. Il demande plus d'intelligence physiologique.
-
-Ce que tu as mis en place est précieux. Mais ce que tu vas intégrer maintenant peut tout réorienter. La formation te donne les clés : comprendre les signaux de ton corps, ajuster avec précision. Parce que ce que tu as construit mérite d'être protégé et amplifié.
-
-Pas demain. Maintenant`,
+        story: `Tu as déjà bâti des fondations solides : tes habitudes, ta direction, ta compréhension de ton propre corps. C'est plus que ce que la plupart osent initier. Mais il te manque encore un étage, tu peux aller plus loin. Tu pourrais te sentir vraiment en forme. Ne plus t'écrouler après manger. Dormir profondément et te réveiller reposé. Garder la tête claire jusqu'au soir. Ce qui fait souvent la différence, ce n'est pas de manger "mieux", c'est de manger plus dense. Des aliments qui réparent vraiment : bouillons d'os, abats, plantes comme l'ortie ou le pissenlit. Peut-être que tu en consommes déjà. La question, c'est : est-ce suffisant, assez régulier, bien préparé ? C'est dans ces détails que tout se joue.
+Si aujourd'hui tu sens des baisses d'énergie après tes repas, un brouillard, des inconforts diffus… ce n'est pas normal. Ce sont des signaux. Des appels précis de ton métabolisme à toi. Il ne te demande pas plus d'effort. Il te demande plus de justesse.
+Imagine : te lever avec une clarté mentale nette, traverser tes journées sans ce creux de 15h, digérer sans y penser, sentir ton énergie tenir jusqu'au soir. C'est ça, un métabolisme qui tourne pour toi et non contre toi.
+La formation t'apprend exactement ça : décoder ce que ton corps te dit, identifier les aliments qui te rechargent vraiment, structurer tes repas pour que chaque bouchée serve ta vitalité. Pas de dogme. Juste une lecture fine de tes propres signaux.
+Ce que tu as mis en place est précieux. Ce que tu vas intégrer maintenant peut tout amplifier.
+Pas demain. Maintenant.`,
         highlights: [],
         plan: [],
         mantra: "",
@@ -700,13 +697,10 @@ Pas demain. Maintenant`,
       label: "TERRAIN ANCESTRAL",
       title: "",
       subtitle: "",
-      story: `Ton terrain est solide. Tu manges comme nos ancêtres mangeaient. Dense, gras, complet. Une vraie attention à la qualité, à la préparation, aux nutriments nobles. C'est rare. C'est précieux.
-
-Continue sur cette voie. C'est celle de la santé durable, du corps qui fonctionne, de l'énergie stable année après année. Pas de prise de poids inexpliquée, pas de fatigue chronique, pas de dégradation lente. Tu te projettes sur le long terme avec une qualité de vie que la plupart ont oubliée.
-
-À court et moyen terme, tout est au vert. Ton évaluation est excellente. Il reste toujours possible d'affiner quelques détails. Une liste de courses mieux organisée, une rotation des abats plus régulière, un bouillon plus fréquent. Mais l'essentiel est là.
-
-Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pas. Les acquis se perdent vite quand on oublie d'où l'on vient. Maintiens le cap et ton corps te le rendra pendant des décennies.`,
+        story: `Ce que tu fais fonctionne. Tu manges dense, tu choisis bien, tu prépares toi-même. C'est simple à dire, mais presque personne ne le fait vraiment.
+Résultat : ton corps tourne. Pas de fatigue qui traîne, pas de digestion compliquée, pas de prise de poids qui sort de nulle part. Tu ne subis pas, tu construis.
+Il reste peut-être des détails à affiner. Pas forcément manger plus ou différemment, mais mieux comprendre pourquoi ça marche. Savoir quoi ajuster si un jour ton corps réagit autrement. La formation t'aide à avoir cette clarté.
+Continue comme ça. Ce genre d'habitudes, ça se perd vite si on relâche. Ce que tu as mis en place, ça vaut la peine de le garder.`,
       highlights: [],
       plan: [],
       mantra: "",
