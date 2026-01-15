@@ -616,15 +616,20 @@ export default function App() {
         label: "TERRAIN CRITIQUE",
         title: "",
         subtitle: "",
-        story: `Ton terrain est fragilisé. Le corps parle, mais ses signaux restent ignorés depuis trop longtemps. Les déséquilibres s'installent quand on s'éloigne de ce que nos ancêtres mangeaient depuis des millénaires.
-
-À moyen terme, sans retour aux fondamentaux, la dégradation suit son cours. Les organes compensent encore, mais ils s'épuisent. Le foie surchargé, l'intestin irrité, les glandes vidées. Les symptômes deviennent plus fréquents, plus lourds, plus difficiles à inverser.
-
-Sur le long terme, c'est la dette qui s'accumule. Fatigue installée, douleurs chroniques, métabolisme effondré. Des années de souffrance évitables si on agit maintenant. Plus on attend, plus le chemin du retour s'allonge.
-
-Tes ancêtres ne connaissaient pas ces maux. Ils mangeaient dense, gras, complet. Abats, bouillons, graisses animales. Leur terrain restait solide.
-
-Agir maintenant est non négociable. La solution la plus directe est de prendre un appel avec notre équipe pour analyser ta situation et poser un plan clair avant que la trajectoire ne devienne irréversible.`,
+        story: `Comprendre les signaux du corps
+Le corps communique constamment à travers des signaux subtils. Fatigue persistante, digestion difficile, sommeil perturbé, ce ne sont pas des détails. Ce sont des alertes qu'il ne faut pas ignorer. Ces déséquilibres s'installent progressivement, par accumulation de petits facteurs : alimentation inadaptée, stress chronique, manque de lumière ou de repos. Le problème : plus ils s'enracinent, plus ils deviennent difficiles à inverser. Ce qui se corrige en quelques semaines aujourd'hui peut prendre des mois demain.
+Ce qui se passe concrètement
+Quand l'énergie cellulaire diminue, plusieurs systèmes compensent. Le foie travaille davantage pour gérer les toxines intestinales et hormonales. Les glandes surrénales produisent plus de cortisol pour maintenir la glycémie. La thyroïde peut ralentir. Ces mécanismes d'adaptation ont une limite, et quand ils lâchent, la chute s'accélère.
+L'intestin joue un rôle central : comme l'a montré Metchnikoff dès le début du XXe siècle, les toxines intestinales peuvent perturber l'ensemble du métabolisme. Un transit lent favorise la fermentation bactérienne et la production de substances inflammatoires. Chaque jour passé dans cet état creuse la dette. L'inflammation s'installe, les carences s'aggravent, le terrain se fragilise.
+Des pistes concrètes à explorer
+Le temps joue contre toi, mais les leviers existent.
+Pour soutenir l'énergie cellulaire, privilégie les sucres issus de fruits mûrs plutôt que les amidons. Le fructose des fruits aide à maintenir une glycémie stable et soutient la fonction hépatique. Le lait et le fromage offrent un bon ratio calcium/phosphate, contrairement aux céréales et légumineuses qui en contiennent trop par rapport au calcium. Les vitamines B, présentes dans le foie et les œufs, soutiennent l'oxydation du glucose.
+Pour l'intestin, à corriger en priorité : les carottes crues, les champignons cuits ou les pousses de bambou accélèrent le transit tout en limitant la prolifération bactérienne. Il faut aussi éviter les gommes et amidons industriels qui favorisent une fermentation excessive.
+Pour le système hormonal, ne pas attendre les symptômes lourds. Réduire les huiles polyinsaturées (tournesol, maïs, soja) qui inhibent la thyroïde et favorisent l'inflammation. L'huile de coco, plus saturée, ne présente pas ces inconvénients et soutient le métabolisme. La lumière du jour, surtout le matin, aide à réguler les hormones de stress.
+Les nutriments protecteurs sont à intégrer rapidement. La niacinamide (vitamine B3) aide à réduire les acides gras libres dans le sang. Le magnésium, présent dans le café, les fruits et les légumes verts, participe à la production d'énergie. La gélatine des bouillons d'os équilibre les acides aminés et soutient la digestion.
+Quelques repères simples
+Un repas idéal combine protéines de qualité (œufs, fromage, viande), calcium suffisant (produits laitiers, feuilles vertes cuites), et sucres naturels (fruits mûrs, miel, jus d'orange). Éviter l'hypoglycémie est fondamental : des petits repas fréquents aident à maintenir une glycémie stable et réduisent la production de cortisol.
+Le changement ne nécessite pas de révolution brutale. Mais chaque semaine d'inaction compte. La dette métabolique s'accumule silencieusement, et le corps n'oublie rien. Agir maintenant, c'est raccourcir le chemin. Attendre, c'est le rallonger.`,
         highlights: [],
         plan: [],
         mantra: "",
@@ -642,17 +647,17 @@ Agir maintenant est non négociable. La solution la plus directe est de prendre 
         label: "TERRAIN DÉSÉQUILIBRÉ",
         title: "",
         subtitle: "",
-        story: `Ton alimentation actuelle t'éloigne de ce que ton corps attend. Il compense encore, mais les premiers signaux apparaissent. Le terrain se fragilise quand on le nourrit avec des aliments que nos ancêtres n'ont jamais connus.
-
-Le retour à une alimentation ancestrale n'est pas une option. C'est une nécessité. Simple, dense, préparée avec soin. Le foie est au centre de tout. Surchargé par les huiles industrielles, les sucres, les produits transformés, il entraîne le reste du corps dans sa chute. Le soutenir avec les bons aliments, le nettoyer avec les bonnes graisses, c'est la première étape.
-
-Sans correction réelle, les troubles digestifs, métaboliques, inflammatoires ne sont qu'une question de temps. Pas de "si", seulement de "quand".
-
-Nos ancêtres savaient. Ils mangeaient l'animal entier, cuisaient les os pendant des heures, respectaient les graisses saturées. Leur corps fonctionnait.
-
-Pour éviter la dégradation, suis la formation proposée pour comprendre quoi manger, comment préparer, comment soutenir tes organes. Un appel avec l'équipe te permettra d'identifier rapidement les erreurs et de poser un plan adapté à ta situation.
-
-Agir maintenant t'évite des complications futures. Attendre, c'est laisser la dette se creuser. Le plus efficace reste de prendre directement un appel avec l'équipe via ce lien afin d'agir immédiatement.`,
+        story: `Un écart qui se creuse
+Ton alimentation actuelle s'éloigne de ce que ton corps attend physiologiquement. Il compense encore, mais les premiers signes apparaissent : digestion perturbée, fatigue installée, inconforts qui deviennent chroniques. Ces déséquilibres surviennent quand l'organisme reçoit des aliments qu'il n'a jamais appris à gérer au fil de l'évolution.
+Revenir à une alimentation cohérente avec ta physiologie n'est pas accessoire. C'est fondamental. Une alimentation simple, dense, bien préparée, construite autour de graisses stables, de protéines animales complètes, de cuissons longues.
+Le foie au centre
+Le foie est souvent le premier à souffrir. Organe central de filtration et de régulation hormonale, il encaisse les huiles industrielles, les sucres raffinés, les produits ultra-transformés. Le soutenir ne veut pas dire le "détoxifier" avec des cures passagères. Cela veut dire lui redonner ses cofacteurs au quotidien : choline, graisses saturées, antioxydants liposolubles.
+Sans correction, les troubles digestifs, métaboliques ou inflammatoires ne sont pas une hypothèse. Ils sont une suite logique. Le moment d'agir est toujours avant l'effondrement, pas après.
+Ce que savaient les anciens
+Les populations traditionnelles maîtrisaient sans le théoriser l'art de nourrir le terrain. Abats, bouillons, produits fermentés, graisses animales de qualité. Pas d'ultra-transformation. Pas d'excès de végétaux crus ou mal préparés. Ce modèle a permis une résilience biologique que la modernité a largement effacée.
+Passer à l'action
+Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Comment tu le prépares. Ce que tes organes peuvent gérer aujourd'hui. C'est ce que propose la formation.
+Et si tu veux aller à l'essentiel, un appel avec l'équipe permet d'analyser ta situation et de poser un plan adapté à ton profil. Agir maintenant limite la dette métabolique. Repousser, c'est rendre la correction plus lente, plus difficile, parfois irréversible.`,
         highlights: [],
         plan: [],
         mantra: "",
@@ -777,6 +782,12 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
                       setPhoneValidationAttempted(true);
                     }
                   }}
+                  onBlur={() => {
+                    // Déclencher la validation quand l'utilisateur quitte le champ
+                    if (phone.length > 0) {
+                      setPhoneValidationAttempted(true);
+                    }
+                  }}
                   placeholder="Ton numéro de téléphone"
                   type="tel"
                   autoComplete="tel"
@@ -796,7 +807,15 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
               <div style={styles.sexRow}>
                 <button
                   type="button"
-                  onClick={() => setSex("homme")}
+                  onClick={() => {
+                    // Forcer le blur de tous les inputs pour fermer le clavier mobile
+                    document.activeElement?.blur();
+                    setSex("homme");
+                    // Déclencher la validation du téléphone si il a été rempli
+                    if (phone.length > 0) {
+                      setTimeout(() => setPhoneValidationAttempted(true), 100);
+                    }
+                  }}
                   style={{
                     ...styles.sexBtn,
                     ...(sex === "homme" ? styles.sexBtnActive : null),
@@ -806,7 +825,15 @@ Tes ancêtres seraient fiers. Tu as retrouvé ce qu'ils savaient. Ne relâche pa
                 </button>
                 <button
                   type="button"
-                  onClick={() => setSex("femme")}
+                  onClick={() => {
+                    // Forcer le blur de tous les inputs pour fermer le clavier mobile
+                    document.activeElement?.blur();
+                    setSex("femme");
+                    // Déclencher la validation du téléphone si il a été rempli
+                    if (phone.length > 0) {
+                      setTimeout(() => setPhoneValidationAttempted(true), 100);
+                    }
+                  }}
                   style={{
                     ...styles.sexBtn,
                     ...(sex === "femme" ? styles.sexBtnActive : null),
@@ -1266,7 +1293,10 @@ const styles = {
     maxHeight: "96dvh",
     margin: "auto",
     overflowY: "auto",
+    overflowX: "hidden",
     WebkitOverflowScrolling: "touch",
+    touchAction: "pan-y",
+    scrollBehavior: "smooth",
     background: "rgba(2, 6, 23, 0.78)",
     padding: "clamp(16px, 4vw, 22px)",
     borderRadius: 18,
