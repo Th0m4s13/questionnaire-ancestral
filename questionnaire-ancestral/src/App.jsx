@@ -390,6 +390,7 @@ export default function App() {
       category: currentQuestion.category,
       score: option.score,
       question: currentQuestion.question,
+      reponseTexte: option.text,
     }]);
     
     // Marquer le bouton comme cliqué pour l'animation grisée
@@ -463,6 +464,7 @@ export default function App() {
         question: ans.question,
         categorie: ans.category,
         score: ans.score,
+        reponseTexte: ans.reponseTexte,
       })),
     };
 
