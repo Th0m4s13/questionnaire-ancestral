@@ -675,13 +675,15 @@ Et si tu veux aller à l'essentiel, un appel avec l'équipe permet d'analyser ta
         label: "TERRAIN STABLE",
         title: "",
         subtitle: "",
-        story: `Ton terrain est correct. Les bases sont là, mais quelques ajustements peuvent faire la différence entre une santé moyenne et une vitalité réelle. Nos ancêtres ne se contentaient pas de "correct". Ils visaient la densité maximale.
+        story: `Tu as déjà bâti des fondations solides : des habitudes, une direction, une compréhension de ton corps. C'est plus que ce que la plupart osent initier. Mais au fond, tu le sais, il manque encore un étage. Cette vitalité stable, franche, nourrissante. Celle qui ne vacille pas après les repas. Celle qui reconstruit au lieu d'épuiser.
 
-Sur le long terme, continuer à densifier ton alimentation reste la voie. Pense à intégrer les plantes traditionnelles de ton territoire. En France, l'ortie, le persil, le pissenlit. Chaque région a ses trésors oubliés. L'objectif reste le même depuis des millénaires : des aliments à haute densité nutritionnelle, préparés avec soin.
+Nos ancêtres ne comptaient pas les calories. Ils mangeaient dense. Chaque repas servait à réparer, à bâtir : bouillons d'os riches en collagène et en minéraux, abats chargés en cofacteurs bioactifs, plantes sauvages amères aux vertus digestives et hormonales. Ils mangeaient ce que le corps reconnaissait. Et le corps répondait.
 
-Si certains points restent flous, la formation te donnera les clés pour comprendre et choisir. Si tu ressens de la fatigue après les repas ou des signes de déséquilibre, c'est le moment d'ajuster. Les plantes médicinales de nos ancêtres, associées aux abats et aux bouillons, peuvent tout changer.
+Si aujourd'hui tu sens des baisses d'énergie après les repas, un brouillard, des inconforts diffus… ce n'est pas normal. Ce sont des signaux. Des appels précis de ton métabolisme. Il ne demande pas plus d'effort. Il demande plus d'intelligence physiologique.
 
-Se former ou se faire accompagner, c'est accélérer le processus. Avec les bons outils, tout se met en place naturellement. Ne pas maintenir cet équilibre, c'est risquer de perdre ce que tu as déjà construit.`,
+Ce que tu as mis en place est précieux. Mais ce que tu vas intégrer maintenant peut tout réorienter. La formation te donne les clés : comprendre les signaux de ton corps, ajuster avec précision. Parce que ce que tu as construit mérite d'être protégé et amplifié.
+
+Pas demain. Maintenant`,
         highlights: [],
         plan: [],
         mantra: "",
