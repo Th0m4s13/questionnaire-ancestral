@@ -786,7 +786,7 @@ Continue comme ça. Ce genre d'habitudes, ça se perd vite si on relâche. Ce qu
                       setPhoneValidationAttempted(true);
                     }
                   }}
-                  placeholder="Ton numéro de téléphone"
+                  placeholder="Ton num de tél (tu recevras un retour via WhatsApp)"
                   type="tel"
                   autoComplete="tel"
                 />
