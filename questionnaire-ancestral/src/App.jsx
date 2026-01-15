@@ -1295,7 +1295,7 @@ const styles = {
     WebkitOverflowScrolling: "touch",
     touchAction: "pan-y",
     scrollBehavior: "smooth",
-    background: "rgba(2, 6, 23, 0.78)",
+    background: "rgba(2, 6, 23, 0.45)",
     padding: "clamp(16px, 4vw, 22px)",
     borderRadius: 18,
     textAlign: "center",
