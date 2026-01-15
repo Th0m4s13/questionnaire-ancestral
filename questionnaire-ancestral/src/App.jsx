@@ -694,7 +694,7 @@ Pas demain. Maintenant.`,
     
     return {
       themeKey: "solaire",
-      label: "TERRAIN ANCESTRAL",
+      label: "TERRAIN AVANCÉ",
       title: "",
       subtitle: "",
         story: `Ce que tu fais fonctionne. Tu manges dense, tu choisis bien, tu prépares toi-même. C'est simple à dire, mais presque personne ne le fait vraiment.
