@@ -277,6 +277,57 @@ export default function App() {
   const phoneDigits = phone.replace(/\D/g, ''); // Enlever tout sauf les chiffres
   const isPhoneValid = phoneDigits.length === 10;
 
+  function formatDateFR(isoString) {
+    try {
+      return new Date(isoString).toLocaleString("fr-FR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+    } catch {
+      return isoString;
+    }
+  }
+
+  function buildWhatsappText({ timestamp, nom, telephoneRaw, sexe, score, scoreMax, pourcentage, profil, reponses }) {
+    const header = [
+      "📋 NOUVEAU QUESTIONNAIRE ANCESTRAL",
+      "",
+      "👤 INFORMATIONS",
+      `• Nom: ${nom || "-"}`,
+      `• Téléphone: ${telephoneRaw || "-"}`,
+      `• Sexe: ${sexe || "-"}`,
+      "",
+      "📊 RÉSULTATS",
+      `• Score: ${typeof score === "number" ? score : "-"} / ${typeof scoreMax === "number" ? scoreMax : "-"}`,
+      `• Pourcentage: ${typeof pourcentage === "number" ? pourcentage : "-"}%`,
+      `• Profil: ${profil || "-"}`,
+      "",
+      `⏰ Date: ${timestamp ? formatDateFR(timestamp) : "-"}`,
+      "",
+      "🧾 RÉPONSES DÉTAILLÉES:",
+    ].join("\n");
+
+    const details = Array.isArray(reponses)
+      ? reponses
+          .map((r, i) => {
+            const q = r?.question || `Question ${i + 1}`;
+            const a = r?.reponseTexte || "";
+            return `- ${q}${a ? `\n  → ${a}` : ""}`;
+          })
+          .join("\n")
+      : "";
+
+    let text = `${header}\n${details}`.trim();
+    // WhatsApp a une limite de longueur : on garde une marge.
+    const MAX = 3800;
+    if (text.length > MAX) text = text.slice(0, MAX - 20) + "\n…(tronqué)";
+    return text;
+  }
+
   const canStart =
     name.trim().length >= 2 &&
     isPhoneValid &&
@@ -448,15 +499,18 @@ export default function App() {
     const prof = personality();
     if (!prof) return;
 
+    const timestamp = new Date().toISOString();
+    const pourcentage = Math.round((score / maxScore) * 100);
+
     const data = {
-      timestamp: new Date().toISOString(),
+      timestamp,
       nom: name,
       telephone: phoneDigits,
       telephoneRaw: phone,
       sexe: sex,
       score: score,
       scoreMax: maxScore,
-      pourcentage: Math.round((score / maxScore) * 100),
+      pourcentage,
       profil: prof.label,
       profilTitle: prof.title,
       profilSubtitle: prof.subtitle,
@@ -468,6 +522,17 @@ export default function App() {
         reponseTexte: ans.reponseTexte,
       })),
     };
+    data.whatsappText = buildWhatsappText({
+      timestamp: data.timestamp,
+      nom: data.nom,
+      telephoneRaw: data.telephoneRaw,
+      sexe: data.sexe,
+      score: data.score,
+      scoreMax: data.scoreMax,
+      pourcentage: data.pourcentage,
+      profil: data.profil,
+      reponses: data.reponses,
+    });
 
     try {
       // URL du webhook Make.com
