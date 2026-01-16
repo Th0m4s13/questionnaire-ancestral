@@ -72,7 +72,7 @@ export default function App() {
         question: "Tu as souvent besoin de café ou thé pour fonctionner ?",
         category: "energie",
         options: [
-          { text: " Je ne bois jamais de café", score: 4 },
+          { text: " Je ne bois jamais de café/thé", score: 4 },
           { text: " De temps en temps", score: 3 },
           { text: " Tous les jours", score: 2 },
           { text: ' Plusieurs fois par jour sinon je "tombe"', score: 1 },
