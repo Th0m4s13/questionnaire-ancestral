@@ -32,6 +32,7 @@ export default function App() {
   const [showConsentPage, setShowConsentPage] = useState(false);
   const [phoneError, setPhoneError] = useState("");
   const [phoneValidationAttempted, setPhoneValidationAttempted] = useState(false);
+  const [openAnswer, setOpenAnswer] = useState(""); // Pour les questions ouvertes
   const hasSentRef = useRef(false);
 
   // Questions (base)
@@ -71,7 +72,7 @@ export default function App() {
         question: "Tu as souvent besoin de café ou thé pour fonctionner ?",
         category: "energie",
         options: [
-          { text: " Jamais", score: 4 },
+          { text: " Je ne bois jamais de café", score: 4 },
           { text: " De temps en temps", score: 3 },
           { text: " Tous les jours", score: 2 },
           { text: ' Plusieurs fois par jour sinon je "tombe"', score: 1 },
@@ -131,10 +132,10 @@ export default function App() {
         question: "Quand tu es malade, tu guéris en :",
         category: "immunite",
         options: [
-          { text: " 2–3 jours", score: 4 },
-          { text: " 5–6 jours", score: 3 },
-          { text: " 1 à 2 semaines", score: 2 },
-          { text: " Ça traîne toujours, je rechute souvent", score: 1 },
+          { text: " Je ne tombe jamais malade", score: 4 },
+          { text: " 2–3 jours", score: 3 },
+          { text: " 5–6 jours", score: 2 },
+          { text: " 1 à 2 semaines ou ça traîne", score: 1 },
         ],
       },
       {
@@ -238,9 +239,21 @@ export default function App() {
           { text: " Oui, plusieurs groupes d'aliments me rendent mal", score: 1 },
         ],
       },
+      {
+        question: "Quel est ton régime type actuellement ? (donne-moi un maximum de détails)",
+        category: "alimentation",
+        type: "open",
+        score: 2,
+      },
+      {
+        question: "As-tu des antécédents médicaux ? Si oui, lesquels ?",
+        category: "medical",
+        type: "open",
+        score: 2,
+      },
     ].map(q => ({
       ...q,
-      options: shuffleArray(q.options)
+      options: q.options ? shuffleArray(q.options) : undefined
     })),
     []
   );
@@ -469,6 +482,35 @@ export default function App() {
     }, 750); // Délai total pour la transition
   }
 
+  function submitOpenAnswer() {
+    const currentQuestion = questions[step];
+    if (!currentQuestion || currentQuestion.type !== "open") return;
+    
+    const trimmedAnswer = openAnswer.trim();
+    if (!trimmedAnswer) return; // Ne pas passer si vide
+    
+    setScore((s) => s + (currentQuestion.score || 2));
+    setAnswers((prev) => [...prev, {
+      category: currentQuestion.category,
+      score: currentQuestion.score || 2,
+      question: currentQuestion.question,
+      reponseTexte: trimmedAnswer,
+    }]);
+    
+    setOpenAnswer(""); // Réinitialiser
+    setQuestionTransitioning(true);
+    
+    setTimeout(() => {
+      if (step + 1 < questions.length) {
+        setStep((x) => x + 1);
+        setQuestionTransitioning(false);
+      } else {
+        setShowCompleted(true);
+        setQuestionTransitioning(false);
+      }
+    }, 400);
+  }
+
   function goBack() {
     if (step > 0) {
       // Retirer la dernière réponse
@@ -480,11 +522,13 @@ export default function App() {
       // Revenir à la question précédente
       setStep((x) => x - 1);
       setClickedOptionIndex(null); // Réinitialiser l'animation
+      setOpenAnswer(""); // Réinitialiser la réponse ouverte
     } else if (step === 0) {
       // Revenir à la page de consentement
       setConsentGiven(false);
       setShowConsentPage(false);
       setClickedOptionIndex(null);
+      setOpenAnswer("");
     }
   }
 
@@ -800,6 +844,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
     setFinished(false);
     setQuestionTransitioning(false);
     setShowCompleted(false);
+    setOpenAnswer("");
   }
 
   function restartFromStart() {
@@ -815,6 +860,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
     setFinished(false);
     setQuestionTransitioning(false);
     setShowCompleted(false);
+    setOpenAnswer("");
   }
 
   return (
@@ -1019,23 +1065,57 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
 
             <h2 style={{ margin: "10px 0 0" }}>{questions[step]?.question}</h2>
 
-            <div style={styles.options}>
-              {questions[step]?.options?.map((opt, i) => (
-                <button 
-                  key={i} 
+            {questions[step]?.type === "open" ? (
+              <div style={{ marginTop: 16 }}>
+                <textarea
+                  value={openAnswer}
+                  onChange={(e) => setOpenAnswer(e.target.value)}
+                  placeholder="Tape ta réponse ici..."
+                  rows={6}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    fontSize: "15px",
+                    fontFamily: "inherit",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    borderRadius: "8px",
+                    background: "rgba(255,255,255,0.05)",
+                    color: "white",
+                    resize: "vertical",
+                  }}
+                />
+                <button
+                  onClick={submitOpenAnswer}
+                  disabled={!openAnswer.trim()}
                   style={{
                     ...styles.button,
-                  }} 
-                  onClick={(e) => answer(opt, i, e)}
-                  disabled={clickedOptionIndex !== null}
+                    marginTop: 12,
+                    opacity: openAnswer.trim() ? 1 : 0.5,
+                    cursor: openAnswer.trim() ? "pointer" : "not-allowed",
+                  }}
                 >
-                  {clickedOptionIndex === i && (
-                    <div className="button-sweep-overlay" />
-                  )}
-                  {opt.text}
+                  Suivant →
                 </button>
-              ))}
-            </div>
+              </div>
+            ) : (
+              <div style={styles.options}>
+                {questions[step]?.options?.map((opt, i) => (
+                  <button 
+                    key={i} 
+                    style={{
+                      ...styles.button,
+                    }} 
+                    onClick={(e) => answer(opt, i, e)}
+                    disabled={clickedOptionIndex !== null}
+                  >
+                    {clickedOptionIndex === i && (
+                      <div className="button-sweep-overlay" />
+                    )}
+                    {opt.text}
+                  </button>
+                ))}
+              </div>
+            )}
 
             <div style={{ position: 'relative', marginTop: 16 }}>
             <p style={styles.progress}>
