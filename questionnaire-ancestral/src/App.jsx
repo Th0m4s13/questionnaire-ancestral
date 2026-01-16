@@ -451,7 +451,8 @@ export default function App() {
     const data = {
       timestamp: new Date().toISOString(),
       nom: name,
-      telephone: phone,
+      telephone: phoneDigits,
+      telephoneRaw: phone,
       sexe: sex,
       score: score,
       scoreMax: maxScore,
@@ -470,21 +471,26 @@ export default function App() {
 
     try {
       // URL du webhook Make.com
-      const WEBHOOK_URL = 'https://hook.eu1.make.com/yf61fckihxirt84w6r5rhd5813e16s5v';
+      const WEBHOOK_URL =
+        import.meta.env.VITE_MAKE_WEBHOOK_URL ||
+        "https://hook.eu1.make.com/yf61fckihxirt84w6r5rhd5813e16s5v";
       
       if (WEBHOOK_URL) {
         await fetch(WEBHOOK_URL, {
           method: 'POST',
+          // Make.com peut ne pas renvoyer d'entêtes CORS : on envoie quand même le webhook.
+          mode: "no-cors",
+          keepalive: true,
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(data),
         });
         
-        console.log('✅ Données envoyées sur WhatsApp avec succès');
+        console.log("✅ Webhook Make.com envoyé");
       }
     } catch (error) {
-      console.error('❌ Erreur lors de l\'envoi:', error);
+      console.error("❌ Erreur lors de l'envoi du webhook:", error);
     }
   }
 
