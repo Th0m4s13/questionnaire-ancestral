@@ -541,15 +541,36 @@ export default function App() {
         "https://hook.eu1.make.com/yf61fckihxirt84w6r5rhd5813e16s5v";
       
       if (WEBHOOK_URL) {
+        // IMPORTANT:
+        // En mode `no-cors`, le navigateur n'enverra pas `Content-Type: application/json`.
+        // Make recevrait alors un simple champ "value" (texte JSON) au lieu de champs structurés.
+        // On envoie donc en `application/x-www-form-urlencoded` (safelisted) pour que Make parse les champs.
+        const reponses = data.reponses;
+        const payload = {
+          timestamp: data.timestamp,
+          nom: data.nom,
+          telephone: data.telephone,
+          telephoneRaw: data.telephoneRaw,
+          sexe: data.sexe,
+          score: String(data.score),
+          scoreMax: String(data.scoreMax),
+          pourcentage: String(data.pourcentage),
+          profil: data.profil,
+          profilTitle: data.profilTitle || "",
+          profilSubtitle: data.profilSubtitle || "",
+          nombreQuestions: String(data.nombreQuestions),
+          whatsappText: data.whatsappText,
+          // Pour Google Sheets / debug
+          reponsesJson: JSON.stringify(reponses),
+          rawJson: JSON.stringify(data),
+        };
+
         await fetch(WEBHOOK_URL, {
           method: 'POST',
           // Make.com peut ne pas renvoyer d'entêtes CORS : on envoie quand même le webhook.
           mode: "no-cors",
           keepalive: true,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+          body: new URLSearchParams(payload),
         });
         
         console.log("✅ Webhook Make.com envoyé");
