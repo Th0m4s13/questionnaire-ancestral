@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import "./App.css";
 
 const BG_IMAGE = "/BG_IMAGE.png"; // dans /public
@@ -32,6 +32,7 @@ export default function App() {
   const [showConsentPage, setShowConsentPage] = useState(false);
   const [phoneError, setPhoneError] = useState("");
   const [phoneValidationAttempted, setPhoneValidationAttempted] = useState(false);
+  const hasSentRef = useRef(false);
 
   // Questions (base)
   const baseQuestions = useMemo(
@@ -488,6 +489,8 @@ export default function App() {
   }
 
   function revealResults() {
+    if (hasSentRef.current) return;
+    hasSentRef.current = true;
     setShowCompleted(false);
     setFinished(true);
     
@@ -550,6 +553,7 @@ export default function App() {
           timestamp: data.timestamp,
           nom: data.nom,
           telephone: data.telephone,
+          telephoneText: `'${data.telephone}`,
           telephoneRaw: data.telephoneRaw,
           sexe: data.sexe,
           score: String(data.score),
@@ -789,6 +793,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
   const theme = prof ? THEME_PRESETS[prof.themeKey] : THEME_PRESETS.aube;
 
   function resetAll() {
+    hasSentRef.current = false;
     setStep(0);
     setScore(0);
     setAnswers([]);
@@ -798,6 +803,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
   }
 
   function restartFromStart() {
+    hasSentRef.current = false;
     setName("");
     setPhone("");
     setSex("");
