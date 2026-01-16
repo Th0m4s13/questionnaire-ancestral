@@ -1,14 +1,8 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "questionnaire-ancestral/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
+  "installCommand": "cd questionnaire-ancestral && npm ci",
+  "buildCommand": "cd questionnaire-ancestral && npm run build",
+  "outputDirectory": "questionnaire-ancestral/dist",
   "rewrites": [
     {
       "source": "/(.*)",
