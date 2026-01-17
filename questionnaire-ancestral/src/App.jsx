@@ -289,7 +289,7 @@ export default function App() {
 
   // Validation du numéro de téléphone (seulement les chiffres)
   const phoneDigits = phone.replace(/\D/g, ''); // Enlever tout sauf les chiffres
-  const isPhoneValid = phoneDigits.length === 10;
+  const isPhoneValid = phoneDigits.length >= 1; // Au moins 1 chiffre
 
   function formatDateFR(isoString) {
     try {
@@ -349,8 +349,8 @@ export default function App() {
 
   // Validation du téléphone (seulement après tentative)
   useEffect(() => {
-    if (phoneValidationAttempted && phone.length > 0 && phoneDigits.length > 0 && phoneDigits.length !== 10) {
-      setPhoneError(`Le numéro doit contenir 10 chiffres (actuellement : ${phoneDigits.length})`);
+    if (phoneValidationAttempted && phone.length > 0 && phoneDigits.length === 0) {
+      setPhoneError(`Le numéro doit contenir au moins un chiffre`);
     } else {
       setPhoneError("");
     }
