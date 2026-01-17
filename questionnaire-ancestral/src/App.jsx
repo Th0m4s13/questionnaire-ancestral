@@ -1216,10 +1216,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                   e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                <div>📞 Prendre un rendez-vous avec Mao</div>
-                <div style={{ fontSize: 14, fontWeight: 500, marginTop: 6, opacity: 0.9 }}>
-                  (cliquer ici)
-                </div>
+                <div>📞 Prendre un rdv avec Mao pour mettre en place ton plan d'action ancestral</div>
               </a>
             ) : null}
 
