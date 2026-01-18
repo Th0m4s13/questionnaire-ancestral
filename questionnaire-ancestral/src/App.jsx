@@ -549,6 +549,13 @@ export default function App() {
     const timestamp = new Date().toISOString();
     const pourcentage = Math.round((score / maxScore) * 100);
 
+    // Analyser les réponses pour extraire les symptômes les plus problématiques
+    const analysis = analyzeAnswers();
+    const topSymptoms = analysis.weakCategories.slice(0, 2); // Les 2 plus problématiques
+    
+    const symptome1 = topSymptoms[0] ? (categoryDescriptions[topSymptoms[0]]?.issues || topSymptoms[0]) : "";
+    const symptome2 = topSymptoms[1] ? (categoryDescriptions[topSymptoms[1]]?.issues || topSymptoms[1]) : "";
+
     const data = {
       timestamp,
       nom: name,
@@ -557,11 +564,14 @@ export default function App() {
       sexe: sex,
       score: score,
       scoreMax: maxScore,
+      scoreFormatted: `${score} sur ${maxScore}`,
       pourcentage,
       profil: prof.label,
       profilTitle: prof.title,
       profilSubtitle: prof.subtitle,
       nombreQuestions: questions.length,
+      symptome1,
+      symptome2,
       reponses: answers.map((ans, idx) => ({
         question: ans.question,
         categorie: ans.category,
@@ -602,11 +612,14 @@ export default function App() {
           sexe: data.sexe,
           score: String(data.score),
           scoreMax: String(data.scoreMax),
+          scoreFormatted: data.scoreFormatted,
           pourcentage: String(data.pourcentage),
           profil: data.profil,
           profilTitle: data.profilTitle || "",
           profilSubtitle: data.profilSubtitle || "",
           nombreQuestions: String(data.nombreQuestions),
+          symptome1: data.symptome1 || "",
+          symptome2: data.symptome2 || "",
           whatsappText: data.whatsappText,
           // Pour Google Sheets / debug
           reponsesJson: JSON.stringify(reponses),
