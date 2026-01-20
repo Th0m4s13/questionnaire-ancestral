@@ -1406,62 +1406,13 @@ function TestimonialsCarousel() {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
-  const testimonials = [
-    {
-      text: "Depuis que je suis tes conseils et ton alimentation j'ai enfin réussi à dormir 6h par nuit cela ne m'était pas arrivé depuis plus de 30 ans. Je dormais maximum 2h et j'étais fatiguée toute la journée. C'est vraiment incroyable ce changement donc merci merci merci.",
-    },
-    {
-      text: "J'ai commencé d'appliquer ce que tu expliques il y a environ 3/4 mois. L'alimentation ancestrale/brute est juste incroyable.",
-    },
-    {
-      text: "Il y a 3 ans, on m'a détecté des lésions au niveau de l'utérus, papillomavirus. En novembre j'ait fait un contrôle, que je fais tous les 6 mois pour contrôler que les lesions ne deviennent pas cancéreuses. Hier, j'ai eu le résultat et le test est revenu négatif!!! 3 ans que je me bats contre ces lésions et en l'espace de quelques mois certainement dû à cette alimentation, les lésions ont disparu!!!!!",
-    },
-    {
-      text: "Depuis que je mange comme ça j'ai pleins pleins de cheveux qui repoussent j'avais un début de calvitie mais ça repousse c'est génial adieu la greff de cheveux en turquie bonjour patate douce 🍠",
-    },
-    {
-      text: "Les patates c'est magiques vraiment je suis en train de tester d'en manger chaque jour c'est affolant l'énergie que j'ai, la vitalité, le dynamisme, merci pour ton contenu, je dis tjrs aux gens de te suivre parce qu'en étudiant depuis de nombreuses années la nutrition pour moi tu as toutes les clefs et les vérités, donc gros merci, continue 🙏",
-    },
-    {
-      text: "Comme expliqué en pantalon avant nutrition ancestrale : 40 voir carrément 42, après 1 mois : 40 proche 38",
-    },
-    {
-      text: "Ça fonctionne !!! 🤣 je remet mes costards",
-    },
-    {
-      text: "En 3 semaines à manger à ma faim etc j'ai perdu 1,5kg et j'ai des grosses lèvres 😂😂",
-    },
-    {
-      text: "Depuis que je te suis je me réajuste et rééquilibre petit à petit ❤️ Mais plus de fringale, plus de privation, plus de dévorage de tablette de chocolat. Après des années de TCA ça fait du bien 🙏",
-    },
-    {
-      text: "J'avoue que je suis ton compte depuis qq mois aussi et je trouve des explications sur l'alimentation précises, claires et sans chichis. Tu es une personne simple, authentique et surtout intègre. Merci pour les partages car chacun prend ce qui lui fait sens à travers tes conseils. A bon entendeur...😉",
-    },
-    {
-      text: "Je ne sais pas si c'est l'alimentation vivante que j'ai repris depuis quelques semaines ou les patates vapeurs remplies de bon beurre de lait crû mais mes douleurs musculaires et articulaires s'atténuent drastiquement 👌",
-    },
-    {
-      text: "Mao tu t'en rend peut être pas compte mais ma vie est réellement entrain de changer tu expliques si bien les choses que depuis 2-3 mois où je suis arrivée je ne vois plus les choses de la même manière j'avais commencer un travail de recherche compréhension de la nourriture mais j'étais encore très loin du compte je te trouves ultra pédagogue c'est super important pour moi et ça a créer une confiance vis à vis de toi tu expliques tu ne vend pas tu ne prend pas de raccourcie c'est excellent.",
-    },
-    {
-      text: "Idem pour moi, merci Maoris, j'ai fais un pêcher de m'en priver toutes ces années !! Après avoir essayé pleins de diets pour mes pauvres intestins : Montignac, Delabos, keto, Paléo, auto-immun protocol, sans lectines,... J'en oublie certains, les patates y a pas mieux 😮",
-    },
-    {
-      text: "Salut mec, je voulais te signaler que je te suis depuis peu de temps et que j'essaye d'appliquer les principes que tu évoques ! Et en l'espace de qqls jours, je peux noter des changements ben terme d'énergie. Sans prise de tête, juste en mangeant frugal et le plus ancestral. C'est cool ce que tu fais sur cette page, bonne continuation 🤌",
-    },
-    {
-      text: "Le plus significatif fut une déchirure qui s'est guéri extrêmement vite par rapport à ce que le médecin m'avait dit (mon kiné fut étonné aussi). J'ai un sommeil de meilleure qualité, je récupère beaucoup plus rapidement, ma peau s'est embellie et surtout je sens un regain d'énergie global. De même, il y a eu un effet sur le moral qui est beaucoup plus stable.",
-    },
-    {
-      text: "Je cherchais depuis quelques années à améliorer ma santé par le biais de l'alimentation. Je suis tombé par hasard ton profil instagram et tes post m'ont de suite frappée : une alimentation simple, un retour aux sources en privilégiant des produits de Qualité (oui c'est aussi simple que ça). Je ne m'y retrouvais plus dans la masse d'informations que nous trouvons sur les réseaux ou sur internet. C'était comme une remise en question alimentaire sur des habitudes que j'ai depuis longtemps. C'est très déroutant au début mais les résultats sont là et au final c'est même beaucoup plus simple à vivre au quotidien !",
-    },
-    {
-      text: "Bonjoir Maoris, je me permets un retour sur mon expérience personnelle après m'être lancée dans l'aventure. Alors, j'ai perdu 10 kgs (en 1 mois 😘), depuis que je suis le régime ancestral et le jeûne intermittent. Ma peau est comme neuve. Ma motivation au plus haut. Mon corps transformé très proche de ce que je désire. Avoir la patate ça donne la frite 😁😄 Ps: Tu es un Coach naturopathe incroyable plein de conseils bienveillants ....donc Merci 😊",
-    },
-    {
-      text: "J'ai 30 ans je suis artiste peintre. J'ai été vegan, j'ai coupé les aliments que je croyais 'difficile à digérer et lourds' a savoir tout les amidons, les produits laitiers, céréales. Je mangeais beaucoup de noix et légumes et fruits.",
-    },
-  ];
+  // Nombre total de témoignages (screenshots)
+  const totalTestimonials = 18;
+  
+  // Génère un tableau avec les chemins d'images
+  const testimonials = Array.from({ length: totalTestimonials }, (_, i) => ({
+    image: `/testimonials/testimonial-${i + 1}.png`,
+  }));
 
   // Distance minimale de swipe (en pixels)
   const minSwipeDistance = 50;
@@ -1536,10 +1487,11 @@ function TestimonialsCarousel() {
       <div 
         style={{
           position: "relative",
-          minHeight: "150px",
+          minHeight: "200px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          padding: "0 50px",
         }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
@@ -1581,17 +1533,20 @@ function TestimonialsCarousel() {
           ‹
         </button>
 
-        <p style={{
-          fontSize: 15,
-          lineHeight: 1.6,
-          color: "rgba(255, 255, 255, 0.85)",
-          fontStyle: "italic",
-          margin: 0,
-          padding: "0 50px",
-          animation: "fadeIn 0.5s ease-in",
-        }}>
-          "{testimonials[currentIndex].text}"
-        </p>
+        <img 
+          src={testimonials[currentIndex].image}
+          alt={`Témoignage ${currentIndex + 1}`}
+          style={{
+            maxWidth: "calc(100% - 100px)",
+            maxHeight: "500px",
+            width: "auto",
+            height: "auto",
+            borderRadius: "8px",
+            display: "block",
+            animation: "fadeIn 0.5s ease-in",
+            objectFit: "contain",
+          }}
+        />
 
         {/* Bouton suivant (droite) */}
         <button
