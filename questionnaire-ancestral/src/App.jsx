@@ -1246,7 +1246,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                   e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                <div>📞 Prendre un rdv avec Mao pour mettre en place ton plan d'action ancestral</div>
+                <div>📞 Prendre un rdv pour mettre en place ton plan d'action ancestral</div>
               </a>
             ) : null}
 
@@ -1520,6 +1520,15 @@ function TestimonialsCarousel() {
       padding: "20px 0",
       textAlign: "center",
     }}>
+      <p style={{
+        fontSize: 16,
+        fontWeight: 600,
+        marginBottom: 12,
+        color: "rgba(255, 255, 255, 0.9)",
+        padding: "0 16px",
+      }}>
+        Je les ai accompagnés voici leurs résultats
+      </p>
       <h3 style={{
         fontSize: 18,
         fontWeight: 700,
