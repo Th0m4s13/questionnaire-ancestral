@@ -1539,6 +1539,10 @@ function TestimonialsCarousel() {
           maxWidth: "480px",
           margin: "0 auto",
           padding: "0 16px",
+          minHeight: "300px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
