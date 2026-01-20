@@ -1580,71 +1580,83 @@ function TestimonialsCarousel() {
           ‹
         </button>
 
-        {/* Carte de témoignage style Instagram DM */}
+        {/* Carte de témoignage style WhatsApp */}
         <div
           key={currentIndex}
           style={{
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            background: "#0b141a",
+            backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"40\" height=\"40\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M0 40L40 0H20L0 20M40 40V20L20 40\" fill=\"%23ffffff\" fill-opacity=\"0.015\"/%3E%3C/svg%3E')",
             borderRadius: "16px",
-            padding: "24px",
-            minHeight: "280px",
+            padding: "20px 16px",
+            minHeight: "320px",
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
+            gap: "12px",
             animation: "fadeIn 0.4s ease-in",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
           }}
         >
-          {/* En-tête avec avatar et nom */}
+          {/* En-tête WhatsApp */}
           <div style={{
             display: "flex",
             alignItems: "center",
-            gap: "12px",
+            gap: "10px",
+            paddingBottom: "12px",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
           }}>
             <div style={{
-              width: "40px",
-              height: "40px",
+              width: "36px",
+              height: "36px",
               borderRadius: "50%",
-              background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+              background: "#25d366",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "18px",
-              fontWeight: "700",
+              fontSize: "16px",
+              fontWeight: "600",
               color: "white",
             }}>
               {testimonials[currentIndex].name.charAt(0)}
             </div>
             <div>
               <div style={{
-                fontSize: "15px",
-                fontWeight: "600",
-                color: "white",
+                fontSize: "14px",
+                fontWeight: "500",
+                color: "rgba(255, 255, 255, 0.95)",
               }}>
                 {testimonials[currentIndex].name}
-              </div>
-              <div style={{
-                fontSize: "12px",
-                color: "rgba(255, 255, 255, 0.7)",
-              }}>
-                Client accompagné
               </div>
             </div>
           </div>
 
-          {/* Bulle de message */}
+          {/* Bulle de message WhatsApp */}
           <div style={{
-            background: "rgba(255, 255, 255, 0.95)",
-            borderRadius: "18px",
-            padding: "16px 18px",
-            fontSize: "15px",
-            lineHeight: "1.5",
-            color: "#1a1a1a",
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
+            alignSelf: "flex-start",
+            maxWidth: "85%",
           }}>
-            {testimonials[currentIndex].text}
+            <div style={{
+              background: "#d9fdd3",
+              borderRadius: "8px",
+              borderTopLeftRadius: "0px",
+              padding: "8px 12px 6px 12px",
+              fontSize: "14.5px",
+              lineHeight: "1.5",
+              color: "#111b21",
+              boxShadow: "0 1px 0.5px rgba(0, 0, 0, 0.13)",
+              position: "relative",
+            }}>
+              <div style={{ marginBottom: "4px" }}>
+                {testimonials[currentIndex].text}
+              </div>
+              <div style={{
+                fontSize: "11px",
+                color: "rgba(17, 27, 33, 0.45)",
+                textAlign: "right",
+                marginTop: "4px",
+              }}>
+                {new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+              </div>
+            </div>
           </div>
         </div>
 
