@@ -16,6 +16,7 @@ function shuffleArray(array) {
 export default function App() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [age, setAge] = useState("");
   const [sex, setSex] = useState(""); // "homme" | "femme"
   const [consentGiven, setConsentGiven] = useState(false);
   const [consentAnimating, setConsentAnimating] = useState(false);
@@ -306,12 +307,13 @@ export default function App() {
     }
   }
 
-  function buildWhatsappText({ timestamp, nom, telephoneRaw, sexe, score, scoreMax, pourcentage, profil, reponses }) {
+  function buildWhatsappText({ timestamp, nom, age, telephoneRaw, sexe, score, scoreMax, pourcentage, profil, reponses }) {
     const header = [
       "📋 NOUVEAU QUESTIONNAIRE ANCESTRAL",
       "",
       "👤 INFORMATIONS",
       `• Nom: ${nom || "-"}`,
+      `• Âge: ${age || "-"}`,
       `• Téléphone: ${telephoneRaw || "-"}`,
       `• Sexe: ${sexe || "-"}`,
       "",
@@ -559,6 +561,7 @@ export default function App() {
     const data = {
       timestamp,
       nom: name,
+      age: age,
       telephone: phoneDigits,
       telephoneRaw: phone,
       sexe: sex,
@@ -582,6 +585,7 @@ export default function App() {
     data.whatsappText = buildWhatsappText({
       timestamp: data.timestamp,
       nom: data.nom,
+      age: data.age,
       telephoneRaw: data.telephoneRaw,
       sexe: data.sexe,
       score: data.score,
@@ -606,6 +610,7 @@ export default function App() {
         const payload = {
           timestamp: data.timestamp,
           nom: data.nom,
+          age: data.age || "",
           telephone: data.telephone,
           telephoneText: `'${data.telephone}`,
           telephoneRaw: data.telephoneRaw,
@@ -863,6 +868,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
   function restartFromStart() {
     hasSentRef.current = false;
     setName("");
+    setAge("");
     setPhone("");
     setSex("");
     setConsentGiven(false);
@@ -896,6 +902,17 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                 placeholder="Ton prénom (ou pseudo)"
                 type="text"
                 autoComplete="name"
+              />
+
+              <input
+                style={styles.input}
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                placeholder="Ton âge"
+                type="number"
+                min="1"
+                max="120"
+                autoComplete="age"
               />
 
               <div>
