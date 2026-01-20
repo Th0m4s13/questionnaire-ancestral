@@ -1466,20 +1466,17 @@ function TestimonialsCarousel() {
   return (
     <div style={{
       marginTop: 32,
-      padding: "20px 16px",
-      borderRadius: 12,
-      background: "rgba(255, 255, 255, 0.03)",
-      border: "1px solid rgba(255, 255, 255, 0.1)",
+      padding: "20px 0",
       textAlign: "center",
-      overflow: "hidden",
     }}>
       <h3 style={{
         fontSize: 18,
         fontWeight: 700,
-        marginBottom: 16,
+        marginBottom: 24,
         color: "rgba(255, 255, 255, 0.95)",
         textTransform: "uppercase",
         letterSpacing: "1px",
+        padding: "0 16px",
       }}>
         Ils ont testé l'approche ancestrale
       </h3>
@@ -1487,11 +1484,16 @@ function TestimonialsCarousel() {
       <div 
         style={{
           position: "relative",
-          minHeight: "200px",
+          width: "100%",
+          maxWidth: "500px",
+          margin: "0 auto",
+          aspectRatio: "9 / 16",
+          background: "#000",
+          borderRadius: "12px",
+          overflow: "hidden",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          padding: "0 50px",
         }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
@@ -1503,29 +1505,24 @@ function TestimonialsCarousel() {
           onClick={goToPrevious}
           style={{
             position: "absolute",
-            left: "0px",
+            left: "12px",
             top: "50%",
             transform: "translateY(-50%)",
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            border: "1px solid rgba(255, 255, 255, 0.3)",
-            background: "rgba(255, 255, 255, 0.1)",
+            background: "transparent",
+            border: "none",
             color: "white",
-            fontSize: "20px",
+            fontSize: "32px",
             cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "all 0.3s ease",
+            transition: "all 0.2s ease",
             zIndex: 10,
+            padding: "8px",
+            lineHeight: "1",
+            textShadow: "0 2px 8px rgba(0,0,0,0.5)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)";
-            e.currentTarget.style.transform = "translateY(-50%) scale(1.1)";
+            e.currentTarget.style.transform = "translateY(-50%) scale(1.2)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
             e.currentTarget.style.transform = "translateY(-50%) scale(1)";
           }}
           aria-label="Témoignage précédent"
@@ -1534,17 +1531,14 @@ function TestimonialsCarousel() {
         </button>
 
         <img 
+          key={currentIndex}
           src={testimonials[currentIndex].image}
           alt={`Témoignage ${currentIndex + 1}`}
           style={{
-            maxWidth: "calc(100% - 100px)",
-            maxHeight: "500px",
-            width: "auto",
-            height: "auto",
-            borderRadius: "8px",
-            display: "block",
-            animation: "fadeIn 0.5s ease-in",
+            width: "100%",
+            height: "100%",
             objectFit: "contain",
+            animation: "fadeIn 0.3s ease-in",
           }}
         />
 
@@ -1553,29 +1547,24 @@ function TestimonialsCarousel() {
           onClick={goToNext}
           style={{
             position: "absolute",
-            right: "0px",
+            right: "12px",
             top: "50%",
             transform: "translateY(-50%)",
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            border: "1px solid rgba(255, 255, 255, 0.3)",
-            background: "rgba(255, 255, 255, 0.1)",
+            background: "transparent",
+            border: "none",
             color: "white",
-            fontSize: "20px",
+            fontSize: "32px",
             cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "all 0.3s ease",
+            transition: "all 0.2s ease",
             zIndex: 10,
+            padding: "8px",
+            lineHeight: "1",
+            textShadow: "0 2px 8px rgba(0,0,0,0.5)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)";
-            e.currentTarget.style.transform = "translateY(-50%) scale(1.1)";
+            e.currentTarget.style.transform = "translateY(-50%) scale(1.2)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
             e.currentTarget.style.transform = "translateY(-50%) scale(1)";
           }}
           aria-label="Témoignage suivant"
