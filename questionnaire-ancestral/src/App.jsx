@@ -1555,6 +1555,7 @@ function TestimonialsCarousel() {
             transform: "translateY(-50%)",
             background: "rgba(0, 0, 0, 0.3)",
             border: "none",
+            outline: "none",
             color: "white",
             fontSize: "24px",
             cursor: "pointer",
@@ -1568,6 +1569,8 @@ function TestimonialsCarousel() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            userSelect: "none",
+            WebkitTapHighlightColor: "transparent",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = "rgba(0, 0, 0, 0.5)";
@@ -1619,6 +1622,7 @@ function TestimonialsCarousel() {
             transform: "translateY(-50%)",
             background: "rgba(0, 0, 0, 0.3)",
             border: "none",
+            outline: "none",
             color: "white",
             fontSize: "24px",
             cursor: "pointer",
@@ -1632,6 +1636,8 @@ function TestimonialsCarousel() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            userSelect: "none",
+            WebkitTapHighlightColor: "transparent",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = "rgba(0, 0, 0, 0.5)";
