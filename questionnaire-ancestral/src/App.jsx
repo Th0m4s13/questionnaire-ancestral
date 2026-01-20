@@ -1406,13 +1406,68 @@ function TestimonialsCarousel() {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
-  // Nombre total de témoignages (screenshots)
-  const totalTestimonials = 15;
-  
-  // Génère un tableau avec les chemins d'images
-  const testimonials = Array.from({ length: totalTestimonials }, (_, i) => ({
-    image: `/testimonials/testimonial-${i + 1}.png`,
-  }));
+  const testimonials = [
+    {
+      name: "Sarah",
+      text: "Depuis que je suis tes conseils et ton alimentation j'ai enfin réussi à dormir 6h par nuit cela ne m'était pas arrivé depuis plus de 30 ans. Je dormais maximum 2h et j'étais fatiguée toute la journée. C'est vraiment incroyable ce changement donc merci merci merci 🙏"
+    },
+    {
+      name: "Marc",
+      text: "J'ai commencé d'appliquer ce que tu expliques il y a environ 3/4 mois. L'alimentation ancestrale/brute est juste incroyable."
+    },
+    {
+      name: "Laura",
+      text: "Il y a 3 ans, on m'a détecté des lésions au niveau de l'utérus, papillomavirus. En novembre j'ai fait un contrôle, que je fais tous les 6 mois pour contrôler que les lésions ne deviennent pas cancéreuses. Hier, j'ai eu le résultat et le test est revenu négatif!!! 3 ans que je me bats contre ces lésions et en l'espace de quelques mois certainement dû à cette alimentation, les lésions ont disparu!!! 🎉"
+    },
+    {
+      name: "Thomas",
+      text: "Depuis que je mange comme ça j'ai pleins pleins de cheveux qui repoussent j'avais un début de calvitie mais ça repousse c'est génial adieu la greffe de cheveux en turquie bonjour patate douce 🍠"
+    },
+    {
+      name: "Julie",
+      text: "Les patates c'est magiques vraiment je suis en train de tester d'en manger chaque jour c'est affolant l'énergie que j'ai, la vitalité, le dynamisme, merci pour ton contenu, je dis tjrs aux gens de te suivre parce qu'en étudiant depuis de nombreuses années la nutrition pour moi tu as toutes les clefs et les vérités, donc gros merci, continue 🙏"
+    },
+    {
+      name: "Alexandre",
+      text: "Comme expliqué en pantalon avant nutrition ancestrale : 40 voir carrément 42, après 1 mois : 40 proche 38 💪"
+    },
+    {
+      name: "David",
+      text: "Ça fonctionne !!! 🤣 je remet mes costards"
+    },
+    {
+      name: "Emma",
+      text: "En 3 semaines à manger à ma faim etc j'ai perdu 1,5kg et j'ai des grosses lèvres 😂"
+    },
+    {
+      name: "Sophie",
+      text: "Depuis que je te suis je me réajuste et rééquilibre petit à petit ❤️ Mais plus de fringale, plus de privation, plus de dévorage de tablette de chocolat. Après des années de TCA ça fait du bien 🙏"
+    },
+    {
+      name: "Marie",
+      text: "J'avoue que je suis ton compte depuis qq mois aussi et je trouve des explications sur l'alimentation précises, claires et sans chichis. Tu es une personne simple, authentique et surtout intègre. Merci pour les partages car chacun prend ce qui lui fait sens à travers tes conseils. A bon entendeur...😉"
+    },
+    {
+      name: "Pierre",
+      text: "Je ne sais pas si c'est l'alimentation vivante que j'ai repris depuis quelques semaines ou les patates vapeurs remplies de bon beurre de lait crû mais mes douleurs musculaires et articulaires s'atténuent drastiquement 👌"
+    },
+    {
+      name: "Chloé",
+      text: "Mao tu t'en rend peut être pas compte mais ma vie est réellement entrain de changer tu expliques si bien les choses que depuis 2-3 mois où je suis arrivée je ne vois plus les choses de la même manière. Je te trouve ultra pédagogue c'est super important pour moi et ça a créer une confiance vis à vis de toi 💙"
+    },
+    {
+      name: "Léa",
+      text: "Idem pour moi, merci Maoris, j'ai fait un pêcher de m'en priver toutes ces années !! Après avoir essayé pleins de diets pour mes pauvres intestins : Montignac, Delabos, keto, Paléo, auto-immun protocol, sans lectines,... J'en oublie certains, les patates y a pas mieux 😮"
+    },
+    {
+      name: "Lucas",
+      text: "Salut mec, je voulais te signaler que je te suis depuis peu de temps et que j'essaye d'appliquer les principes que tu évoques ! Et en l'espace de qqls jours, je peux noter des changements ben terme d'énergie. Sans prise de tête, juste en mangeant frugal et le plus ancestral. C'est cool ce que tu fais sur cette page, bonne continuation 🤌"
+    },
+    {
+      name: "Camille",
+      text: "Le plus significatif fut une déchirure qui s'est guéri extrêmement vite par rapport à ce que le médecin m'avait dit (mon kiné fut étonné aussi). J'ai un sommeil de meilleure qualité, je récupère beaucoup plus rapidement, ma peau s'est embellie et surtout je sens un regain d'énergie global. De même, il y a eu un effet sur le moral qui est beaucoup plus stable ✨"
+    }
+  ];
 
   // Distance minimale de swipe (en pixels)
   const minSwipeDistance = 50;
@@ -1485,15 +1540,9 @@ function TestimonialsCarousel() {
         style={{
           position: "relative",
           width: "100%",
-          maxWidth: "500px",
+          maxWidth: "480px",
           margin: "0 auto",
-          aspectRatio: "9 / 16",
-          background: "#000",
-          borderRadius: "12px",
-          overflow: "hidden",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          padding: "0 16px",
         }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
@@ -1505,24 +1554,25 @@ function TestimonialsCarousel() {
           onClick={goToPrevious}
           style={{
             position: "absolute",
-            left: "12px",
+            left: "-20px",
             top: "50%",
             transform: "translateY(-50%)",
             background: "transparent",
             border: "none",
-            color: "white",
-            fontSize: "32px",
+            color: "rgba(255, 255, 255, 0.8)",
+            fontSize: "40px",
             cursor: "pointer",
             transition: "all 0.2s ease",
             zIndex: 10,
             padding: "8px",
             lineHeight: "1",
-            textShadow: "0 2px 8px rgba(0,0,0,0.5)",
           }}
           onMouseEnter={(e) => {
+            e.currentTarget.style.color = "rgba(255, 255, 255, 1)";
             e.currentTarget.style.transform = "translateY(-50%) scale(1.2)";
           }}
           onMouseLeave={(e) => {
+            e.currentTarget.style.color = "rgba(255, 255, 255, 0.8)";
             e.currentTarget.style.transform = "translateY(-50%) scale(1)";
           }}
           aria-label="Témoignage précédent"
@@ -1530,41 +1580,98 @@ function TestimonialsCarousel() {
           ‹
         </button>
 
-        <img 
+        {/* Carte de témoignage style Instagram DM */}
+        <div
           key={currentIndex}
-          src={testimonials[currentIndex].image}
-          alt={`Témoignage ${currentIndex + 1}`}
           style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            animation: "fadeIn 0.3s ease-in",
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            borderRadius: "16px",
+            padding: "24px",
+            minHeight: "280px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+            animation: "fadeIn 0.4s ease-in",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
           }}
-        />
+        >
+          {/* En-tête avec avatar et nom */}
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}>
+            <div style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "18px",
+              fontWeight: "700",
+              color: "white",
+            }}>
+              {testimonials[currentIndex].name.charAt(0)}
+            </div>
+            <div>
+              <div style={{
+                fontSize: "15px",
+                fontWeight: "600",
+                color: "white",
+              }}>
+                {testimonials[currentIndex].name}
+              </div>
+              <div style={{
+                fontSize: "12px",
+                color: "rgba(255, 255, 255, 0.7)",
+              }}>
+                Client accompagné
+              </div>
+            </div>
+          </div>
+
+          {/* Bulle de message */}
+          <div style={{
+            background: "rgba(255, 255, 255, 0.95)",
+            borderRadius: "18px",
+            padding: "16px 18px",
+            fontSize: "15px",
+            lineHeight: "1.5",
+            color: "#1a1a1a",
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+          }}>
+            {testimonials[currentIndex].text}
+          </div>
+        </div>
 
         {/* Bouton suivant (droite) */}
         <button
           onClick={goToNext}
           style={{
             position: "absolute",
-            right: "12px",
+            right: "-20px",
             top: "50%",
             transform: "translateY(-50%)",
             background: "transparent",
             border: "none",
-            color: "white",
-            fontSize: "32px",
+            color: "rgba(255, 255, 255, 0.8)",
+            fontSize: "40px",
             cursor: "pointer",
             transition: "all 0.2s ease",
             zIndex: 10,
             padding: "8px",
             lineHeight: "1",
-            textShadow: "0 2px 8px rgba(0,0,0,0.5)",
           }}
           onMouseEnter={(e) => {
+            e.currentTarget.style.color = "rgba(255, 255, 255, 1)";
             e.currentTarget.style.transform = "translateY(-50%) scale(1.2)";
           }}
           onMouseLeave={(e) => {
+            e.currentTarget.style.color = "rgba(255, 255, 255, 0.8)";
             e.currentTarget.style.transform = "translateY(-50%) scale(1)";
           }}
           aria-label="Témoignage suivant"
