@@ -1550,26 +1550,30 @@ function TestimonialsCarousel() {
           onClick={goToPrevious}
           style={{
             position: "absolute",
-            left: "-20px",
+            left: "-15px",
             top: "50%",
             transform: "translateY(-50%)",
-            background: "transparent",
+            background: "rgba(0, 0, 0, 0.3)",
             border: "none",
-            color: "rgba(255, 255, 255, 0.8)",
-            fontSize: "40px",
+            color: "white",
+            fontSize: "24px",
             cursor: "pointer",
             transition: "all 0.2s ease",
             zIndex: 10,
-            padding: "8px",
+            padding: "12px 10px",
             lineHeight: "1",
+            borderRadius: "50%",
+            width: "40px",
+            height: "40px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = "rgba(255, 255, 255, 1)";
-            e.currentTarget.style.transform = "translateY(-50%) scale(1.2)";
+            e.currentTarget.style.background = "rgba(0, 0, 0, 0.5)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = "rgba(255, 255, 255, 0.8)";
-            e.currentTarget.style.transform = "translateY(-50%) scale(1)";
+            e.currentTarget.style.background = "rgba(0, 0, 0, 0.3)";
           }}
           aria-label="Témoignage précédent"
         >
@@ -1610,26 +1614,30 @@ function TestimonialsCarousel() {
           onClick={goToNext}
           style={{
             position: "absolute",
-            right: "-20px",
+            right: "-15px",
             top: "50%",
             transform: "translateY(-50%)",
-            background: "transparent",
+            background: "rgba(0, 0, 0, 0.3)",
             border: "none",
-            color: "rgba(255, 255, 255, 0.8)",
-            fontSize: "40px",
+            color: "white",
+            fontSize: "24px",
             cursor: "pointer",
             transition: "all 0.2s ease",
             zIndex: 10,
-            padding: "8px",
+            padding: "12px 10px",
             lineHeight: "1",
+            borderRadius: "50%",
+            width: "40px",
+            height: "40px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = "rgba(255, 255, 255, 1)";
-            e.currentTarget.style.transform = "translateY(-50%) scale(1.2)";
+            e.currentTarget.style.background = "rgba(0, 0, 0, 0.5)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = "rgba(255, 255, 255, 0.8)";
-            e.currentTarget.style.transform = "translateY(-50%) scale(1)";
+            e.currentTarget.style.background = "rgba(0, 0, 0, 0.3)";
           }}
           aria-label="Témoignage suivant"
         >
