@@ -1429,11 +1429,7 @@ function TestimonialsCarousel() {
     },
     {
       name: "Alexandre",
-      text: "Comme expliqué en pantalon avant nutrition ancestrale : 40 voir carrément 42, après 1 mois : 40 proche 38 💪"
-    },
-    {
-      name: "David",
-      text: "Ça fonctionne !!! 🤣 je remet mes costards"
+      text: "Comme expliqué en pantalon avant nutrition ancestrale : 40 voir carrément 42, après 1 mois : 40 proche 38 💪\n\nÇa fonctionne !!! 🤣 je remet mes costards"
     },
     {
       name: "Emma",
@@ -1453,7 +1449,7 @@ function TestimonialsCarousel() {
     },
     {
       name: "Chloé",
-      text: "Mao tu t'en rend peut être pas compte mais ma vie est réellement entrain de changer tu expliques si bien les choses que depuis 2-3 mois où je suis arrivée je ne vois plus les choses de la même manière. Je te trouve ultra pédagogue c'est super important pour moi et ça a créer une confiance vis à vis de toi 💙"
+      text: "Mao tu t'en rend peut être pas compte mais ma vie est réellement entrain de changer tu expliques si bien les choses que depuis 2-3 mois où je suis arrivée je ne vois plus les choses de la même manière j'avais commencer un travail de recherche compréhension de la nourriture mais j'étais encore très loin du compte je te trouves ultra pédagogue c'est super important pour moi et ça a créer une confiance vis à vis de toi tu expliques tu ne vend pas tu ne prend pas de raccourcie c'est excellent 💙"
     },
     {
       name: "Léa",
@@ -1580,84 +1576,33 @@ function TestimonialsCarousel() {
           ‹
         </button>
 
-        {/* Carte de témoignage style WhatsApp */}
+        {/* Carte de témoignage style WhatsApp ultra réaliste */}
         <div
           key={currentIndex}
           style={{
-            background: "#0b141a",
-            backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"40\" height=\"40\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M0 40L40 0H20L0 20M40 40V20L20 40\" fill=\"%23ffffff\" fill-opacity=\"0.015\"/%3E%3C/svg%3E')",
-            borderRadius: "16px",
-            padding: "20px 16px",
-            minHeight: "320px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "12px",
+            background: "#ffffff",
+            borderRadius: "8px",
+            padding: "6px 10px 8px 10px",
+            display: "inline-block",
             animation: "fadeIn 0.4s ease-in",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
-          }}
-        >
-          {/* En-tête WhatsApp */}
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            paddingBottom: "12px",
-            borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-          }}>
-            <div style={{
-              width: "36px",
-              height: "36px",
-              borderRadius: "50%",
-              background: "#25d366",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "16px",
-              fontWeight: "600",
-              color: "white",
-            }}>
-              {testimonials[currentIndex].name.charAt(0)}
-            </div>
-            <div>
-              <div style={{
-                fontSize: "14px",
-                fontWeight: "500",
-                color: "rgba(255, 255, 255, 0.95)",
-              }}>
-                {testimonials[currentIndex].name}
-              </div>
-            </div>
-          </div>
-
-          {/* Bulle de message WhatsApp */}
-          <div style={{
             alignSelf: "flex-start",
             maxWidth: "85%",
+            boxShadow: "0 1px 0.5px rgba(0, 0, 0, 0.13)",
+            position: "relative",
+          }}
+        >
+          <p style={{
+            fontSize: "14.2px",
+            lineHeight: "19px",
+            color: "#111b21",
+            margin: 0,
+            textAlign: "left",
+            whiteSpace: "pre-line",
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+            wordWrap: "break-word",
           }}>
-            <div style={{
-              background: "#d9fdd3",
-              borderRadius: "8px",
-              borderTopLeftRadius: "0px",
-              padding: "8px 12px 6px 12px",
-              fontSize: "14.5px",
-              lineHeight: "1.5",
-              color: "#111b21",
-              boxShadow: "0 1px 0.5px rgba(0, 0, 0, 0.13)",
-              position: "relative",
-            }}>
-              <div style={{ marginBottom: "4px" }}>
-                {testimonials[currentIndex].text}
-              </div>
-              <div style={{
-                fontSize: "11px",
-                color: "rgba(17, 27, 33, 0.45)",
-                textAlign: "right",
-                marginTop: "4px",
-              }}>
-                {new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-              </div>
-            </div>
-          </div>
+            {testimonials[currentIndex].text}
+          </p>
         </div>
 
         {/* Bouton suivant (droite) */}
