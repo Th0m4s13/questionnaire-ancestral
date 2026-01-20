@@ -1403,6 +1403,8 @@ function TextWithLinks({ text, style }) {
 /** Carrousel de témoignages */
 function TestimonialsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   const testimonials = [
     {
@@ -1461,13 +1463,54 @@ function TestimonialsCarousel() {
     },
   ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
-    }, 5000); // Change toutes les 5 secondes
+  // Distance minimale de swipe (en pixels)
+  const minSwipeDistance = 50;
 
-    return () => clearInterval(interval);
-  }, [testimonials.length]);
+  const goToNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+  };
+
+  const goToPrevious = () => {
+    setCurrentIndex((prevIndex) => 
+      prevIndex === 0 ? testimonials.length - 1 : prevIndex - 1
+    );
+  };
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      goToNext();
+    } else if (isRightSwipe) {
+      goToPrevious();
+    }
+  };
+
+  // Gestion du swipe avec le trackpad (wheel event)
+  const handleWheel = (e) => {
+    // Détection du swipe horizontal sur trackpad
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      e.preventDefault();
+      if (e.deltaX > 30) {
+        goToNext();
+      } else if (e.deltaX < -30) {
+        goToPrevious();
+      }
+    }
+  };
 
   return (
     <div style={{
@@ -1490,24 +1533,100 @@ function TestimonialsCarousel() {
         💬 Ils ont testé l'approche ancestrale
       </h3>
       
-      <div style={{
-        position: "relative",
-        minHeight: "150px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}>
+      <div 
+        style={{
+          position: "relative",
+          minHeight: "150px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onWheel={handleWheel}
+      >
+        {/* Bouton précédent (gauche) */}
+        <button
+          onClick={goToPrevious}
+          style={{
+            position: "absolute",
+            left: "0px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            width: "40px",
+            height: "40px",
+            borderRadius: "50%",
+            border: "1px solid rgba(255, 255, 255, 0.3)",
+            background: "rgba(255, 255, 255, 0.1)",
+            color: "white",
+            fontSize: "20px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "all 0.3s ease",
+            zIndex: 10,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)";
+            e.currentTarget.style.transform = "translateY(-50%) scale(1.1)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
+            e.currentTarget.style.transform = "translateY(-50%) scale(1)";
+          }}
+          aria-label="Témoignage précédent"
+        >
+          ‹
+        </button>
+
         <p style={{
           fontSize: 15,
           lineHeight: 1.6,
           color: "rgba(255, 255, 255, 0.85)",
           fontStyle: "italic",
           margin: 0,
-          padding: "0 8px",
+          padding: "0 50px",
           animation: "fadeIn 0.5s ease-in",
         }}>
           "{testimonials[currentIndex].text}"
         </p>
+
+        {/* Bouton suivant (droite) */}
+        <button
+          onClick={goToNext}
+          style={{
+            position: "absolute",
+            right: "0px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            width: "40px",
+            height: "40px",
+            borderRadius: "50%",
+            border: "1px solid rgba(255, 255, 255, 0.3)",
+            background: "rgba(255, 255, 255, 0.1)",
+            color: "white",
+            fontSize: "20px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "all 0.3s ease",
+            zIndex: 10,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)";
+            e.currentTarget.style.transform = "translateY(-50%) scale(1.1)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
+            e.currentTarget.style.transform = "translateY(-50%) scale(1)";
+          }}
+          aria-label="Témoignage suivant"
+        >
+          ›
+        </button>
       </div>
 
       <div style={{
