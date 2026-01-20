@@ -1530,7 +1530,7 @@ function TestimonialsCarousel() {
         textTransform: "uppercase",
         letterSpacing: "1px",
       }}>
-        💬 Ils ont testé l'approche ancestrale
+        Ils ont testé l'approche ancestrale
       </h3>
       
       <div 
