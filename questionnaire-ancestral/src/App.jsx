@@ -1407,7 +1407,7 @@ function TestimonialsCarousel() {
   const [touchEnd, setTouchEnd] = useState(null);
 
   // Nombre total de témoignages (screenshots)
-  const totalTestimonials = 18;
+  const totalTestimonials = 15;
   
   // Génère un tableau avec les chemins d'images
   const testimonials = Array.from({ length: totalTestimonials }, (_, i) => ({
