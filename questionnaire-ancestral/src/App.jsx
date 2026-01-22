@@ -252,6 +252,12 @@ export default function App() {
         type: "open",
         score: 2,
       },
+      {
+        question: "Quel est ton métier et est-il stressant pour toi ?",
+        category: "stress",
+        type: "open",
+        score: 2,
+      },
     ].map(q => ({
       ...q,
       options: q.options ? shuffleArray(q.options) : undefined
