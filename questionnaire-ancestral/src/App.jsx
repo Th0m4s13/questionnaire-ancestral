@@ -1223,7 +1223,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
 
             {prof?.hasIclosedLink ? (
               <a
-                href={prof.iclosedUrl}
+                href="https://calendly.com/inuatcontact/accompagnement"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -1255,41 +1255,6 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                 <div>📞 Prendre un rdv pour mettre en place ton plan d'action ancestral</div>
               </a>
             ) : null}
-
-            {prof?.hasIclosedLink && (
-              <a
-                href="https://calendly.com/inuatcontact/accompagnement"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "block",
-                  marginTop: 12,
-                  padding: "16px 20px",
-                  borderRadius: 12,
-                  background: "linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(124, 58, 237, 0.25) 100%)",
-                  border: "1px solid rgba(139, 92, 246, 0.4)",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  color: "white",
-                  fontWeight: 700,
-                  fontSize: 16,
-                  transition: "all 0.3s ease",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(139, 92, 246, 0.35) 0%, rgba(124, 58, 237, 0.35) 100%)";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 8px 20px rgba(139, 92, 246, 0.3)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(124, 58, 237, 0.25) 100%)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                <div>📅 Réserver un appel découverte (Calendly)</div>
-              </a>
-            )}
 
             {prof?.hasIclosedLink && (
               <a
