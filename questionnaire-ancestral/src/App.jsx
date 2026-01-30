@@ -1223,7 +1223,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
 
             {prof?.hasIclosedLink ? (
               <a
-                href="https://calendly.com/inuatcontact/accompagnement"
+                href="https://calendly.com/d/cxhk-x8n-nzw/accompagnement-inuat"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
