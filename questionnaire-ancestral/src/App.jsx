@@ -16,7 +16,7 @@ function shuffleArray(array) {
 
 export default function App() {
   const [name, setName] = useState("");
-  const [phonePrefix, setPhonePrefix] = useState("");
+  const [phonePrefix, setPhonePrefix] = useState("+33");
   const [phone, setPhone] = useState("");
   const [indicatifDropdownOpen, setIndicatifDropdownOpen] = useState(false);
   const [indicatifSearch, setIndicatifSearch] = useState("");
@@ -414,16 +414,15 @@ export default function App() {
     }
   }, [phonePrefix, phone, phoneDigits.length, phoneDigitsOnly.length, phoneValidationAttempted]);
 
-  // Animation de transition quand le formulaire initial est complété
-  useEffect(() => {
-    if (canStart && !showConsentPage && !consentGiven) {
-      setInitialFormAnimating(true);
-      setTimeout(() => {
-        setShowConsentPage(true);
-        setInitialFormAnimating(false);
-      }, 400);
-    }
-  }, [canStart, showConsentPage, consentGiven]);
+  // Passage à la page consent uniquement au clic sur "Continuer" (plus d'auto-avance au clic Homme/Femme)
+  function goToConsentPage() {
+    if (!canStart) return;
+    setInitialFormAnimating(true);
+    setTimeout(() => {
+      setShowConsentPage(true);
+      setInitialFormAnimating(false);
+    }, 400);
+  }
 
   // Auto-progression de la barre de chargement
   useEffect(() => {
@@ -1059,11 +1058,13 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                           autoFocus
                         />
                         <div
+                          className="indicatif-list-scroll"
                           style={{
-                            overflowY: "auto",
+                            overflowY: "scroll",
                             flex: 1,
                             minHeight: 0,
                             padding: "0 10px 10px",
+                            WebkitOverflowScrolling: "touch",
                           }}
                         >
                           {filteredCountries.map((c) => (
@@ -1132,6 +1133,9 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                             Autre
                           </button>
                         </div>
+                        <p style={{ margin: 0, padding: "8px 12px 10px", fontSize: 12, color: "rgba(255,255,255,0.6)", textAlign: "center", flexShrink: 0, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                          ↓ Faites défiler pour plus de pays
+                        </p>
                       </div>
                     )}
                   </div>
@@ -1174,11 +1178,11 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
               <div style={styles.sexRow}>
                 <button
                   type="button"
-                  onClick={() => {
-                    // Forcer le blur de tous les inputs pour fermer le clavier mobile
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     document.activeElement?.blur();
                     setSex("homme");
-                    // Déclencher la validation du téléphone si il a été rempli
                     if (phone.length > 0) {
                       setTimeout(() => setPhoneValidationAttempted(true), 100);
                     }
@@ -1192,11 +1196,11 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    // Forcer le blur de tous les inputs pour fermer le clavier mobile
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     document.activeElement?.blur();
                     setSex("femme");
-                    // Déclencher la validation du téléphone si il a été rempli
                     if (phone.length > 0) {
                       setTimeout(() => setPhoneValidationAttempted(true), 100);
                     }
@@ -1213,6 +1217,27 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
               <p style={styles.note}>
                 Tu dois remplir <b>prénom + téléphone</b> (avec indicatif) et choisir <b>Homme/Femme</b>.
               </p>
+              {canStart && (
+                <button
+                  type="button"
+                  onClick={goToConsentPage}
+                  style={{
+                    marginTop: 16,
+                    width: "100%",
+                    padding: "14px 20px",
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: "white",
+                    background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                    border: "none",
+                    borderRadius: 12,
+                    cursor: "pointer",
+                    boxShadow: "0 4px 14px rgba(59, 130, 246, 0.4)",
+                  }}
+                >
+                  Continuer
+                </button>
+              )}
             </div>
           </div>
         ) : !consentGiven ? (
