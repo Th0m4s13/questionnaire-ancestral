@@ -1004,8 +1004,9 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                       }}
                       style={{
                         ...styles.input,
-                        width: "auto",
-                        minWidth: 200,
+                        width: "max-content",
+                        minWidth: 100,
+                        maxWidth: 140,
                         border: "none",
                         borderRadius: 0,
                         borderRight: "1px solid rgba(255,255,255,0.14)",
@@ -1014,12 +1015,12 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
-                        gap: 8,
+                        gap: 6,
                         textAlign: "left",
                       }}
                       aria-label="Choisir l'indicatif"
                     >
-                      <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {selectedIndicatifLabel}
                       </span>
                       <span style={{ opacity: 0.8 }}>{indicatifDropdownOpen ? "▲" : "▼"}</span>
@@ -1045,7 +1046,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                       >
                         <input
                           type="text"
-                          placeholder="Rechercher un pays ou indicatif..."
+                          placeholder="Rechercher ton pays"
                           value={indicatifSearch}
                           onChange={(e) => setIndicatifSearch(e.target.value)}
                           onKeyDown={(e) => e.stopPropagation()}
@@ -1073,7 +1074,6 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                               type="button"
                               onClick={() => {
                                 setPhonePrefix(c.dial);
-                                setPhone("");
                                 setPhoneError("");
                                 setPhoneValidationAttempted(false);
                                 setIndicatifDropdownOpen(false);
@@ -1104,7 +1104,6 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                             type="button"
                             onClick={() => {
                               setPhonePrefix("OTHER");
-                              setPhone("");
                               setPhoneError("");
                               setPhoneValidationAttempted(false);
                               setIndicatifDropdownOpen(false);
