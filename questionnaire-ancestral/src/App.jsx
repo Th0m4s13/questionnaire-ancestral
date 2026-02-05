@@ -40,6 +40,7 @@ export default function App() {
   const [phoneValidationAttempted, setPhoneValidationAttempted] = useState(false);
   const [openAnswer, setOpenAnswer] = useState(""); // Pour les questions ouvertes
   const hasSentRef = useRef(false);
+  const consentNoTimeoutRef = useRef(null);
 
   // Questions (base)
   const baseQuestions = useMemo(
@@ -319,12 +320,19 @@ export default function App() {
           })();
 
   const filteredCountries = useMemo(() => {
-    const q = indicatifSearch.trim().toLowerCase();
-    if (!q) return COUNTRY_DIAL_LIST;
+    const raw = indicatifSearch.trim();
+    if (!raw) return COUNTRY_DIAL_LIST;
+    const q = raw.toLowerCase();
+    const sansAccent = (s) =>
+      s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const matchName = (name) => {
+      const n = name.toLowerCase();
+      return n.includes(q) || sansAccent(name).includes(sansAccent(raw));
+    };
     return COUNTRY_DIAL_LIST.filter(
       (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.dial.replace("+", "").includes(q.replace(/\D/g, ""))
+        matchName(c.name) ||
+        c.dial.replace("+", "").includes(raw.replace(/\D/g, ""))
     );
   }, [indicatifSearch]);
 
@@ -1013,8 +1021,8 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                       style={{
                         ...styles.input,
                         width: "max-content",
-                        minWidth: 100,
-                        maxWidth: 140,
+                        minWidth: 180,
+                        maxWidth: 240,
                         border: "none",
                         borderRadius: 0,
                         borderRight: "1px solid rgba(255,255,255,0.14)",
@@ -1023,7 +1031,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
-                        gap: 6,
+                        gap: 8,
                         textAlign: "left",
                       }}
                       aria-label="Choisir l'indicatif"
@@ -1079,6 +1087,11 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                             WebkitOverflowScrolling: "touch",
                           }}
                         >
+                          {filteredCountries.length === 0 ? (
+                            <p style={{ padding: "12px", margin: 0, fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
+                              Aucun pays trouvé pour « {indicatifSearch.trim()} »
+                            </p>
+                          ) : null}
                           {filteredCountries.map((c) => (
                             <button
                               key={c.dial}
@@ -1236,27 +1249,26 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
               <p style={styles.note}>
                 Tu dois remplir <b>prénom + téléphone</b> (avec indicatif) et choisir <b>Homme/Femme</b>.
               </p>
-              {canStart && (
-                <button
-                  type="button"
-                  onClick={goToConsentPage}
-                  style={{
-                    marginTop: 16,
-                    width: "100%",
-                    padding: "14px 20px",
-                    fontSize: 16,
-                    fontWeight: 600,
-                    color: "white",
-                    background: "linear-gradient(135deg, #3b82f6, #2563eb)",
-                    border: "none",
-                    borderRadius: 12,
-                    cursor: "pointer",
-                    boxShadow: "0 4px 14px rgba(59, 130, 246, 0.4)",
-                  }}
-                >
-                  Continuer
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={goToConsentPage}
+                disabled={!canStart}
+                style={{
+                  marginTop: 20,
+                  width: "100%",
+                  padding: "14px 20px",
+                  fontSize: 16,
+                  fontWeight: 600,
+                  color: canStart ? "white" : "rgba(255,255,255,0.5)",
+                  background: canStart ? "linear-gradient(135deg, #3b82f6, #2563eb)" : "rgba(255,255,255,0.1)",
+                  border: canStart ? "none" : "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: 12,
+                  cursor: canStart ? "pointer" : "not-allowed",
+                  boxShadow: canStart ? "0 4px 14px rgba(59, 130, 246, 0.4)" : "none",
+                }}
+              >
+                Continuer
+              </button>
             </div>
           </div>
         ) : !consentGiven ? (
@@ -1269,6 +1281,8 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
               <br /><br />
               Tes réponses resteront strictement confidentielles et anonymes. Tu es libre de passer toute question qui ne te convient pas, ou d'arrêter à tout moment.
               <br /><br />
+              <strong>Tu recevras un retour personnalisé de Mao sur WhatsApp</strong> après avoir terminé le questionnaire.
+              <br /><br />
               <strong>Souhaites-tu poursuivre ?</strong>
             </p>
 
@@ -1276,6 +1290,10 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
               <button
                 style={styles.consentButton}
                 onClick={() => {
+                  if (consentNoTimeoutRef.current) {
+                    clearTimeout(consentNoTimeoutRef.current);
+                    consentNoTimeoutRef.current = null;
+                  }
                   setConsentChoice('yes');
                   setTimeout(() => {
                   setConsentAnimating(true);
@@ -1286,7 +1304,6 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                   }, 300);
                   }, 800);
                 }}
-                disabled={consentChoice !== null}
               >
                 <span className={consentChoice === 'yes' ? 'consent-check-box' : ''} 
                       style={{ 
@@ -1301,12 +1318,13 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                 style={{ ...styles.consentButton, background: "rgba(239, 68, 68, 0.25)", border: "1px solid rgba(239, 68, 68, 0.35)" }}
                 onClick={() => {
                   setConsentChoice('no');
-                  setTimeout(() => {
+                  if (consentNoTimeoutRef.current) clearTimeout(consentNoTimeoutRef.current);
+                  consentNoTimeoutRef.current = setTimeout(() => {
+                    consentNoTimeoutRef.current = null;
                     alert("Merci pour ta visite. Prends soin de toi !");
-                  restartFromStart();
+                    restartFromStart();
                   }, 800);
                 }}
-                disabled={consentChoice !== null}
               >
                 <span className={consentChoice === 'no' ? 'consent-cross-box' : ''} 
                       style={{ 
