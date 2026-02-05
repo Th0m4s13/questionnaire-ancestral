@@ -335,8 +335,13 @@ export default function App() {
         setIndicatifDropdownOpen(false);
       }
     }
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = prevOverflow;
+    };
   }, [indicatifDropdownOpen]);
 
   function formatDateFR(isoString) {
@@ -613,7 +618,9 @@ export default function App() {
     const symptome1 = topSymptoms[0] ? (categoryDescriptions[topSymptoms[0]]?.issues || topSymptoms[0]) : "";
     const symptome2 = topSymptoms[1] ? (categoryDescriptions[topSymptoms[1]]?.issues || topSymptoms[1]) : "";
 
-    const fullPhoneWithPlus = dialCode ? `${dialCode}${phoneDigits}` : (phonePrefix === "OTHER" ? phone : phoneDigitsOnly);
+    // Supprimer le 0 initial (06...) pour envoyer +336... au webhook
+    const nationalForWebhook = (dialCode ? phoneDigitsOnly : phoneDigitsOnly).replace(/^0+/, "");
+    const fullPhoneWithPlus = dialCode ? `${dialCode}${nationalForWebhook}` : (phonePrefix === "OTHER" ? phone : phoneDigitsOnly);
     const fullPhoneDigitsOnly = fullPhoneWithPlus.replace(/\D/g, "");
     const data = {
       timestamp,
@@ -622,7 +629,7 @@ export default function App() {
       indicatif: phonePrefix === "OTHER" ? "" : dialCode,
       telephone: fullPhoneDigitsOnly,
       telephoneInternational: fullPhoneWithPlus || fullPhoneDigitsOnly,
-      telephoneNational: dialCode ? phoneDigits : phoneDigitsOnly,
+      telephoneNational: dialCode ? nationalForWebhook : phoneDigitsOnly,
       telephoneRaw: fullPhoneDigitsOnly,
       sexe: sex,
       score: score,
@@ -987,9 +994,10 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                   style={{
                     display: "flex",
                     alignItems: "stretch",
-                    borderRadius: 14,
-                    border: "1px solid rgba(255,255,255,0.14)",
-                    background: "rgba(15,23,42,0.55)",
+                    borderRadius: 16,
+                    border: "1px solid rgba(255,255,255,0.18)",
+                    background: "rgba(15,23,42,0.7)",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)",
                     overflow: "visible",
                     position: "relative",
                   }}
@@ -1027,18 +1035,20 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                     </button>
                     {indicatifDropdownOpen && (
                       <div
+                        onWheel={(e) => e.stopPropagation()}
                         style={{
                           position: "absolute",
                           top: "100%",
                           left: 0,
                           right: 0,
-                          marginTop: 4,
+                          marginTop: 6,
                           background: "rgba(15,23,42,0.98)",
-                          border: "1px solid rgba(255,255,255,0.14)",
+                          border: "1px solid rgba(255,255,255,0.18)",
                           borderRadius: 12,
                           boxShadow: "0 10px 40px rgba(0,0,0,0.5)",
                           zIndex: 1000,
                           maxHeight: 320,
+                          minHeight: 180,
                           display: "flex",
                           flexDirection: "column",
                           overflow: "hidden",
@@ -1060,10 +1070,11 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                         />
                         <div
                           className="indicatif-list-scroll"
+                          onWheel={(e) => e.stopPropagation()}
                           style={{
                             overflowY: "scroll",
                             flex: 1,
-                            minHeight: 0,
+                            minHeight: 132,
                             padding: "0 10px 10px",
                             WebkitOverflowScrolling: "touch",
                           }}
@@ -1148,8 +1159,17 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                     }}
                     value={phone}
                     onChange={(e) => {
-                      setPhone(e.target.value);
-                      if (phoneValidationAttempted && e.target.value.replace(/\D/g, "").length >= 9) {
+                      let v = e.target.value;
+                      if (dialCode) {
+                        const digits = v.replace(/\D/g, "");
+                        if (digits.startsWith("0")) {
+                          setPhone(digits.replace(/^0+/, ""));
+                          if (phoneValidationAttempted && digits.replace(/^0+/, "").length >= 9) setPhoneValidationAttempted(false);
+                          return;
+                        }
+                      }
+                      setPhone(v);
+                      if (phoneValidationAttempted && v.replace(/\D/g, "").length >= 9) {
                         setPhoneValidationAttempted(false);
                       }
                     }}
