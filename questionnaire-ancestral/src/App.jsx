@@ -967,7 +967,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
       <div style={{ ...styles.bgPhoto, backgroundImage: `url(${BG_IMAGE})` }} />
       <div style={{ ...styles.overlay, background: "rgba(0,0,0,0.3)" }} />
 
-      <div style={styles.card}>
+      <div style={{ ...styles.card, ...(indicatifDropdownOpen ? { overflowY: "hidden", overflow: "hidden" } : {}) }}>
         {!showConsentPage ? (
           <div className={initialFormAnimating ? "question-fade-out" : ""}>
             <div style={styles.kicker}>TON PROFIL ALIMENTAIRE</div>
@@ -1002,10 +1002,9 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                   style={{
                     display: "flex",
                     alignItems: "stretch",
-                    borderRadius: 16,
-                    border: "1px solid rgba(255,255,255,0.18)",
-                    background: "rgba(15,23,42,0.7)",
-                    boxShadow: "0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)",
+                    borderRadius: 14,
+                    border: "1px solid rgba(255,255,255,0.14)",
+                    background: "rgba(15,23,42,0.55)",
                     overflow: "visible",
                     position: "relative",
                   }}
@@ -1024,9 +1023,9 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                         minWidth: 180,
                         maxWidth: 240,
                         border: "none",
-                        borderRadius: 0,
+                        borderRadius: "12px 0 0 12px",
                         borderRight: "1px solid rgba(255,255,255,0.14)",
-                        background: "rgba(255,255,255,0.06)",
+                        background: "transparent",
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
@@ -1167,7 +1166,8 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                       ...styles.input,
                       flex: 1,
                       border: "none",
-                      borderRadius: 0,
+                      borderRadius: "0 12px 12px 0",
+                      background: "transparent",
                       ...(phoneError ? { borderLeft: "1px solid #ef4444" } : {}),
                     }}
                     value={phone}
