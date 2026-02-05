@@ -1281,7 +1281,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
               <br /><br />
               Tes réponses resteront strictement confidentielles et anonymes. Tu es libre de passer toute question qui ne te convient pas, ou d'arrêter à tout moment.
               <br /><br />
-              <strong>Tu recevras un retour personnalisé de Mao sur WhatsApp</strong> après avoir terminé le questionnaire.
+              <strong>Tu recevras un message personnalisé de ma part</strong> après avoir terminé le questionnaire.
               <br /><br />
               <strong>Souhaites-tu poursuivre ?</strong>
             </p>
