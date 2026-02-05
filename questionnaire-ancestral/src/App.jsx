@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import "./App.css";
+import { COUNTRY_DIAL_LIST } from "./countryDialCodes";
 
 const BG_IMAGE = "/BG_IMAGE.png"; // dans /public
 
@@ -15,7 +16,11 @@ function shuffleArray(array) {
 
 export default function App() {
   const [name, setName] = useState("");
+  const [phonePrefix, setPhonePrefix] = useState("");
   const [phone, setPhone] = useState("");
+  const [indicatifDropdownOpen, setIndicatifDropdownOpen] = useState(false);
+  const [indicatifSearch, setIndicatifSearch] = useState("");
+  const indicatifDropdownRef = useRef(null);
   const [age, setAge] = useState("");
   const [sex, setSex] = useState(""); // "homme" | "femme"
   const [consentGiven, setConsentGiven] = useState(false);
@@ -294,9 +299,45 @@ export default function App() {
 
   const maxScore = useMemo(() => questions.length * 4, [questions.length]);
 
-  // Validation du numéro de téléphone (seulement les chiffres)
-  const phoneDigits = phone.replace(/\D/g, ''); // Enlever tout sauf les chiffres
-  const isPhoneValid = phoneDigits.length >= 1; // Au moins 1 chiffre
+  const dialCode = phonePrefix && phonePrefix !== "OTHER" ? phonePrefix : "";
+  const phoneDigitsOnly = phone.replace(/\D/g, "");
+  const phoneDigits = dialCode
+    ? phoneDigitsOnly.replace(/^0+/, "")
+    : phoneDigitsOnly;
+  const isPhoneValid =
+    phonePrefix !== "" &&
+    (phonePrefix === "OTHER" ? phoneDigitsOnly.length >= 1 : phoneDigits.length >= 1);
+
+  const selectedIndicatifLabel =
+    !phonePrefix
+      ? "Indicatif (à choisir)"
+      : phonePrefix === "OTHER"
+        ? "Autre"
+        : (() => {
+            const c = COUNTRY_DIAL_LIST.find((x) => x.dial === phonePrefix);
+            return c ? `${c.name} ${c.dial}` : "Indicatif (à choisir)";
+          })();
+
+  const filteredCountries = useMemo(() => {
+    const q = indicatifSearch.trim().toLowerCase();
+    if (!q) return COUNTRY_DIAL_LIST;
+    return COUNTRY_DIAL_LIST.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.dial.replace("+", "").includes(q.replace(/\D/g, ""))
+    );
+  }, [indicatifSearch]);
+
+  useEffect(() => {
+    if (!indicatifDropdownOpen) return;
+    function handleClickOutside(e) {
+      if (indicatifDropdownRef.current && !indicatifDropdownRef.current.contains(e.target)) {
+        setIndicatifDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [indicatifDropdownOpen]);
 
   function formatDateFR(isoString) {
     try {
@@ -357,12 +398,21 @@ export default function App() {
 
   // Validation du téléphone (seulement après tentative)
   useEffect(() => {
-    if (phoneValidationAttempted && phone.length > 0 && phoneDigits.length === 0) {
-      setPhoneError(`Le numéro doit contenir au moins un chiffre`);
+    if (phonePrefix === "") {
+      setPhoneError("");
+      return;
+    }
+    if (phoneValidationAttempted && phone.length > 0) {
+      const digits = phonePrefix === "OTHER" ? phoneDigitsOnly : phoneDigits;
+      if (digits.length === 0) {
+        setPhoneError("Le numéro doit contenir au moins un chiffre");
+      } else {
+        setPhoneError("");
+      }
     } else {
       setPhoneError("");
     }
-  }, [phone, phoneDigits.length, phoneValidationAttempted]);
+  }, [phonePrefix, phone, phoneDigits.length, phoneDigitsOnly.length, phoneValidationAttempted]);
 
   // Animation de transition quand le formulaire initial est complété
   useEffect(() => {
@@ -564,12 +614,17 @@ export default function App() {
     const symptome1 = topSymptoms[0] ? (categoryDescriptions[topSymptoms[0]]?.issues || topSymptoms[0]) : "";
     const symptome2 = topSymptoms[1] ? (categoryDescriptions[topSymptoms[1]]?.issues || topSymptoms[1]) : "";
 
+    const fullPhoneWithPlus = dialCode ? `${dialCode}${phoneDigits}` : (phonePrefix === "OTHER" ? phone : phoneDigitsOnly);
+    const fullPhoneDigitsOnly = fullPhoneWithPlus.replace(/\D/g, "");
     const data = {
       timestamp,
       nom: name,
       age: age,
-      telephone: phoneDigits,
-      telephoneRaw: phone,
+      indicatif: phonePrefix === "OTHER" ? "" : dialCode,
+      telephone: fullPhoneDigitsOnly,
+      telephoneInternational: fullPhoneWithPlus || fullPhoneDigitsOnly,
+      telephoneNational: dialCode ? phoneDigits : phoneDigitsOnly,
+      telephoneRaw: fullPhoneDigitsOnly,
       sexe: sex,
       score: score,
       scoreMax: maxScore,
@@ -592,7 +647,7 @@ export default function App() {
       timestamp: data.timestamp,
       nom: data.nom,
       age: data.age,
-      telephoneRaw: data.telephoneRaw,
+      telephoneRaw: fullPhoneWithPlus || data.telephone,
       sexe: data.sexe,
       score: data.score,
       scoreMax: data.scoreMax,
@@ -617,7 +672,10 @@ export default function App() {
           timestamp: data.timestamp,
           nom: data.nom,
           age: data.age || "",
+          indicatif: data.indicatif || "",
           telephone: data.telephone,
+          telephoneInternational: data.telephoneInternational || "",
+          telephoneNational: data.telephoneNational || "",
           telephoneText: `'${data.telephone}`,
           telephoneRaw: data.telephoneRaw,
           sexe: data.sexe,
@@ -874,6 +932,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
   function restartFromStart() {
     hasSentRef.current = false;
     setName("");
+    setPhonePrefix("");
     setAge("");
     setPhone("");
     setSex("");
@@ -922,42 +981,191 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
               />
 
               <div>
-                <input
+                <label style={{ display: "block", textAlign: "left", fontSize: 13, opacity: 0.9, marginBottom: 6 }}>
+                  Ton numéro de téléphone
+                </label>
+                <div
                   style={{
-                    ...styles.input,
-                    ...(phoneError ? { border: "1px solid #ef4444" } : {})
+                    display: "flex",
+                    alignItems: "stretch",
+                    borderRadius: 14,
+                    border: "1px solid rgba(255,255,255,0.14)",
+                    background: "rgba(15,23,42,0.55)",
+                    overflow: "visible",
+                    position: "relative",
                   }}
-                  value={phone}
-                  onChange={(e) => {
-                    setPhone(e.target.value);
-                    // Réinitialiser la validation si l'utilisateur modifie
-                    if (phoneValidationAttempted && e.target.value.replace(/\D/g, '').length === 10) {
-                      setPhoneValidationAttempted(false);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      setPhoneValidationAttempted(true);
-                    }
-                  }}
-                  onBlur={() => {
-                    // Déclencher la validation quand l'utilisateur quitte le champ
-                    if (phone.length > 0) {
-                      setPhoneValidationAttempted(true);
-                    }
-                  }}
-                  placeholder="Ton num de tél (tu recevras un retour via WhatsApp)"
-                  type="tel"
-                  autoComplete="tel"
-                />
+                  ref={indicatifDropdownRef}
+                >
+                  <div style={{ position: "relative", flexShrink: 0 }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIndicatifDropdownOpen((o) => !o);
+                        if (!indicatifDropdownOpen) setIndicatifSearch("");
+                      }}
+                      style={{
+                        ...styles.input,
+                        width: "auto",
+                        minWidth: 200,
+                        border: "none",
+                        borderRadius: 0,
+                        borderRight: "1px solid rgba(255,255,255,0.14)",
+                        background: "rgba(255,255,255,0.06)",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: 8,
+                        textAlign: "left",
+                      }}
+                      aria-label="Choisir l'indicatif"
+                    >
+                      <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {selectedIndicatifLabel}
+                      </span>
+                      <span style={{ opacity: 0.8 }}>{indicatifDropdownOpen ? "▲" : "▼"}</span>
+                    </button>
+                    {indicatifDropdownOpen && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "100%",
+                          left: 0,
+                          right: 0,
+                          marginTop: 4,
+                          background: "rgba(15,23,42,0.98)",
+                          border: "1px solid rgba(255,255,255,0.14)",
+                          borderRadius: 12,
+                          boxShadow: "0 10px 40px rgba(0,0,0,0.5)",
+                          zIndex: 1000,
+                          maxHeight: 320,
+                          display: "flex",
+                          flexDirection: "column",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <input
+                          type="text"
+                          placeholder="Rechercher un pays ou indicatif..."
+                          value={indicatifSearch}
+                          onChange={(e) => setIndicatifSearch(e.target.value)}
+                          onKeyDown={(e) => e.stopPropagation()}
+                          style={{
+                            ...styles.input,
+                            margin: 10,
+                            marginBottom: 6,
+                            flexShrink: 0,
+                          }}
+                          autoFocus
+                        />
+                        <div
+                          style={{
+                            overflowY: "auto",
+                            flex: 1,
+                            minHeight: 0,
+                            padding: "0 10px 10px",
+                          }}
+                        >
+                          {filteredCountries.map((c) => (
+                            <button
+                              key={c.dial}
+                              type="button"
+                              onClick={() => {
+                                setPhonePrefix(c.dial);
+                                setPhone("");
+                                setPhoneError("");
+                                setPhoneValidationAttempted(false);
+                                setIndicatifDropdownOpen(false);
+                              }}
+                              style={{
+                                display: "block",
+                                width: "100%",
+                                padding: "10px 12px",
+                                border: "none",
+                                borderRadius: 8,
+                                background: "transparent",
+                                color: "white",
+                                textAlign: "left",
+                                cursor: "pointer",
+                                fontSize: 14,
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "transparent";
+                              }}
+                            >
+                              {c.name} {c.dial}
+                            </button>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPhonePrefix("OTHER");
+                              setPhone("");
+                              setPhoneError("");
+                              setPhoneValidationAttempted(false);
+                              setIndicatifDropdownOpen(false);
+                            }}
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              padding: "10px 12px",
+                              border: "none",
+                              borderRadius: 8,
+                              background: "transparent",
+                              color: "white",
+                              textAlign: "left",
+                              cursor: "pointer",
+                              fontSize: 14,
+                              borderTop: "1px solid rgba(255,255,255,0.1)",
+                              marginTop: 4,
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = "transparent";
+                            }}
+                          >
+                            Autre
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    style={{
+                      ...styles.input,
+                      flex: 1,
+                      border: "none",
+                      borderRadius: 0,
+                      ...(phoneError ? { borderLeft: "1px solid #ef4444" } : {}),
+                    }}
+                    value={phone}
+                    onChange={(e) => {
+                      setPhone(e.target.value);
+                      if (phoneValidationAttempted && e.target.value.replace(/\D/g, "").length >= 9) {
+                        setPhoneValidationAttempted(false);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        setPhoneValidationAttempted(true);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (phone.length > 0) setPhoneValidationAttempted(true);
+                    }}
+                    placeholder={phonePrefix === "OTHER" ? "Numéro avec indicatif" : (dialCode ? "6 12 34 56 78" : "Numéro")}
+                    type="tel"
+                    autoComplete="tel-national"
+                  />
+                </div>
                 {phoneError && (
-                  <p style={{
-                    color: "#ef4444",
-                    fontSize: 13,
-                    margin: "6px 0 0 0",
-                    textAlign: "left",
-                  }}>
+                  <p style={{ color: "#ef4444", fontSize: 13, margin: "6px 0 0 0", textAlign: "left" }}>
                     ⚠️ {phoneError}
                   </p>
                 )}
@@ -1003,7 +1211,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
               </div>
 
               <p style={styles.note}>
-                Tu dois remplir <b>prénom + téléphone</b> et choisir <b>Homme/Femme</b>.
+                Tu dois remplir <b>prénom + téléphone</b> (avec indicatif) et choisir <b>Homme/Femme</b>.
               </p>
             </div>
           </div>
@@ -1304,7 +1512,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                   <strong>Numéro mobile pour contacter Mao :</strong>
                   <br />
                   <a 
-                    href="tel:+33756984875"
+                    href="tel:+33749834339"
                     style={{
                       color: "#60a5fa",
                       textDecoration: "none",
@@ -1313,7 +1521,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                       letterSpacing: "0.5px",
                     }}
                   >
-                    07 56 98 48 75
+                    07 49 83 43 39
                   </a>
                 </p>
               </div>
@@ -1341,7 +1549,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
               }}>
                 Numéro WhatsApp de Mao :{" "}
                 <a 
-                  href="https://wa.me/33756984875"
+                  href="https://wa.me/33749834339"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -1350,7 +1558,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                     fontWeight: 600,
                   }}
                 >
-                  07 56 98 48 75
+                  07 49 83 43 39
                 </a>
               </p>
               </>
