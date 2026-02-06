@@ -16,6 +16,7 @@ function shuffleArray(array) {
 
 export default function App() {
   const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [phonePrefix, setPhonePrefix] = useState("+33");
   const [phone, setPhone] = useState("");
   const [indicatifDropdownOpen, setIndicatifDropdownOpen] = useState(false);
@@ -367,11 +368,12 @@ export default function App() {
     }
   }
 
-  function buildWhatsappText({ timestamp, nom, age, telephoneRaw, sexe, score, scoreMax, pourcentage, profil, reponses }) {
+  function buildWhatsappText({ timestamp, prenom, nom, age, telephoneRaw, sexe, score, scoreMax, pourcentage, profil, reponses }) {
     const header = [
       "📋 NOUVEAU QUESTIONNAIRE ANCESTRAL",
       "",
       "👤 INFORMATIONS",
+      `• Prénom: ${prenom || "-"}`,
       `• Nom: ${nom || "-"}`,
       `• Âge: ${age || "-"}`,
       `• Téléphone: ${telephoneRaw || "-"}`,
@@ -406,6 +408,7 @@ export default function App() {
 
   const canStart =
     name.trim().length >= 2 &&
+    lastName.trim().length >= 1 &&
     isPhoneValid &&
     (sex === "homme" || sex === "femme");
 
@@ -630,9 +633,13 @@ export default function App() {
     const nationalForWebhook = (dialCode ? phoneDigitsOnly : phoneDigitsOnly).replace(/^0+/, "");
     const fullPhoneWithPlus = dialCode ? `${dialCode}${nationalForWebhook}` : (phonePrefix === "OTHER" ? phone : phoneDigitsOnly);
     const fullPhoneDigitsOnly = fullPhoneWithPlus.replace(/\D/g, "");
+    const nomTrim = lastName.trim();
+    const prenomNom = [name.trim(), nomTrim].filter(Boolean).join(" ");
     const data = {
       timestamp,
-      nom: name,
+      prenom: name,
+      nom: nomTrim,
+      prenomNom,
       age: age,
       indicatif: phonePrefix === "OTHER" ? "" : dialCode,
       telephone: fullPhoneDigitsOnly,
@@ -659,6 +666,7 @@ export default function App() {
     };
     data.whatsappText = buildWhatsappText({
       timestamp: data.timestamp,
+      prenom: data.prenom,
       nom: data.nom,
       age: data.age,
       telephoneRaw: fullPhoneWithPlus || data.telephone,
@@ -684,7 +692,9 @@ export default function App() {
         const reponses = data.reponses;
         const payload = {
           timestamp: data.timestamp,
-          nom: data.nom,
+          prenom: data.prenom || "",
+          nom: data.nom || "",
+          prenomNom: data.prenomNom || "",
           age: data.age || "",
           indicatif: data.indicatif || "",
           telephone: data.telephone,
@@ -946,6 +956,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
   function restartFromStart() {
     hasSentRef.current = false;
     setName("");
+    setLastName("");
     setPhonePrefix("");
     setAge("");
     setPhone("");
@@ -978,9 +989,17 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                 style={styles.input}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Ton prénom (ou pseudo)"
+                placeholder="Ton prénom"
                 type="text"
-                autoComplete="name"
+                autoComplete="given-name"
+              />
+              <input
+                style={styles.input}
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Ton nom"
+                type="text"
+                autoComplete="family-name"
               />
 
               <input
@@ -1247,7 +1266,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
               </div>
 
               <p style={styles.note}>
-                Tu dois remplir <b>prénom + téléphone</b> (avec indicatif) et choisir <b>Homme/Femme</b>.
+                Tu dois remplir <b>prénom + nom + téléphone</b> (avec indicatif) et choisir <b>Homme/Femme</b>.
               </p>
               <button
                 type="button"
