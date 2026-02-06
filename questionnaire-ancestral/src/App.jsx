@@ -1512,7 +1512,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
 
             {prof?.hasIclosedLink ? (
               <a
-                href="https://calendly.com/d/cxhk-x8n-nzw/accompagnement-inuat"
+                href="https://calendly.com/d/cxhk-x8n-nzw/bilan-ancestral"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
