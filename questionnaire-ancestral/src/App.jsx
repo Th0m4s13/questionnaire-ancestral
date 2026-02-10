@@ -1314,14 +1314,12 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                     consentNoTimeoutRef.current = null;
                   }
                   setConsentChoice('yes');
-                  setTimeout(() => {
                   setConsentAnimating(true);
                   setTimeout(() => {
                     setConsentGiven(true);
                     setConsentAnimating(false);
-                      setConsentChoice(null);
-                  }, 300);
-                  }, 800);
+                    setConsentChoice(null);
+                  }, 400);
                 }}
               >
                 <span className={consentChoice === 'yes' ? 'consent-check-box' : ''} 
