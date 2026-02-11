@@ -81,6 +81,7 @@ export default function App() {
         category: "energie",
         options: [
           { text: " Je ne bois jamais de café/thé", score: 4 },
+          { text: " Je ne bois pas régulièrement de café/thé", score: 4 },
           { text: " De temps en temps", score: 3 },
           { text: " Tous les jours", score: 2 },
           { text: ' Plusieurs fois par jour sinon je "tombe"', score: 1 },
@@ -203,7 +204,8 @@ export default function App() {
           { text: " Souple, hydratée", score: 4 },
           { text: " Sèche parfois", score: 3 },
           { text: " Très sèche, qui pèle", score: 2 },
-          { text: " Acné, eczéma ou inflammation chronique", score: 1 },
+          { text: " Acné ou inflammation chronique", score: 1 },
+          { text: " Eczéma", score: 1 },
         ],
       },
       {
@@ -211,6 +213,7 @@ export default function App() {
         category: "cheveux",
         options: [
           { text: " Non", score: 4 },
+          { text: " Peu, surtout lors de la douche", score: 4 },
           { text: " Légère, périodique", score: 3 },
           { text: " Oui, depuis plusieurs mois", score: 2 },
           { text: " Chute constante, zones dégarnies", score: 1 },
