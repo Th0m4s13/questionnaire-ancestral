@@ -287,6 +287,10 @@ export default function App() {
             score: 1,
           },
           { text: " Pas de règles du tout", score: 1 },
+          {
+            text: " Sous contraceptif hormonal ou ménopausée (pas de règles)",
+            score: 2,
+          },
         ]),
       },
     ],
@@ -1574,7 +1578,7 @@ Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Com
                   e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                Non merci
+                Découvrir la formation ancestrale
               </a>
             )}
 
