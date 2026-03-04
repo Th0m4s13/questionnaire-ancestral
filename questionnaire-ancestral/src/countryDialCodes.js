@@ -1,5 +1,4 @@
 // Liste des pays avec indicatif téléphonique (France en premier, puis ordre alphabétique)
-// Source: codes d'appel internationaux ITU
 export const COUNTRY_DIAL_LIST = [
   { name: "France", dial: "+33" },
   { name: "Afghanistan", dial: "+93" },

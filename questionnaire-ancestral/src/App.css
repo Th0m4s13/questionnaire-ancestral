@@ -48,43 +48,53 @@
   }
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Animation d'apparition */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
   }
-  to {
-    transform: rotate(360deg);
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+/* Animation de sortie */
+@keyframes fadeOutUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-15px);
   }
 }
 
-.card {
-  padding: 2em;
+/* Animation de pulsation */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
 }
 
-.read-the-docs {
-  color: #888;
+/* Balayage gris horizontal */
+@keyframes sweepX {
+  0% {
+    transform: scaleX(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0.55;
+  }
 }
 
-/* Animation pour la transition du consentement */
+/* Animation pour le consentement */
 @keyframes consentFadeOut {
   0% {
     opacity: 1;
@@ -100,36 +110,12 @@
   animation: consentFadeOut 0.3s ease-out forwards;
 }
 
-/* Animation d'apparition du questionnaire */
-@keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .questionnaire-fade-in {
   animation: fadeInUp 0.3s ease-out forwards;
 }
 
-/* Animation de sortie pour les questions */
-@keyframes fadeOutDown {
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-}
-
 .question-fade-out {
-  animation: fadeOutDown 0.2s ease-out forwards;
+  animation: fadeOutUp 0.2s ease-out forwards;
 }
 
 /* Animation pour le message "Questionnaire terminé" */
@@ -152,18 +138,77 @@
   animation: completedPulse 0.4s ease-out forwards;
 }
 
-/* Animation de pulsation pour l'icône de validation */
-@keyframes iconPulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
+/* Boutons option */
+.btn-option {
+  transition: all 0.15s ease;
+}
+.btn-option:hover {
+  background: #475569 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-1px);
+}
+.btn-option:active {
+  transform: scale(0.98);
 }
 
-.completed-icon-pulse {
-  animation: iconPulse 1s ease-in-out infinite;
+/* CTA */
+.btn-cta {
+  transition: all 0.25s ease;
+}
+.btn-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(96, 165, 250, 0.35);
+}
+
+/* Sweep overlay */
+.sweep-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(120, 120, 120, 0.65);
+  transform-origin: center;
+  animation: sweepX 0.45s ease-out forwards;
+  pointer-events: none;
+  border-radius: 14px;
+}
+
+/* Placeholder styling */
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Scrollbar fine */
+.scroll-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+}
+
+/* Liste indicatif : scroll visible et intuitif */
+.indicatif-list-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+.indicatif-list-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.indicatif-list-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.indicatif-list-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+}
+.indicatif-list-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 /* Effet Ripple pour les boutons */
@@ -183,7 +228,7 @@
   }
 }
 
-/* Animation pour la coche verte dans la case */
+/* Animation pour la coche verte */
 @keyframes checkBoxAnimation {
   0% {
     transform: scale(0);
@@ -202,7 +247,7 @@
   animation: checkBoxAnimation 0.4s ease-out forwards;
 }
 
-/* Animation pour la croix rouge dans la case */
+/* Animation pour la croix rouge */
 @keyframes crossBoxAnimation {
   0% {
     transform: scale(0);
@@ -221,7 +266,7 @@
   animation: crossBoxAnimation 0.4s ease-out forwards;
 }
 
-/* Particules d'explosion (traits) */
+/* Particules d'explosion */
 .explosion-particle {
   position: fixed;
   border-radius: 2px;
@@ -250,31 +295,6 @@
   }
 }
 
-/* Animation de balayage gris horizontal depuis le centre */
-@keyframes sweepFromCenter {
-  0% {
-    transform: scaleX(0);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scaleX(1);
-    opacity: 0.5;
-  }
-}
-
-.button-sweep-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(120, 120, 120, 0.7);
-  transform-origin: center;
-  animation: sweepFromCenter 0.5s ease-out forwards;
-  pointer-events: none;
-  border-radius: 14px;
-}
-
 /* Animation pour le carrousel de témoignages */
 @keyframes fadeIn {
   0% {
@@ -285,23 +305,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Liste indicatif : scroll visible et intuitif */
-.indicatif-list-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
-}
-.indicatif-list-scroll::-webkit-scrollbar {
-  width: 8px;
-}
-.indicatif-list-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-.indicatif-list-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.35);
-  border-radius: 4px;
-}
-.indicatif-list-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
 }
