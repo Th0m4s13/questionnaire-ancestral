@@ -1,32 +1,383 @@
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import "./App.css";
 import { COUNTRY_DIAL_LIST } from "./countryDialCodes";
 
-const BG_IMAGE = "/BG_IMAGE.png"; // dans /public
+const BG_IMAGE = "/BG_IMAGE.png";
 
-// Fonction pour mélanger un tableau (Fisher-Yates shuffle)
-function shuffleArray(array) {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
+function shuffleArray(arr) {
+  const s = [...arr];
+  for (let i = s.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [s[i], s[j]] = [s[j], s[i]]; }
+  return s;
 }
 
-export default function App() {
+// ═══════════════════════════════════════════════════════
+// QUESTIONS : TRONC COMMUN (tout le monde)
+// ═══════════════════════════════════════════════════════
+const CORE_QUESTIONS = [
+  // ═══ ÉNERGIE ═══
+  { question: "Le matin au réveil, tu te sens comment ?", category: "energie", options: [
+    { text: "En pleine forme, prêt à attaquer la journée", score: 3 },
+    { text: "Il me faut un moment pour me réveiller vraiment", score: 1 },
+    { text: "Je suis déjà fatigué au lever", score: -2 },
+    { text: "Je me lève vidé, comme si je n'avais pas dormi", score: -4 },
+  ]},
+  { question: "Ton niveau d'énergie en journée est :", category: "energie", options: [
+    { text: "Stable du matin au soir", score: 3 },
+    { text: "Variable mais gérable", score: 1 },
+    { text: "En dents de scie, avec des coups de mou", score: -2 },
+    { text: "Épuisement constant, même sans effort", score: -4 },
+  ]},
+  { question: "Quel est ton rapport au café ou au thé ?", category: "energie", options: [
+    { text: "Je ne bois pas de café/thé", score: 3 },
+    { text: "J'en bois par plaisir, je peux m'en passer sans souci", score: 2 },
+    { text: "J'en bois tous les jours, mais c'est une habitude, pas un besoin", score: 0 },
+    { text: "J'en ai besoin pour démarrer, sans ça je suis à plat", score: -2 },
+    { text: "Plusieurs par jour sinon je ne tiens pas", score: -4 },
+  ]},
+  // ═══ CIRCULATION / THYROÏDE ═══
+  { question: "Tes mains et pieds sont :", category: "circulation", options: [
+    { text: "Toujours bien chauds", score: 3 },
+    { text: "Froids parfois, selon la saison", score: 1 },
+    { text: "Souvent froids même à l'intérieur", score: -2 },
+    { text: "Gelés en permanence, même sous la couette", score: -4 },
+  ]},
+  { question: "Tu as tendance à avoir froid par rapport aux gens autour de toi ?", category: "thyroide", options: [
+    { text: "Non, température normale", score: 3 },
+    { text: "Un peu plus frileux que les autres", score: 1 },
+    { text: "Oui, je mets toujours une couche de plus", score: -2 },
+    { text: "Constamment froid, même quand les autres vont bien", score: -4 },
+  ]},
+  // ═══ SOMMEIL ═══
+  { question: "Tu dors :", category: "sommeil", options: [
+    { text: "Profondément et sans réveils", score: 3 },
+    { text: "Légèrement, je me réveille parfois", score: 1 },
+    { text: "Je me réveille plusieurs fois", score: -2 },
+    { text: "Je dors très mal ou j'ai de l'insomnie", score: -4 },
+  ]},
+  { question: "Combien d'heures de sommeil te faut-il pour récupérer ?", category: "sommeil", options: [
+    { text: "5-6h et je suis en pleine forme", score: 3 },
+    { text: "7-8h, sinon je tiens pas", score: 1 },
+    { text: "9-10h et je suis encore fatigué", score: -2 },
+    { text: "Peu importe la durée, je suis toujours épuisé", score: -4 },
+  ]},
+  // ═══ DIGESTION (screening) ═══
+  { question: "Tu ressens des ballonnements ou gaz :", category: "digestion", options: [
+    { text: "Jamais", score: 3 },
+    { text: "Parfois, après certains plats", score: 1 },
+    { text: "Quasiment tous les jours", score: -2 },
+    { text: "Constamment, avec douleurs", score: -4 },
+  ]},
+  { question: "Ta langue le matin est :", category: "digestion", options: [
+    { text: "Rose et propre", score: 3 },
+    { text: "Un peu blanche parfois", score: 1 },
+    { text: "Blanche quasi tout le temps", score: -2 },
+    { text: "Épaisse, pâteuse, chargée tous les jours", score: -4 },
+  ]},
+  { question: "Tu as des réactions après certains aliments (laitiers, gluten, fruits...) ?", category: "digestion", options: [
+    { text: "Jamais", score: 3 },
+    { text: "Parfois, mais c'est léger", score: 1 },
+    { text: "Oui, j'évite certains aliments pour ça", score: -2 },
+    { text: "Oui, plusieurs groupes d'aliments me rendent mal", score: -4 },
+  ]},
+  { question: "Tes selles sont :", category: "digestion", options: [
+    { text: "Formées, régulières, 1 à 2 fois par jour", score: 3 },
+    { text: "Plutôt normales mais parfois molles ou irrégulières", score: 1 },
+    { text: "Souvent molles ou alternance constipation/diarrhée", score: -2 },
+    { text: "Liquides, constipation chronique ou très irrégulières", score: -4 },
+  ]},
+  // ═══ FOIE ═══
+  { question: "Tu digères bien les repas gras (fromage, friture, avocat) ?", category: "foie", options: [
+    { text: "Bien, aucun souci", score: 3 },
+    { text: "Lourdeur passagère mais ça passe", score: 1 },
+    { text: "Lourdeur longue, envie de sieste après", score: -2 },
+    { text: "Nausées, dégoût des graisses, ou douleur à droite sous les côtes", score: -4 },
+  ]},
+  { question: "Le matin au réveil, ta bouche est :", category: "foie", options: [
+    { text: "Fraîche, rien de particulier", score: 3 },
+    { text: "Un peu sèche", score: 1 },
+    { text: "Pâteuse ou amère", score: -2 },
+    { text: "Très amère, avec nausées ou mauvaise haleine persistante", score: -4 },
+  ]},
+  // ═══ GRAISSES ═══
+  { question: "Tu cuisines avec quoi principalement ?", category: "graisses", options: [
+    { text: "Beurre, ghee, huile de coco ou huile d'olive", score: 3 },
+    { text: "Un mélange (bonnes et mauvaises huiles)", score: 0 },
+    { text: "Huile de tournesol, colza ou 'huile végétale'", score: -2 },
+    { text: "Margarine, huile de friture, ou je ne sais pas", score: -4 },
+  ]},
+  // ═══ IMMUNITÉ ═══
+  { question: "Tu es tombé malade combien de fois cette année ?", category: "immunite", options: [
+    { text: "Jamais", score: 3 },
+    { text: "1 ou 2 fois", score: 1 },
+    { text: "Plus de 3 fois", score: -2 },
+    { text: "Constamment, ou infections longues", score: -4 },
+  ]},
+  { question: "Tes blessures cicatrisent :", category: "immunite", options: [
+    { text: "Rapidement", score: 3 },
+    { text: "Un peu lentement", score: 1 },
+    { text: "Lentement et mal", score: -2 },
+    { text: "Très lentement, infections fréquentes", score: -4 },
+  ]},
+  // ═══ INFLAMMATION ═══
+  { question: "Tu as des douleurs articulaires ou musculaires :", category: "inflammation", options: [
+    { text: "Jamais", score: 3 },
+    { text: "Rarement", score: 1 },
+    { text: "Régulièrement", score: -2 },
+    { text: "Tous les jours ou invalidantes", score: -4 },
+  ]},
+  { question: "Tu as des allergies, eczéma, urticaire ou réactions cutanées ?", category: "inflammation", options: [
+    { text: "Non", score: 3 },
+    { text: "Un peu, saisonnièrement", score: 1 },
+    { text: "Régulièrement dans l'année", score: -2 },
+    { text: "Quasi en permanence", score: -4 },
+  ]},
+  // ═══ MINÉRALISATION ═══
+  { question: "Tes dents et gencives vont comment ?", category: "mineralisation", options: [
+    { text: "Solides, jamais de caries ou saignement", score: 3 },
+    { text: "Quelques saignements ou caries récentes", score: 1 },
+    { text: "Caries fréquentes, gencives sensibles", score: -2 },
+    { text: "Douleurs dentaires ou dents qui se déchaussent", score: -4 },
+  ]},
+  { question: "Tes ongles sont :", category: "mineralisation", options: [
+    { text: "Durs, lisses", score: 3 },
+    { text: "Cassants ou striés", score: 1 },
+    { text: "Qui se dédoublent souvent", score: -2 },
+    { text: "Très mous, avec tâches ou anomalies", score: -4 },
+  ]},
+  // ═══ PEAU ═══
+  { question: "Ta peau est :", category: "peau", options: [
+    { text: "Souple, hydratée", score: 3 },
+    { text: "Sèche parfois", score: 1 },
+    { text: "Très sèche, qui pèle", score: -2 },
+    { text: "Acné ou inflammation chronique", score: -4 },
+    { text: "Eczéma", score: -4 },
+  ]},
+  { question: "Tu as des boutons, acné ou kystes sous-cutanés ?", category: "peau", options: [
+    { text: "Jamais, peau toujours nette", score: 3 },
+    { text: "Quelques-uns occasionnellement", score: 1 },
+    { text: "Fréquemment, selon stress ou alimentation", score: -2 },
+    { text: "Constamment, peau inflammée ou douloureuse", score: -4 },
+  ]},
+  // ═══ CHEVEUX ═══
+  { question: "Tu remarques une perte de cheveux ?", category: "cheveux", options: [
+    { text: "Non", score: 3 },
+    { text: "Peu, surtout lors de la douche", score: 2 },
+    { text: "Légère, périodique", score: 0 },
+    { text: "Oui, depuis plusieurs mois", score: -2 },
+    { text: "Chute constante, zones dégarnies", score: -4 },
+  ]},
+  // ═══ MÉTABOLISME ═══
+  { question: "Es-tu attiré par le sucre ?", category: "metabolisme", options: [
+    { text: "Jamais", score: 3 },
+    { text: "De temps en temps", score: 1 },
+    { text: "Tous les jours", score: -2 },
+    { text: "Plusieurs fois par jour, besoin urgent", score: -4 },
+  ]},
+  { question: "Ton poids est :", category: "metabolisme", options: [
+    { text: "Stable depuis longtemps, sans effort particulier", score: 3 },
+    { text: "Plutôt stable mais je fais attention", score: 1 },
+    { text: "Je prends facilement et j'ai du mal à perdre", score: -2 },
+    { text: "En prise constante malgré mes efforts, ou effet yoyo", score: -4 },
+  ]},
+  // ═══ CANDIDOSE SCREENING ═══
+  { question: "Tu as des mycoses (cutanées, vaginales, buccales, pieds) ?", category: "candidose", options: [
+    { text: "Jamais", score: 3 },
+    { text: "Une fois dans ma vie", score: 1 },
+    { text: "Ça revient régulièrement", score: -2 },
+    { text: "Quasi en permanence malgré les traitements", score: -4 },
+  ]},
+  { question: "Combien de cures d'antibiotiques as-tu prises dans ta vie ?", category: "candidose", options: [
+    { text: "Aucune ou presque", score: 3 },
+    { text: "Quelques-unes", score: 1 },
+    { text: "Plusieurs, cures régulières", score: -2 },
+    { text: "Beaucoup, cures longues ou répétées", score: -4 },
+  ]},
+  // ═══ NERVEUX ═══
+  { question: "Face au stress, tu réagis comment ?", category: "nerveux", options: [
+    { text: "Je gère bien, ça ne m'affecte pas longtemps", score: 3 },
+    { text: "Ça me travaille un peu mais je passe à autre chose", score: 1 },
+    { text: "Je rumine, ça tourne en boucle dans ma tête", score: -2 },
+    { text: "Ça me paralyse, je mange plus ou je dors mal", score: -4 },
+  ]},
+];
+
+const FEMALE_QUESTIONS = [
+  { question: "Ton cycle menstruel est-il :", category: "hormones", options: [
+    { text: "Régulier, sans douleur ni symptômes", score: 3 },
+    { text: "Régulier mais avec quelques douleurs/irritabilité", score: 1 },
+    { text: "Irrégulier, douleurs ou fatigue marquée", score: -2 },
+    { text: "Très irrégulier, acné, gonflements, saignements abondants", score: -4 },
+    { text: "Sous contraceptif hormonal (pilule, implant, stérilet hormonal)", score: -1 },
+    { text: "Ménopausée / en périménopause", score: 0 },
+  ]},
+];
+
+// ═══════════════════════════════════════════════════════
+// QUESTIONS CONDITIONNELLES
+// ═══════════════════════════════════════════════════════
+const SIBO_QUESTIONS = [
+  { question: "Ton ventre gonfle après les repas ?", category: "sibo", options: [
+    { text: "Jamais", score: 3 },
+    { text: "Parfois, surtout après un gros repas", score: 1 },
+    { text: "Quasi systématiquement, surtout sous le nombril", score: -2 },
+    { text: "Au point de déboutonner, avec douleur", score: -4 },
+  ]},
+  { question: "Après manger, tu ressens un brouillard mental ?", category: "sibo", options: [
+    { text: "Jamais, tête claire", score: 3 },
+    { text: "Rarement, après un repas très lourd", score: 1 },
+    { text: "Souvent, difficulté à me concentrer", score: -2 },
+    { text: "Systématiquement, comme anesthésié", score: -4 },
+  ]},
+  { question: "Tes gaz sont plutôt :", category: "sibo", options: [
+    { text: "Rares et inodores", score: 3 },
+    { text: "Réguliers mais pas d'odeur forte", score: 1 },
+    { text: "Fréquents et parfois odorants", score: -2 },
+    { text: "Très fréquents et odorants (œuf pourri, putréfaction)", score: -4 },
+  ]},
+  { question: "As-tu déjà eu une intoxication alimentaire sévère ?", category: "sibo", options: [
+    { text: "Jamais", score: 3 },
+    { text: "Oui une fois, sans séquelles", score: 1 },
+    { text: "Plusieurs fois", score: -2 },
+    { text: "Oui, et mes problèmes digestifs ont commencé après", score: -4 },
+  ]},
+];
+
+const DYSBIOSE_QUESTIONS = [
+  { question: "Tu tolères les aliments fermentés (choucroute, kéfir, kombucha) ?", category: "dysbiose", options: [
+    { text: "Oui, aucun souci", score: 3 },
+    { text: "Je n'en consomme pas", score: 2 },
+    { text: "Ça me ballonne ou me donne des gaz", score: -2 },
+    { text: "Réaction forte : douleurs, diarrhée ou maux de tête", score: -4 },
+  ]},
+  { question: "Tu supportes les oignons, l'ail et les choux ?", category: "dysbiose", options: [
+    { text: "Aucun problème", score: 3 },
+    { text: "Ça passe en petite quantité", score: 1 },
+    { text: "Ballonnements ou gaz quasi systématiques", score: -2 },
+    { text: "Douleurs ou réactions fortes", score: -4 },
+  ]},
+  { question: "Tu as pris des IPP (anti-acides type oméprazole, Inexium) ?", category: "dysbiose", options: [
+    { text: "Jamais", score: 3 },
+    { text: "Ponctuellement, quelques semaines", score: 1 },
+    { text: "Pendant plusieurs mois", score: -2 },
+    { text: "Pendant des années ou encore actuellement", score: -4 },
+  ]},
+  { question: "Les légumineuses (lentilles, pois chiches, haricots) te font quoi ?", category: "dysbiose", options: [
+    { text: "Aucun souci, bonne digestion", score: 3 },
+    { text: "Quelques gaz mais rien de grave", score: 1 },
+    { text: "Ballonnements et inconfort marqué", score: -2 },
+    { text: "Douleurs ou diarrhée", score: -4 },
+  ]},
+];
+
+const CANDIDOSE_QUESTIONS = [
+  { question: "Tes envies de sucré ressemblent à quoi ?", category: "candidose", options: [
+    { text: "Juste un plaisir de temps en temps", score: 3 },
+    { text: "Régulières mais contrôlables", score: 1 },
+    { text: "Fortes, difficiles à résister", score: -2 },
+    { text: "Compulsives, comme une addiction", score: -4 },
+  ]},
+  { question: "Après avoir mangé du sucre, tu ressens :", category: "candidose", options: [
+    { text: "Rien de particulier", score: 3 },
+    { text: "Un petit coup de mou passager", score: 1 },
+    { text: "Fatigue marquée ou brouillard mental", score: -2 },
+    { text: "Crash d'énergie, irritabilité, ou besoin d'en remanger immédiatement", score: -4 },
+  ]},
+];
+
+const FOIE_QUESTIONS = [
+  { question: "Tu as des maux de tête fréquents ?", category: "foie", options: [
+    { text: "Rarement ou jamais", score: 3 },
+    { text: "Occasionnels, liés au stress ou à la fatigue", score: 1 },
+    { text: "Réguliers, surtout sur les tempes ou derrière les yeux", score: -2 },
+    { text: "Fréquents et intenses, parfois avec nausées", score: -4 },
+  ]},
+  { question: "L'alcool, même en petite quantité :", category: "foie", options: [
+    { text: "Je ne bois pas / très rarement", score: 3 },
+    { text: "Aucun souci, je tolère bien", score: 2 },
+    { text: "Un verre suffit à me rendre vaseux ou fatigué le lendemain", score: -2 },
+    { text: "Très mauvaise tolérance : maux de tête, nausées, gueule de bois disproportionnée", score: -4 },
+  ]},
+  { question: "La couleur de tes selles est :", category: "foie", options: [
+    { text: "Brun normal", score: 3 },
+    { text: "Variable, parfois plus claire", score: 1 },
+    { text: "Souvent claires, beiges ou décolorées", score: -2 },
+    { text: "Très claires, presque blanches, ou grasses (flottent)", score: -4 },
+  ]},
+];
+
+const NERVEUX_QUESTIONS = [
+  { question: "Quand tu es stressé ou triste, tu manges :", category: "nerveux", options: [
+    { text: "Normalement, le stress ne change rien", score: 3 },
+    { text: "Un peu plus, surtout du sucré ou du réconfort", score: 1 },
+    { text: "Nettement plus, c'est mon refuge", score: -2 },
+    { text: "Je perds le contrôle, crises compulsives", score: -4 },
+  ]},
+  { question: "Ta concentration et ta mémoire au quotidien :", category: "nerveux", options: [
+    { text: "Bonnes, je reste focus sans difficulté", score: 3 },
+    { text: "Correctes mais ça demande un effort", score: 1 },
+    { text: "Souvent dans le brouillard, j'oublie des choses", score: -2 },
+    { text: "Très mauvaises, je n'arrive plus à me concentrer", score: -4 },
+  ]},
+];
+
+// ═══════════════════════════════════════════════════════
+// QUESTIONS CLOSING (score neutre, tout le monde)
+// ═══════════════════════════════════════════════════════
+const CLOSING_QUESTIONS = [
+  { question: "As-tu les moyens de changer ton alimentation pour du BIO / BRUT ?", category: "engagement", options: [
+    { text: "Oui, sans problème", score: 3 },
+    { text: "Oui, en réorganisant un peu mon budget", score: 3 },
+    { text: "C'est serré, mais je suis prêt à faire des compromis", score: 3 },
+    { text: "Non, budget très limité", score: 3 },
+  ]},
+  { question: "Quel est ton régime type actuellement ?", category: "alimentation", type: "open", score: 3 },
+  { question: "As-tu des antécédents médicaux ? Si oui, lesquels ?", category: "medical", type: "open", score: 3 },
+  { question: "Quel est ton métier et est-il stressant pour toi ?", category: "stress", type: "open", score: 3 },
+];
+
+// ═══════════════════════════════════════════════════════
+// CATÉGORIES pour les résultats
+// ═══════════════════════════════════════════════════════
+const categoryDescriptions = {
+  energie: { name: "énergie", issues: "fatigue chronique, manque de vitalité" },
+  circulation: { name: "circulation sanguine", issues: "extrémités froides, mauvaise circulation" },
+  thyroide: { name: "thyroïde / métabolisme", issues: "frilosité constante, métabolisme lent" },
+  sommeil: { name: "qualité du sommeil", issues: "réveils nocturnes, insomnie, écrans" },
+  digestion: { name: "digestion", issues: "ballonnements, gaz, langue chargée" },
+  foie: { name: "sphère hépatique", issues: "digestion des graisses difficile, bouche amère" },
+  graisses: { name: "qualité des graisses", issues: "huiles inflammatoires au quotidien" },
+  immunite: { name: "immunité", issues: "infections fréquentes, cicatrisation lente" },
+  inflammation: { name: "inflammation", issues: "douleurs articulaires, allergies, eczéma" },
+  mineralisation: { name: "minéralisation", issues: "ongles cassants, problèmes dentaires" },
+  peau: { name: "santé de la peau", issues: "sécheresse, acné, inflammations cutanées" },
+  cheveux: { name: "santé capillaire", issues: "chute de cheveux" },
+  metabolisme: { name: "métabolisme", issues: "envies de sucre, prise de poids, déséquilibre glycémique" },
+  nerveux: { name: "axe nerveux", issues: "stress, rumination, épuisement mental" },
+  hormones: { name: "équilibre hormonal", issues: "cycles irréguliers, symptômes prémenstruels" },
+  sibo: { name: "SIBO (prolifération bactérienne)", issues: "ventre gonflé, brouillard mental post-repas" },
+  candidose: { name: "candidose", issues: "mycoses récurrentes, envies sucrées compulsives" },
+  dysbiose: { name: "dysbiose intestinale", issues: "intolérance FODMAPs, flore déséquilibrée" },
+};
+
+// Catégories exclues de l'affichage "points faibles"
+const EXCLUDED_CATS = ["engagement", "alimentation", "medical", "stress"];
+
+// ═══════════════════════════════════════════════════════
+// COMPOSANT PRINCIPAL
+// ═══════════════════════════════════════════════════════
+export default function QuestionnaireAncestral() {
   const [name, setName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [phonePrefix, setPhonePrefix] = useState("+33");
   const [phone, setPhone] = useState("");
   const [indicatifDropdownOpen, setIndicatifDropdownOpen] = useState(false);
   const [indicatifSearch, setIndicatifSearch] = useState("");
   const indicatifDropdownRef = useRef(null);
   const [age, setAge] = useState("");
-  const [sex, setSex] = useState(""); // "homme" | "femme"
+  const [sex, setSex] = useState("");
   const [consentGiven, setConsentGiven] = useState(false);
   const [consentAnimating, setConsentAnimating] = useState(false);
-  const [consentChoice, setConsentChoice] = useState(null); // 'yes' ou 'no'
+  const [consentChoice, setConsentChoice] = useState(null);
   const [step, setStep] = useState(0);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
@@ -37,2337 +388,1040 @@ export default function App() {
   const [clickedOptionIndex, setClickedOptionIndex] = useState(null);
   const [initialFormAnimating, setInitialFormAnimating] = useState(false);
   const [showConsentPage, setShowConsentPage] = useState(false);
-  const [phoneError, setPhoneError] = useState("");
-  const [phoneValidationAttempted, setPhoneValidationAttempted] = useState(false);
-  const [openAnswer, setOpenAnswer] = useState(""); // Pour les questions ouvertes
+  const [openAnswer, setOpenAnswer] = useState("");
+  const [conditionalBuilt, setConditionalBuilt] = useState(false);
+  const [questionsArray, setQuestionsArray] = useState([]);
+  const [conditionalTriggered, setConditionalTriggered] = useState({ sibo: false, dysbiose: false, candidose: false, foie: false, nerveux: false });
   const hasSentRef = useRef(false);
-  const consentNoTimeoutRef = useRef(null);
 
-  // Questions (base)
-  const baseQuestions = useMemo(
-    () => [
-      {
-        question: "Le matin au réveil, tu te sens comment ?",
-        category: "energie",
-        options: [
-          { text: " En pleine forme, prêt à attaquer la journée", score: 4 },
-          { text: " Il me faut un moment pour me réveiller vraiment", score: 3 },
-          { text: " Je suis déjà fatigué au lever", score: 2 },
-          { text: " Je me lève vidé, comme si je n'avais pas dormi", score: 1 },
-        ],
-      },
-      {
-        question: "Tes mains et pieds sont :",
-        category: "circulation",
-        options: [
-          { text: " Toujours bien chauds", score: 4 },
-          { text: " Froids parfois, selon la saison", score: 3 },
-          { text: " Souvent froids même à l'intérieur", score: 2 },
-          { text: " Gelés en permanence, même sous la couette", score: 1 },
-        ],
-      },
-      {
-        question: "Ton niveau d'énergie en journée est :",
-        category: "energie",
-        options: [
-          { text: " Stable du matin au soir", score: 4 },
-          { text: " Variable mais gérable", score: 3 },
-          { text: " En dents de scie, avec des coups de mou", score: 2 },
-          { text: " Épuisement constant, même sans effort", score: 1 },
-        ],
-      },
-      {
-        question: "Tu as souvent besoin de café ou thé pour fonctionner ?",
-        category: "energie",
-        options: [
-          { text: " Je ne bois jamais de café/thé", score: 4 },
-          { text: " Je ne bois pas régulièrement de café/thé", score: 4 },
-          { text: " De temps en temps", score: 3 },
-          { text: " Tous les jours", score: 2 },
-          { text: ' Plusieurs fois par jour sinon je "tombe"', score: 1 },
-        ],
-      },
-      {
-        question: "Tu dors :",
-        category: "sommeil",
-        options: [
-          { text: " Profondément et sans réveils", score: 4 },
-          { text: " Légèrement, je me réveille parfois", score: 3 },
-          { text: " Je me réveille plusieurs fois", score: 2 },
-          { text: " Je dors très mal ou j'ai de l'insomnie", score: 1 },
-        ],
-      },
-      {
-        question: "Combien d'heures de sommeil te faut-il pour récupérer ?",
-        category: "sommeil",
-        options: [
-          { text: " 5–6h me suffisent", score: 4 },
-          { text: " Il me faut 8h minimum", score: 3 },
-          { text: " Même 9h ne suffisent pas", score: 2 },
-          { text: " Je suis toujours épuisé, même avec 10h", score: 1 },
-        ],
-      },
-      {
-        question: "Tu ressens des ballonnements ou gaz :",
-        category: "digestion",
-        options: [
-          { text: " Jamais", score: 4 },
-          { text: " Parfois, après certains plats", score: 3 },
-          { text: " Quasiment tous les jours", score: 2 },
-          { text: " Constamment, avec douleurs", score: 1 },
-        ],
-      },
-      {
-        question: "Ta langue le matin est :",
-        category: "digestion",
-        options: [
-          { text: " Rose et propre", score: 4 },
-          { text: " Un peu blanche parfois", score: 3 },
-          { text: " Blanche quasi tout le temps", score: 2 },
-          { text: " Épaisse, pâteuse, chargée tous les jours", score: 1 },
-        ],
-      },
-      {
-        question: "Tu es tombé malade combien de fois cette année (rhume, fièvre…) ?",
-        category: "immunite",
-        options: [
-          { text: " Jamais", score: 4 },
-          { text: " 1 ou 2 fois", score: 3 },
-          { text: " Plus de 3 fois", score: 2 },
-          { text: " Constamment, ou infections longues", score: 1 },
-        ],
-      },
-      {
-        question: "Quand tu es malade, tu guéris en :",
-        category: "immunite",
-        options: [
-          { text: " Je ne tombe jamais malade", score: 4 },
-          { text: " 2–3 jours", score: 3 },
-          { text: " 5–6 jours", score: 2 },
-          { text: " 1 à 2 semaines ou ça traîne", score: 1 },
-        ],
-      },
-      {
-        question: "Tu as des douleurs articulaires ou musculaires :",
-        category: "inflammation",
-        options: [
-          { text: " Jamais", score: 4 },
-          { text: " Rarement", score: 3 },
-          { text: " Régulièrement", score: 2 },
-          { text: " Tous les jours ou invalidantes", score: 1 },
-        ],
-      },
-      {
-        question: "Tu as des allergies, eczéma, urticaire ou réactions cutanées ?",
-        category: "inflammation",
-        options: [
-          { text: " Non", score: 4 },
-          { text: " Un peu, saisonnièrement", score: 3 },
-          { text: " Régulièrement dans l'année", score: 2 },
-          { text: " Quasi en permanence", score: 1 },
-        ],
-      },
-      {
-        question: "Tes blessures (coupures, bleus) cicatrisent :",
-        category: "immunite",
-        options: [
-          { text: " Rapidement", score: 4 },
-          { text: " Un peu lentement", score: 3 },
-          { text: " Lentement et mal", score: 2 },
-          { text: " Très lentement, infections fréquentes", score: 1 },
-        ],
-      },
-      {
-        question: "Tes dents et gencives vont comment ?",
-        category: "mineralisation",
-        options: [
-          { text: " Solides, jamais de caries ou saignement", score: 4 },
-          { text: " Quelques saignements ou caries récentes", score: 3 },
-          { text: " Caries fréquentes, gencives sensibles", score: 2 },
-          { text: " Douleurs dentaires ou dents qui se déchaussent", score: 1 },
-        ],
-      },
-      {
-        question: "Tes ongles sont :",
-        category: "mineralisation",
-        options: [
-          { text: " Durs, lisses", score: 4 },
-          { text: " Cassants ou striés", score: 3 },
-          { text: " Qui se dédoublent souvent", score: 2 },
-          { text: " Très mous, avec tâches ou anomalies", score: 1 },
-        ],
-      },
-      {
-        question: "Ta peau est :",
-        category: "peau",
-        options: [
-          { text: " Souple, hydratée", score: 4 },
-          { text: " Sèche parfois", score: 3 },
-          { text: " Très sèche, qui pèle", score: 2 },
-          { text: " Acné ou inflammation chronique", score: 1 },
-          { text: " Eczéma", score: 1 },
-        ],
-      },
-      {
-        question: "Tu remarques une perte de cheveux ?",
-        category: "cheveux",
-        options: [
-          { text: " Non", score: 4 },
-          { text: " Peu, surtout lors de la douche", score: 4 },
-          { text: " Légère, périodique", score: 3 },
-          { text: " Oui, depuis plusieurs mois", score: 2 },
-          { text: " Chute constante, zones dégarnies", score: 1 },
-        ],
-      },
-      {
-        question: "Es-tu attiré par le sucre ?",
-        category: "metabolisme",
-        options: [
-          { text: " Jamais", score: 4 },
-          { text: " De temps en temps", score: 3 },
-          { text: " Tous les jours", score: 2 },
-          { text: " Plusieurs fois par jour, besoin urgent", score: 1 },
-        ],
-      },
-      {
-        question: "Tu as des boutons, acné ou kystes sous-cutanés ?",
-        category: "peau",
-        options: [
-          { text: " Jamais, peau toujours nette", score: 4 },
-          { text: " Quelques-uns occasionnellement", score: 3 },
-          { text: " Fréquemment, selon stress ou alimentation", score: 2 },
-          { text: " Constamment, peau inflammée ou douloureuse", score: 1 },
-        ],
-      },
-      {
-        question:
-          "Tu as des réactions digestives ou physiques après certains aliments (laitiers, gluten, fruits, légumes…) ?",
-        category: "digestion",
-        options: [
-          { text: " Jamais", score: 4 },
-          { text: " Parfois, mais c'est léger", score: 3 },
-          { text: " Oui, j'évite certains aliments pour ça", score: 2 },
-          { text: " Oui, plusieurs groupes d'aliments me rendent mal", score: 1 },
-        ],
-      },
-      {
-        question: "Quel est ton régime type actuellement ? (donne-moi un maximum de détails)",
-        category: "alimentation",
-        type: "open",
-        score: 2,
-      },
-      {
-        question: "As-tu des antécédents médicaux ? Si oui, lesquels ?",
-        category: "medical",
-        type: "open",
-        score: 2,
-      },
-      {
-        question: "Quel est ton métier et est-il stressant pour toi ?",
-        category: "stress",
-        type: "open",
-        score: 2,
-      },
-    ].map(q => ({
-      ...q,
-      options: q.options ? shuffleArray(q.options) : undefined
-    })),
-    []
-  );
+  // Build initial questions when sex is selected
+  const coreLength = useMemo(() => CORE_QUESTIONS.length + (sex === "femme" ? FEMALE_QUESTIONS.length : 0), [sex]);
 
-  // Question Femme seulement
-  const femaleOnly = useMemo(
-    () => [
-      {
-        question: "Ton cycle menstruel est-il :",
-        category: "hormones",
-        options: shuffleArray([
-          { text: " Régulier, sans douleur ni symptômes", score: 4 },
-          { text: " Régulier mais avec quelques douleurs/irritabilité", score: 3 },
-          { text: " Irrégulier, douleurs ou fatigue marquée", score: 2 },
-          {
-            text: " Très irrégulier, avec acné, gonflements, saignements abondants",
-            score: 1,
-          },
-          { text: " Pas de règles du tout", score: 1 },
-          {
-            text: " Sous contraceptif hormonal ou ménopausée (pas de règles)",
-            score: 2,
-          },
-        ]),
-      },
-    ],
-    []
-  );
+  useEffect(() => {
+    if (!sex) return;
+    const core = CORE_QUESTIONS.map(q => ({ ...q, options: q.options ? shuffleArray(q.options) : undefined }));
+    const female = FEMALE_QUESTIONS.map(q => ({ ...q, options: shuffleArray(q.options) }));
+    const closing = CLOSING_QUESTIONS.map(q => ({ ...q, options: q.options ? shuffleArray(q.options) : undefined }));
+    if (sex === "femme") setQuestionsArray([...core, ...female, ...closing]);
+    else setQuestionsArray([...core, ...closing]);
+    setConditionalBuilt(false);
+  }, [sex]);
 
-  const questions = useMemo(() => {
-    if (sex === "femme") return [...baseQuestions, ...femaleOnly];
-    if (sex === "homme") return baseQuestions;
-    return [];
-  }, [sex, baseQuestions, femaleOnly]);
+  // When core is complete, compute & insert conditional questions
+  useEffect(() => {
+    if (conditionalBuilt || answers.length < coreLength || coreLength === 0) return;
 
-  const maxScore = useMemo(() => questions.length * 4, [questions.length]);
+    const coreAnswers = answers.slice(0, coreLength);
 
+    // Compute averages
+    const catScores = {};
+    coreAnswers.forEach(a => {
+      if (!catScores[a.category]) catScores[a.category] = { total: 0, count: 0 };
+      catScores[a.category].total += a.score;
+      catScores[a.category].count += 1;
+    });
+    const avg = (cat) => catScores[cat] ? catScores[cat].total / catScores[cat].count : 3;
+
+    // Find specific answer scores
+    const findScore = (cat, keyword) => {
+      const a = coreAnswers.find(a => a.category === cat && a.question.toLowerCase().includes(keyword));
+      return a ? a.score : 3;
+    };
+
+    const digestionAvg = avg("digestion");
+    const sucreSc = findScore("metabolisme", "sucre");
+    const mycosesSc = findScore("candidose", "mycoses");
+    const antibioSc = findScore("candidose", "antibiotiques");
+
+    const triggers = { sibo: false, dysbiose: false, candidose: false, foie: false, nerveux: false };
+    const conditionals = [];
+
+    // FOIE : si foie avg < 0 (au moins une réponse mauvaise)
+    const foieAvg = avg("foie");
+    if (foieAvg < 0) {
+      triggers.foie = true;
+      conditionals.push(
+        { type: "transition", message: "Tes réponses sur le foie montrent des signaux importants. Quelques questions pour affiner." },
+        ...FOIE_QUESTIONS.map(q => ({ ...q, options: shuffleArray(q.options) })),
+      );
+    }
+
+    // SIBO + DYSBIOSE : si digestion avg < 0
+    if (digestionAvg < 0) {
+      triggers.sibo = true;
+      triggers.dysbiose = true;
+      if (conditionals.length === 0) {
+        conditionals.push({ type: "transition", message: "Tes réponses sur la digestion montrent des signaux importants. Je te pose quelques questions supplémentaires pour affiner l'analyse." });
+      } else {
+        conditionals.push({ type: "transition", message: "Maintenant, quelques questions sur ta digestion pour aller plus loin." });
+      }
+      conditionals.push(
+        ...SIBO_QUESTIONS.map(q => ({ ...q, options: shuffleArray(q.options) })),
+        ...DYSBIOSE_QUESTIONS.map(q => ({ ...q, options: q.options ? shuffleArray(q.options) : undefined })),
+      );
+    }
+
+    // CANDIDOSE : si sucre < 0 OU mycoses < 0 OU antibiotiques < 0
+    if (sucreSc < 0 || mycosesSc < 0 || antibioSc < 0) {
+      triggers.candidose = true;
+      if (conditionals.length === 0) {
+        conditionals.push({ type: "transition", message: "Quelques signaux supplémentaires à vérifier. Encore quelques questions pour compléter ton profil." });
+      }
+      conditionals.push(...CANDIDOSE_QUESTIONS.map(q => ({ ...q, options: shuffleArray(q.options) })));
+    }
+
+    // NERVEUX : si nerveux score < 0
+    const nerveuxSc = findScore("nerveux", "stress");
+    if (nerveuxSc < 0) {
+      triggers.nerveux = true;
+      if (conditionals.length === 0) {
+        conditionals.push({ type: "transition", message: "Quelques questions sur ton rapport au stress et aux émotions." });
+      }
+      conditionals.push(...NERVEUX_QUESTIONS.map(q => ({ ...q, options: shuffleArray(q.options) })));
+    }
+
+    setConditionalTriggered(triggers);
+
+    if (conditionals.length > 0) {
+      setQuestionsArray(prev => {
+        const core = prev.slice(0, coreLength);
+        const closing = prev.slice(coreLength);
+        return [...core, ...conditionals, ...closing];
+      });
+    }
+    setConditionalBuilt(true);
+  }, [answers.length, coreLength, conditionalBuilt]);
+
+  // ═══════════════════════════════════════════════════════
+  // WEBHOOK — ENVOI MAKE.COM À LA FIN DU QUESTIONNAIRE
+  // ═══════════════════════════════════════════════════════
+  useEffect(() => {
+    if (!finished || hasSentRef.current) return;
+    hasSentRef.current = true;
+
+    // Formater le téléphone en international
+    const nationalDigits = phone.replace(/\D/g, "").replace(/^0+/, "");
+    const fullPhoneWithPlus = phonePrefix === "OTHER" ? phone : `${phonePrefix}${nationalDigits}`;
+    const fullPhoneDigitsOnly = fullPhoneWithPlus.replace(/\D/g, "");
+
+    // Calculer les moyennes par catégorie
+    const catScores = {};
+    answers.forEach(a => {
+      if (!catScores[a.category]) catScores[a.category] = { total: 0, count: 0 };
+      catScores[a.category].total += a.score;
+      catScores[a.category].count += 1;
+    });
+    const categoryAverages = {};
+    Object.keys(catScores).forEach(c => {
+      categoryAverages[c] = Math.round((catScores[c].total / catScores[c].count) * 100) / 100;
+    });
+
+    // Terrain
+    const nbQ = questionsArray.filter(q => q.type !== "transition").length;
+    const minScore = nbQ * -4;
+    const pct = nbQ > 0 ? (score - minScore) / (maxScore - minScore) : 0;
+    let terrain;
+    if (pct <= 0.4) terrain = "TERRAIN CRITIQUE";
+    else if (pct <= 0.6) terrain = "TERRAIN DÉSÉQUILIBRÉ";
+    else if (pct <= 0.8) terrain = "TERRAIN STABLE";
+    else terrain = "TERRAIN AVANCÉ";
+
+    const pourcentage = Math.round(pct * 100);
+
+    // Points faibles (avg < 0, hors catégories exclues)
+    const weakCategories = Object.keys(categoryAverages)
+      .filter(c => !EXCLUDED_CATS.includes(c) && categoryAverages[c] < 0)
+      .sort((a, b) => categoryAverages[a] - categoryAverages[b]);
+
+    const symptome1 = weakCategories[0] ? (categoryDescriptions[weakCategories[0]]?.issues || weakCategories[0]) : "";
+    const symptome2 = weakCategories[1] ? (categoryDescriptions[weakCategories[1]]?.issues || weakCategories[1]) : "";
+
+    // Réponses ouvertes
+    const openAnswersMap = {};
+    answers.forEach(a => {
+      if (["alimentation", "medical", "stress"].includes(a.category)) {
+        openAnswersMap[a.category] = a.reponseTexte;
+      }
+    });
+
+    // Noms
+    const prenom = name.trim().split(/\s+/)[0] || "";
+    const nom = name.trim().split(/\s+/).slice(1).join(" ") || "";
+    const prenomNom = name.trim();
+
+    // Timestamp
+    const timestamp = new Date().toISOString();
+
+    // Réponses formatées
+    const reponses = answers.map(a => ({
+      question: a.question,
+      categorie: a.category,
+      score: a.score,
+      reponse: a.reponseTexte,
+    }));
+
+    // WhatsApp text pré-formaté
+    const whatsappLines = [
+      "📋 NOUVEAU QUESTIONNAIRE ANCESTRAL", "",
+      "👤 INFORMATIONS",
+      `• Prénom: ${prenom || "-"}`,
+      `• Nom: ${nom || "-"}`,
+      `• Email: ${email.trim() || "-"}`,
+      `• Âge: ${age || "-"}`,
+      `• Téléphone: ${fullPhoneWithPlus || "-"}`,
+      `• Sexe: ${sex || "-"}`, "",
+      "📊 RÉSULTATS",
+      `• Score: ${score} / ${maxScore}`,
+      `• Pourcentage: ${pourcentage}%`,
+      `• Profil: ${terrain}`, "",
+      `⏰ Date: ${timestamp}`, "",
+      "🧾 RÉPONSES DÉTAILLÉES:",
+      ...reponses.map((r, i) => `- ${r.question}\n  → ${r.reponse}`),
+    ];
+    let whatsappText = whatsappLines.join("\n").trim();
+    if (whatsappText.length > 3800) whatsappText = whatsappText.slice(0, 3780) + "\n…(tronqué)";
+
+    // Payload URLSearchParams (compatible no-cors)
+    const payload = {
+      timestamp,
+      prenom,
+      nom,
+      prenomNom,
+      email: email.trim(),
+      age: age || "",
+      indicatif: phonePrefix === "OTHER" ? "" : phonePrefix,
+      telephone: fullPhoneDigitsOnly,
+      telephoneInternational: fullPhoneWithPlus,
+      telephoneNational: nationalDigits,
+      telephoneText: `'${fullPhoneDigitsOnly}`,
+      telephoneRaw: fullPhoneDigitsOnly,
+      sexe: sex,
+      score: String(score),
+      scoreMax: String(maxScore),
+      scoreFormatted: `${score} sur ${maxScore}`,
+      pourcentage: String(pourcentage),
+      profil: terrain,
+      nombreQuestions: String(questionsArray.filter(q => q.type !== "transition").length),
+      symptome1,
+      symptome2,
+      weakCategoriesText: weakCategories.map(c => categoryDescriptions[c]?.name || c).join(", "),
+      conditionalSibo: String(conditionalTriggered.sibo),
+      conditionalDysbiose: String(conditionalTriggered.dysbiose),
+      conditionalCandidose: String(conditionalTriggered.candidose),
+      conditionalFoie: String(conditionalTriggered.foie),
+      conditionalNerveux: String(conditionalTriggered.nerveux),
+      regime: openAnswersMap.alimentation || "",
+      antecedents: openAnswersMap.medical || "",
+      metier: openAnswersMap.stress || "",
+      whatsappText,
+      reponsesJson: JSON.stringify(reponses),
+      categoryAveragesJson: JSON.stringify(categoryAverages),
+      rawJson: JSON.stringify({
+        timestamp, prenom, nom, email: email.trim(), age, telephone: fullPhoneWithPlus,
+        sexe: sex, score, scoreMax: maxScore, pourcentage, terrain,
+        categoryAverages, weakCategories, conditionalTriggered, reponses,
+      }),
+    };
+
+    const WEBHOOK_URL = (typeof import.meta !== "undefined" && import.meta.env?.VITE_MAKE_WEBHOOK_URL) || "https://hook.eu1.make.com/yf61fckihxirt84w6r5rhd5813e16s5v";
+
+    fetch(WEBHOOK_URL, {
+      method: "POST",
+      mode: "no-cors",
+      keepalive: true,
+      body: new URLSearchParams(payload),
+    })
+      .then(() => console.log("✅ Webhook Make.com envoyé"))
+      .catch(err => console.error("❌ Webhook failed:", err));
+  }, [finished]);
+
+  // Phone logic
   const dialCode = phonePrefix && phonePrefix !== "OTHER" ? phonePrefix : "";
   const phoneDigitsOnly = phone.replace(/\D/g, "");
-  const phoneDigits = dialCode
-    ? phoneDigitsOnly.replace(/^0+/, "")
-    : phoneDigitsOnly;
-  const isPhoneValid =
-    phonePrefix !== "" &&
-    (phonePrefix === "OTHER" ? phoneDigitsOnly.length >= 1 : phoneDigits.length >= 1);
+  const phoneDigits = dialCode ? phoneDigitsOnly.replace(/^0+/, "") : phoneDigitsOnly;
+  const isPhoneValid = phonePrefix !== "" && (phonePrefix === "OTHER" ? phoneDigitsOnly.length >= 1 : phoneDigits.length >= 1);
 
-  const selectedIndicatifLabel =
-    !phonePrefix
-      ? "Indicatif (à choisir)"
-      : phonePrefix === "OTHER"
-        ? "Autre"
-        : (() => {
-            const c = COUNTRY_DIAL_LIST.find((x) => x.dial === phonePrefix);
-            return c ? `${c.name} ${c.dial}` : "Indicatif (à choisir)";
-          })();
+  const selectedIndicatifLabel = !phonePrefix ? "Indicatif" : phonePrefix === "OTHER" ? "Autre" : (() => {
+    const c = COUNTRY_DIAL_LIST.find(x => x.dial === phonePrefix);
+    return c ? `${c.name} ${c.dial}` : "Indicatif";
+  })();
 
   const filteredCountries = useMemo(() => {
     const raw = indicatifSearch.trim();
     if (!raw) return COUNTRY_DIAL_LIST;
-    const q = raw.toLowerCase();
-    const sansAccent = (s) =>
-      s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const matchName = (name) => {
-      const n = name.toLowerCase();
-      return n.includes(q) || sansAccent(name).includes(sansAccent(raw));
-    };
-    return COUNTRY_DIAL_LIST.filter(
-      (c) =>
-        matchName(c.name) ||
-        c.dial.replace("+", "").includes(raw.replace(/\D/g, ""))
-    );
+    const sansAccent = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return COUNTRY_DIAL_LIST.filter(c => sansAccent(c.name).includes(sansAccent(raw)) || c.dial.replace("+", "").includes(raw.replace(/\D/g, "")));
   }, [indicatifSearch]);
 
   useEffect(() => {
     if (!indicatifDropdownOpen) return;
-    function handleClickOutside(e) {
-      if (indicatifDropdownRef.current && !indicatifDropdownRef.current.contains(e.target)) {
-        setIndicatifDropdownOpen(false);
-      }
-    }
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.body.style.overflow = prevOverflow;
-    };
+    const h = (e) => { if (indicatifDropdownRef.current && !indicatifDropdownRef.current.contains(e.target)) setIndicatifDropdownOpen(false); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
   }, [indicatifDropdownOpen]);
 
-  function formatDateFR(isoString) {
-    try {
-      return new Date(isoString).toLocaleString("fr-FR", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
-    } catch {
-      return isoString;
-    }
-  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isEmailValid = emailRegex.test(email.trim());
+  const canStart = name.trim().length >= 2 && isEmailValid && isPhoneValid && (sex === "homme" || sex === "femme");
 
-  function buildWhatsappText({ timestamp, prenom, nom, age, telephoneRaw, sexe, score, scoreMax, pourcentage, profil, reponses }) {
-    const header = [
-      "📋 NOUVEAU QUESTIONNAIRE ANCESTRAL",
-      "",
-      "👤 INFORMATIONS",
-      `• Prénom: ${prenom || "-"}`,
-      `• Nom: ${nom || "-"}`,
-      `• Âge: ${age || "-"}`,
-      `• Téléphone: ${telephoneRaw || "-"}`,
-      `• Sexe: ${sexe || "-"}`,
-      "",
-      "📊 RÉSULTATS",
-      `• Score: ${typeof score === "number" ? score : "-"} / ${typeof scoreMax === "number" ? scoreMax : "-"}`,
-      `• Pourcentage: ${typeof pourcentage === "number" ? pourcentage : "-"}%`,
-      `• Profil: ${profil || "-"}`,
-      "",
-      `⏰ Date: ${timestamp ? formatDateFR(timestamp) : "-"}`,
-      "",
-      "🧾 RÉPONSES DÉTAILLÉES:",
-    ].join("\n");
-
-    const details = Array.isArray(reponses)
-      ? reponses
-          .map((r, i) => {
-            const q = r?.question || `Question ${i + 1}`;
-            const a = r?.reponseTexte || "";
-            return `- ${q}${a ? `\n  → ${a}` : ""}`;
-          })
-          .join("\n")
-      : "";
-
-    let text = `${header}\n${details}`.trim();
-    // WhatsApp a une limite de longueur : on garde une marge.
-    const MAX = 3800;
-    if (text.length > MAX) text = text.slice(0, MAX - 20) + "\n…(tronqué)";
-    return text;
-  }
-
-  const canStart =
-    name.trim().length >= 2 &&
-    lastName.trim().length >= 1 &&
-    isPhoneValid &&
-    (sex === "homme" || sex === "femme");
-
-  // Validation du téléphone (seulement après tentative)
-  useEffect(() => {
-    if (phonePrefix === "") {
-      setPhoneError("");
-      return;
-    }
-    if (phoneValidationAttempted && phone.length > 0) {
-      const digits = phonePrefix === "OTHER" ? phoneDigitsOnly : phoneDigits;
-      if (digits.length === 0) {
-        setPhoneError("Le numéro doit contenir au moins un chiffre");
-      } else {
-        setPhoneError("");
-      }
-    } else {
-      setPhoneError("");
-    }
-  }, [phonePrefix, phone, phoneDigits.length, phoneDigitsOnly.length, phoneValidationAttempted]);
-
-  // Passage à la page consent uniquement au clic sur "Continuer" (plus d'auto-avance au clic Homme/Femme)
   function goToConsentPage() {
     if (!canStart) return;
     setInitialFormAnimating(true);
-    setTimeout(() => {
-      setShowConsentPage(true);
-      setInitialFormAnimating(false);
-    }, 400);
+    setTimeout(() => { setShowConsentPage(true); setInitialFormAnimating(false); }, 400);
   }
 
-  // Auto-progression de la barre de chargement
+  // Loading animation
   useEffect(() => {
-    if (showCompleted) {
-      setLoadingProgress(0);
-      
-      // Animation de la barre de progression
-      const duration = 3000; // 3 secondes
-      const steps = 60; // 60 frames
-      const increment = 100 / steps;
-      const interval = duration / steps;
-      
-      let currentProgress = 0;
-      const progressInterval = setInterval(() => {
-        currentProgress += increment;
-        if (currentProgress >= 100) {
-          setLoadingProgress(100);
-          clearInterval(progressInterval);
-          // Révéler les résultats après une courte pause
-          setTimeout(() => {
-            setShowCompleted(false);
-            setFinished(true);
-            saveDataToSheet();
-          }, 200);
-        } else {
-          setLoadingProgress(currentProgress);
-        }
-      }, interval);
-      
-      return () => clearInterval(progressInterval);
-    }
+    if (!showCompleted) return;
+    setLoadingProgress(0);
+    const steps = 60, interval = 3000 / steps;
+    let p = 0;
+    const id = setInterval(() => {
+      p += 100 / steps;
+      if (p >= 100) { setLoadingProgress(100); clearInterval(id); setTimeout(() => { setShowCompleted(false); setFinished(true); }, 200); }
+      else setLoadingProgress(p);
+    }, interval);
+    return () => clearInterval(id);
   }, [showCompleted]);
 
-  function createRipple(event) {
-    const button = event.currentTarget;
-    const circle = document.createElement("span");
-    const diameter = Math.max(button.clientWidth, button.clientHeight);
-    const radius = diameter / 2;
+  const maxScore = useMemo(() => {
+    return questionsArray.filter(q => q.type !== "transition").length * 3;
+  }, [questionsArray]);
 
-    const rect = button.getBoundingClientRect();
-    circle.style.width = circle.style.height = `${diameter}px`;
-    circle.style.left = `${event.clientX - rect.left - radius}px`;
-    circle.style.top = `${event.clientY - rect.top - radius}px`;
-    circle.classList.add("ripple");
-
-    const ripple = button.getElementsByClassName("ripple")[0];
-    if (ripple) {
-      ripple.remove();
-    }
-
-    button.appendChild(circle);
-  }
-
-  function createExplosion(event) {
-    const x = event.clientX;
-    const y = event.clientY;
-
-    // Créer 12 traits rayonnants
-    for (let i = 0; i < 12; i++) {
-      const particle = document.createElement("span");
-      particle.classList.add("explosion-particle");
-      
-      const angle = (i / 12) * Math.PI * 2;
-      const maxLength = 60 + Math.random() * 30; // longueur maximale du trait
-      const thickness = 1; // épaisseur ultra fine
-      
-      particle.style.position = 'fixed';
-      particle.style.left = `${x}px`;
-      particle.style.top = `${y}px`;
-      particle.style.width = `${maxLength}px`;
-      particle.style.height = `${thickness}px`;
-      particle.style.transformOrigin = '0 50%'; // Origine à gauche du trait (point de clic)
-      particle.style.setProperty('--rotation', `${angle}rad`);
-      
-      document.body.appendChild(particle);
-      
-      setTimeout(() => {
-        particle.remove();
-      }, 1200);
-    }
-  }
-
-  function answer(option, optionIndex, event) {
-    const currentQuestion = questions[step];
-    setScore((s) => s + option.score);
-    setAnswers((prev) => [...prev, {
-      category: currentQuestion.category,
-      score: option.score,
-      question: currentQuestion.question,
-      reponseTexte: option.text,
-    }]);
-    
-    // Marquer le bouton comme cliqué pour l'animation grisée
+  function answer(option, optionIndex) {
+    const q = questionsArray[step];
+    setScore(s => s + option.score);
+    setAnswers(prev => [...prev, { category: q.category, score: option.score, question: q.question, reponseTexte: option.text }]);
     setClickedOptionIndex(optionIndex);
-    
-    // Attendre que l'animation du bouton soit visible (400ms)
+    setTimeout(() => setQuestionTransitioning(true), 400);
     setTimeout(() => {
-      // Puis lancer le fade-out de la question
-      setQuestionTransitioning(true);
-    }, 400);
-    
-    setTimeout(() => {
-      if (step + 1 < questions.length) {
-        // Passe à la question suivante
-        setStep((x) => x + 1);
-        setQuestionTransitioning(false);
-        setClickedOptionIndex(null); // Réinitialiser l'animation
-      } else {
-        // Dernière question : afficher le message "Questionnaire terminé"
-        setShowCompleted(true);
-        setQuestionTransitioning(false);
-        setClickedOptionIndex(null); // Réinitialiser l'animation
-      }
-    }, 750); // Délai total pour la transition
+      const next = step + 1;
+      if (next < questionsArray.length) { setStep(next); setQuestionTransitioning(false); setClickedOptionIndex(null); }
+      else { setShowCompleted(true); setQuestionTransitioning(false); setClickedOptionIndex(null); }
+    }, 750);
+  }
+
+  function advanceTransition() {
+    setQuestionTransitioning(true);
+    setTimeout(() => { setStep(s => s + 1); setQuestionTransitioning(false); }, 400);
   }
 
   function submitOpenAnswer() {
-    const currentQuestion = questions[step];
-    if (!currentQuestion || currentQuestion.type !== "open") return;
-    
-    const trimmedAnswer = openAnswer.trim();
-    if (!trimmedAnswer) return; // Ne pas passer si vide
-    
-    setScore((s) => s + (currentQuestion.score || 2));
-    setAnswers((prev) => [...prev, {
-      category: currentQuestion.category,
-      score: currentQuestion.score || 2,
-      question: currentQuestion.question,
-      reponseTexte: trimmedAnswer,
-    }]);
-    
-    setOpenAnswer(""); // Réinitialiser
+    const q = questionsArray[step];
+    if (!q || q.type !== "open" || !openAnswer.trim()) return;
+    setScore(s => s + (q.score || 4));
+    setAnswers(prev => [...prev, { category: q.category, score: q.score || 4, question: q.question, reponseTexte: openAnswer.trim() }]);
+    setOpenAnswer("");
     setQuestionTransitioning(true);
-    
     setTimeout(() => {
-      if (step + 1 < questions.length) {
-        setStep((x) => x + 1);
-        setQuestionTransitioning(false);
-      } else {
-        setShowCompleted(true);
-        setQuestionTransitioning(false);
-      }
+      const next = step + 1;
+      if (next < questionsArray.length) { setStep(next); setQuestionTransitioning(false); }
+      else { setShowCompleted(true); setQuestionTransitioning(false); }
     }, 400);
   }
 
   function goBack() {
     if (step > 0) {
-      // Retirer la dernière réponse
-      const lastAnswer = answers[answers.length - 1];
-      if (lastAnswer) {
-        setScore((s) => s - lastAnswer.score);
-        setAnswers((prev) => prev.slice(0, -1));
+      const prevQ = questionsArray[step - 1];
+      if (prevQ && prevQ.type !== "transition") {
+        const last = answers[answers.length - 1];
+        if (last) { setScore(s => s - last.score); setAnswers(prev => prev.slice(0, -1)); }
       }
-      // Revenir à la question précédente
-      setStep((x) => x - 1);
-      setClickedOptionIndex(null); // Réinitialiser l'animation
-      setOpenAnswer(""); // Réinitialiser la réponse ouverte
-    } else if (step === 0) {
-      // Revenir à la page de consentement
-      setConsentGiven(false);
-      setShowConsentPage(false);
+      setStep(s => s - 1);
       setClickedOptionIndex(null);
       setOpenAnswer("");
+    } else {
+      setConsentGiven(false);
+      setShowConsentPage(false);
     }
   }
 
-  function revealResults() {
-    if (hasSentRef.current) return;
-    hasSentRef.current = true;
-    setShowCompleted(false);
-    setFinished(true);
-    
-    // Enregistrer les données
-    saveDataToSheet();
-  }
-
-  async function saveDataToSheet() {
-    const prof = personality();
-    if (!prof) return;
-
-    const timestamp = new Date().toISOString();
-    const pourcentage = Math.round((score / maxScore) * 100);
-
-    // Analyser les réponses pour extraire les symptômes les plus problématiques
-    const analysis = analyzeAnswers();
-    const topSymptoms = analysis.weakCategories.slice(0, 2); // Les 2 plus problématiques
-    
-    const symptome1 = topSymptoms[0] ? (categoryDescriptions[topSymptoms[0]]?.issues || topSymptoms[0]) : "";
-    const symptome2 = topSymptoms[1] ? (categoryDescriptions[topSymptoms[1]]?.issues || topSymptoms[1]) : "";
-
-    // Supprimer le 0 initial (06...) pour envoyer +336... au webhook
-    const nationalForWebhook = (dialCode ? phoneDigitsOnly : phoneDigitsOnly).replace(/^0+/, "");
-    const fullPhoneWithPlus = dialCode ? `${dialCode}${nationalForWebhook}` : (phonePrefix === "OTHER" ? phone : phoneDigitsOnly);
-    const fullPhoneDigitsOnly = fullPhoneWithPlus.replace(/\D/g, "");
-    const nomTrim = lastName.trim();
-    const prenomNom = [name.trim(), nomTrim].filter(Boolean).join(" ");
-    const data = {
-      timestamp,
-      prenom: name,
-      nom: nomTrim,
-      prenomNom,
-      age: age,
-      indicatif: phonePrefix === "OTHER" ? "" : dialCode,
-      telephone: fullPhoneDigitsOnly,
-      telephoneInternational: fullPhoneWithPlus || fullPhoneDigitsOnly,
-      telephoneNational: dialCode ? nationalForWebhook : phoneDigitsOnly,
-      telephoneRaw: fullPhoneDigitsOnly,
-      sexe: sex,
-      score: score,
-      scoreMax: maxScore,
-      scoreFormatted: `${score} sur ${maxScore}`,
-      pourcentage,
-      profil: prof.label,
-      profilTitle: prof.title,
-      profilSubtitle: prof.subtitle,
-      nombreQuestions: questions.length,
-      symptome1,
-      symptome2,
-      reponses: answers.map((ans, idx) => ({
-        question: ans.question,
-        categorie: ans.category,
-        score: ans.score,
-        reponseTexte: ans.reponseTexte,
-      })),
-    };
-    data.whatsappText = buildWhatsappText({
-      timestamp: data.timestamp,
-      prenom: data.prenom,
-      nom: data.nom,
-      age: data.age,
-      telephoneRaw: fullPhoneWithPlus || data.telephone,
-      sexe: data.sexe,
-      score: data.score,
-      scoreMax: data.scoreMax,
-      pourcentage: data.pourcentage,
-      profil: data.profil,
-      reponses: data.reponses,
-    });
-
-    try {
-      // URL du webhook Make.com
-      const WEBHOOK_URL =
-        import.meta.env.VITE_MAKE_WEBHOOK_URL ||
-        "https://hook.eu1.make.com/yf61fckihxirt84w6r5rhd5813e16s5v";
-      
-      if (WEBHOOK_URL) {
-        // IMPORTANT:
-        // En mode `no-cors`, le navigateur n'enverra pas `Content-Type: application/json`.
-        // Make recevrait alors un simple champ "value" (texte JSON) au lieu de champs structurés.
-        // On envoie donc en `application/x-www-form-urlencoded` (safelisted) pour que Make parse les champs.
-        const reponses = data.reponses;
-        const payload = {
-          timestamp: data.timestamp,
-          prenom: data.prenom || "",
-          nom: data.nom || "",
-          prenomNom: data.prenomNom || "",
-          age: data.age || "",
-          indicatif: data.indicatif || "",
-          telephone: data.telephone,
-          telephoneInternational: data.telephoneInternational || "",
-          telephoneNational: data.telephoneNational || "",
-          telephoneText: `'${data.telephone}`,
-          telephoneRaw: data.telephoneRaw,
-          sexe: data.sexe,
-          score: String(data.score),
-          scoreMax: String(data.scoreMax),
-          scoreFormatted: data.scoreFormatted,
-          pourcentage: String(data.pourcentage),
-          profil: data.profil,
-          profilTitle: data.profilTitle || "",
-          profilSubtitle: data.profilSubtitle || "",
-          nombreQuestions: String(data.nombreQuestions),
-          symptome1: data.symptome1 || "",
-          symptome2: data.symptome2 || "",
-          whatsappText: data.whatsappText,
-          // Pour Google Sheets / debug
-          reponsesJson: JSON.stringify(reponses),
-          rawJson: JSON.stringify(data),
-        };
-
-        await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          // Make.com peut ne pas renvoyer d'entêtes CORS : on envoie quand même le webhook.
-          mode: "no-cors",
-          keepalive: true,
-          body: new URLSearchParams(payload),
-        });
-        
-        console.log("✅ Webhook Make.com envoyé");
-      }
-    } catch (error) {
-      console.error("❌ Erreur lors de l'envoi du webhook:", error);
-    }
-  }
-
-  // Thèmes
-  const THEME_PRESETS = {
-    brume: {
-      name: "Brume Terre",
-      halo1: "#D7F2E3",
-      halo2: "#FDE6D8",
-      accent: "#F4A261",
-      chipBg: "rgba(244,162,97,0.14)",
-      blockBorder: "rgba(244,162,97,0.35)",
-    },
-    aube: {
-      name: "Aube Fluide",
-      halo1: "#E6F0FF",
-      halo2: "#FDE2F3",
-      accent: "#7C9DFF",
-      chipBg: "rgba(124,157,255,0.14)",
-      blockBorder: "rgba(124,157,255,0.35)",
-    },
-    solaire: {
-      name: "Solaire Clair",
-      halo1: "#FFF1C7",
-      halo2: "#D7F7F2",
-      accent: "#2A9D8F",
-      chipBg: "rgba(42,157,143,0.14)",
-      blockBorder: "rgba(42,157,143,0.35)",
-    },
-  };
-
-  // Analyse des réponses par catégorie
+  // ═══ ANALYSE DES RÉSULTATS ═══
   function analyzeAnswers() {
-    const categories = {};
-    answers.forEach((ans) => {
-      if (!categories[ans.category]) {
-        categories[ans.category] = { total: 0, count: 0, scores: [] };
-      }
-      categories[ans.category].total += ans.score;
-      categories[ans.category].count += 1;
-      categories[ans.category].scores.push(ans.score);
+    const cats = {};
+    answers.forEach(a => {
+      if (EXCLUDED_CATS.includes(a.category)) return;
+      if (!cats[a.category]) cats[a.category] = { total: 0, count: 0 };
+      cats[a.category].total += a.score;
+      cats[a.category].count += 1;
     });
-
-    // Calculer la moyenne par catégorie
-    const categoryAverages = {};
-    Object.keys(categories).forEach((cat) => {
-      categoryAverages[cat] = categories[cat].total / categories[cat].count;
-    });
-
-    // Identifier les catégories problématiques (moyenne < 2.5)
-    const weakCategories = Object.keys(categoryAverages)
-      .filter((cat) => categoryAverages[cat] < 2.5)
-      .sort((a, b) => categoryAverages[a] - categoryAverages[b]);
-
-    // Identifier les catégories moyennes (2.5 <= moyenne < 3.5)
-    const moderateCategories = Object.keys(categoryAverages)
-      .filter((cat) => categoryAverages[cat] >= 2.5 && categoryAverages[cat] < 3.5)
-      .sort((a, b) => categoryAverages[a] - categoryAverages[b]);
-
-    return { weakCategories, moderateCategories, categoryAverages };
+    const avgs = {};
+    Object.keys(cats).forEach(c => { avgs[c] = cats[c].total / cats[c].count; });
+    const weak = Object.keys(avgs)
+      .filter(c => avgs[c] < 0 && !["sibo", "candidose", "dysbiose", "foie", "nerveux", "graisses"].includes(c))
+      .sort((a, b) => avgs[a] - avgs[b]);
+    return { weakCategories: weak, categoryAverages: avgs };
   }
 
-  // Traduction des catégories en descriptions
-  const categoryDescriptions = {
-    energie: { name: "énergie", issues: "fatigue chronique, manque de vitalité", advice: "soutenir tes glandes surrénales et ton métabolisme énergétique" },
-    circulation: { name: "circulation sanguine", issues: "extrémités froides, mauvaise circulation", advice: "améliorer ta circulation avec des aliments réchauffants et du mouvement" },
-    sommeil: { name: "qualité du sommeil", issues: "réveils nocturnes, insomnie", advice: "réguler ton rythme circadien et apaiser ton système nerveux" },
-    digestion: { name: "digestion", issues: "ballonnements, gaz, langue chargée", advice: "restaurer ta flore intestinale et alléger tes repas" },
-    immunite: { name: "immunité", issues: "infections fréquentes, cicatrisation lente", advice: "renforcer ton système immunitaire avec les bons nutriments" },
-    inflammation: { name: "inflammation", issues: "douleurs articulaires, allergies", advice: "réduire l'inflammation avec une alimentation anti-inflammatoire" },
-    mineralisation: { name: "minéralisation", issues: "ongles cassants, problèmes dentaires", advice: "améliorer ton apport en minéraux biodisponibles" },
-    peau: { name: "santé de la peau", issues: "sécheresse, acné, inflammations cutanées", advice: "nourrir ta peau de l'intérieur avec les bons lipides et vitamines" },
-    cheveux: { name: "santé capillaire", issues: "chute de cheveux", advice: "nourrir tes follicules pileux avec protéines et minéraux" },
-    metabolisme: { name: "métabolisme", issues: "envies de sucre, déséquilibre glycémique", advice: "stabiliser ta glycémie avec une alimentation adaptée" },
-    hormones: { name: "équilibre hormonal", issues: "cycles irréguliers, symptômes prémenstruels", advice: "soutenir ton équilibre hormonal naturellement" },
-  };
+  // ═══ BLOCS SPÉCIAUX RÉSULTATS ═══
+  function buildSpecialBlocks(avgs) {
+    const blocks = [];
+    const findAnswer = (keyword) => answers.find(a => a.question.toLowerCase().includes(keyword));
 
-  // Générer un texte personnalisé basé sur les problèmes identifiés
-  function generatePersonalizedInsights(weakCats, modCats, isFemme) {
-    if (weakCats.length === 0) return "";
-
-    const tu = isFemme ? "tu" : "tu";
-    const ton = isFemme ? "ta" : "ton";
-    const tes = "tes";
-    
-    let text = `\n\nD'après tes réponses, voici les domaines qui nécessitent une attention particulière :\n\n`;
-    
-    // Problèmes majeurs
-    if (weakCats.length > 0) {
-      text += `**Points critiques identifiés :**\n`;
-      weakCats.slice(0, 3).forEach((cat) => {
-        const desc = categoryDescriptions[cat];
-        if (desc) {
-          text += `• **${desc.name.charAt(0).toUpperCase() + desc.name.slice(1)}** : ${tu} présentes des signes de ${desc.issues}. Il est essentiel de ${desc.advice}.\n`;
+    // FOIE
+    if (avgs.foie && avgs.foie < 0) {
+      let txt = "Tes réponses suggèrent que le foie pourrait être en surcharge. Quand il fatigue, ça peut ralentir la digestion des graisses, l'énergie, et pas mal d'autres choses. En naturopathie, on commence souvent par là.";
+      if (conditionalTriggered.foie) {
+        const mauxTete = findAnswer("maux de tête");
+        const alcool = findAnswer("alcool");
+        const sellesColor = findAnswer("couleur de tes selles");
+        const details = [];
+        if (mauxTete && mauxTete.score < 0) details.push("maux de tête fréquents");
+        if (alcool && alcool.score < 0) details.push("mauvaise tolérance à l'alcool");
+        if (sellesColor && sellesColor.score < 0) details.push("selles claires ou décolorées");
+        if (details.length > 0) {
+          txt += "\n\nSignaux supplémentaires : " + details.join(", ") + ". Plus il y a de signaux convergents, plus c'est un axe prioritaire.";
         }
+      }
+      if (avgs.hormones && avgs.hormones < 0) {
+        txt += "\n\nLe foie aide aussi à éliminer le surplus d'hormones. Quand il est surchargé, ça peut jouer sur l'équilibre hormonal.";
+      }
+      if (avgs.digestion && avgs.digestion < 0) {
+        txt += "\n\nFoie et digestion sont très liés. Quand l'un fatigue, l'autre a tendance à suivre.";
+      }
+      blocks.push({ title: "Sphère hépatique", level: "fort", color: "#ef4444", text: txt });
+    }
+
+    // GRAISSES
+    const graissesAns = findAnswer("cuisines avec quoi");
+    if (graissesAns && graissesAns.score < 0) {
+      blocks.push({ title: "Qualité des graisses", level: "urgent", color: "#ef4444",
+        text: "Les huiles que tu utilises au quotidien pourraient entretenir une inflammation de fond. Tournesol, colza, margarine : elles sont riches en oméga-6, qui en excès peuvent poser problème. Passer au beurre/ghee (cuisson), olive (à froid) et coco (haute température) est souvent le changement le plus simple avec le plus d'impact.",
+        table: { headers: ["A virer", "A utiliser"], rows: [
+          ["Margarine", "Beurre cru / ghee (cuisson)"],
+          ["Huile de tournesol", "Huile d'olive extra vierge (à froid)"],
+          ["Huile de colza (cuisson)", "Huile de coco (haute température)"],
+        ]}
       });
     }
 
-    // Problèmes modérés
-    if (modCats.length > 0 && modCats.length <= 3) {
-      text += `\n**Points à surveiller :**\n`;
-      modCats.forEach((cat) => {
-        const desc = categoryDescriptions[cat];
-        if (desc) {
-          text += `• ${desc.name.charAt(0).toUpperCase() + desc.name.slice(1)} : quelques signes à ne pas négliger.\n`;
-        }
-      });
+    // SIBO
+    if (conditionalTriggered.sibo && avgs.sibo) {
+      if (avgs.sibo < -1) {
+        let txt = "Ventre qui gonfle après les repas, brouillard mental, gaz fréquents : ça peut évoquer une prolifération bactérienne dans l'intestin grêle (SIBO). C'est quand des bactéries se développent là où elles ne devraient pas être en excès.";
+        if (avgs.digestion < 0) txt += "\n\nC'est souvent lié à un estomac qui ne fait pas assez bien son travail en amont.";
+        blocks.push({ title: "SIBO (possible)", level: "fort", color: "#ef4444", text: txt });
+      } else if (avgs.sibo < 0) {
+        blocks.push({ title: "SIBO (possible)", level: "modéré", color: "#f59e0b", text: "Quelques signaux digestifs qui pourraient évoquer une prolifération bactérienne. Rien de massif, mais les ballonnements réguliers méritent attention." });
+      }
     }
 
-    return text;
+    // DYSBIOSE
+    if (conditionalTriggered.dysbiose && avgs.dysbiose) {
+      if (avgs.dysbiose < -1) {
+        let txt = "Difficulté avec les oignons, l'ail, les choux, les légumineuses, peut-être les fermentés : ça ressemble à une flore intestinale déséquilibrée. Quand l'intestin est fragilisé, certains aliments passent mal et ça peut créer des réactions en chaîne.";
+        if (avgs.sibo && avgs.sibo < 0) txt += "\n\nC'est souvent lié au SIBO. Les deux vont souvent ensemble et se corrigent en même temps.";
+        blocks.push({ title: "Dysbiose intestinale", level: "fort", color: "#ef4444", text: txt });
+      } else if (avgs.dysbiose < 0) {
+        blocks.push({ title: "Dysbiose intestinale", level: "modéré", color: "#f59e0b", text: "Certains aliments passent mal : légumineuses, choux, oignons, peut-être les fermentés. C'est pas une fatalité, ça peut évoquer une flore qui a besoin d'être rééquilibrée." });
+      }
+    }
+
+    // CANDIDOSE
+    if (conditionalTriggered.candidose && avgs.candidose) {
+      const mycAns = findAnswer("mycoses");
+      const antiAns = findAnswer("antibiotiques");
+      const hasMycoses = mycAns && mycAns.score < 0;
+      const hasAntibio = antiAns && antiAns.score < 0;
+
+      if (avgs.candidose < -1 && (hasMycoses || hasAntibio)) {
+        blocks.push({ title: "Candidose (possible)", level: "fort", color: "#ef4444",
+          text: "Envies sucrées fortes, mycoses qui reviennent, historique d'antibiotiques : ça peut évoquer un déséquilibre fongique (Candida). C'est une levure naturellement présente dans l'intestin, mais qui peut proliférer quand la flore est affaiblie ou que le sucre est en excès."
+        });
+      } else if (avgs.candidose < 0 && (hasMycoses || hasAntibio)) {
+        blocks.push({ title: "Candidose (à surveiller)", level: "modéré", color: "#f59e0b",
+          text: "Envies sucrées combinées à un historique d'antibiotiques ou de mycoses : ça peut évoquer un possible déséquilibre fongique. Pas de panique, mais c'est un axe à surveiller."
+        });
+      } else if (avgs.candidose < 2 && !hasMycoses && !hasAntibio) {
+        blocks.push({ title: "Candidose : peu probable", level: "info", color: "#3b82f6",
+          text: "Tes envies sucrées s'expliquent probablement plutôt par un déséquilibre alimentaire ou le stress, pas par une mycose. Pas de mycoses récurrentes, pas d'historique d'antibiotiques lourds. Ça devrait s'améliorer avec le travail digestif et le rééquilibrage alimentaire."
+        });
+      }
+    }
+
+    // THYROÏDE
+    if (avgs.thyroide && avgs.thyroide < 0 && avgs.circulation && avgs.circulation < 0) {
+      const hasLowEnergie = avgs.energie && avgs.energie < 0;
+      const hasLowCheveux = avgs.cheveux && avgs.cheveux < 0;
+      const hasLowMetabo = avgs.metabolisme && avgs.metabolisme < 0;
+      if (hasLowEnergie || hasLowCheveux || hasLowMetabo) {
+        blocks.push({ title: "Métabolisme lent (possible)", level: "à surveiller", color: "#f59e0b",
+          text: "Frilosité, extrémités froides, fatigue, perte de cheveux ou prise de poids facile : cette combinaison peut évoquer un métabolisme qui tourne au ralenti. C'est un axe à explorer, ça vaut le coup de creuser."
+        });
+      }
+    }
+
+    // NERVEUX
+    if (avgs.nerveux && avgs.nerveux < 0) {
+      let txt = "Stress qui tourne en boucle, difficulté à se concentrer, besoin de manger sous pression : ça peut être le signe que le corps manque de certains nutriments essentiels (magnésium, zinc, vitamines B).";
+      if (conditionalTriggered.nerveux) {
+        const aliEmot = findAnswer("stressé ou triste");
+        const concent = findAnswer("concentration");
+        if (aliEmot && aliEmot.score < 0) txt += " Le fait de manger sous stress, c'est pas un manque de volonté, c'est souvent le corps qui cherche du carburant parce qu'il manque de certaines choses.";
+        if (concent && concent.score < 0) txt += " La difficulté à se concentrer va dans le même sens.";
+      }
+      const hasLowDigestion = avgs.digestion && avgs.digestion < 0;
+      const hasLowFoie = avgs.foie && avgs.foie < 0;
+      if (hasLowDigestion || hasLowFoie) {
+        txt += "\n\nEt quand la digestion" + (hasLowFoie ? " ou le foie" : "") + " sont en difficulté, ces nutriments passent moins bien. Remettre le digestif en ordre, c'est souvent la première étape.";
+      } else {
+        txt += "\n\nLa qualité des graisses au quotidien peut aussi jouer là-dessus.";
+      }
+      blocks.push({ title: "Axe nerveux", level: avgs.nerveux < -1 ? "fort" : "modéré", color: avgs.nerveux < -1 ? "#ef4444" : "#f59e0b", text: txt });
+    }
+
+    return blocks;
   }
 
   function personality() {
-    if (!questions.length) return null;
+    if (!questionsArray.length || !maxScore) return null;
+    const nbQ = questionsArray.filter(q => q.type !== "transition").length;
+    const minScoreVal = nbQ * -4;
+    const pct = nbQ > 0 ? (score - minScoreVal) / (maxScore - minScoreVal) : 0;
+    const prenom = name.trim().split(/\s+/)[0] || "toi";
 
-    const pct = score / maxScore;
-    const prenom = name.trim() || "toi";
-    const isFemme = sex === "femme";
-    const g = (masc, fem) => (isFemme ? fem : masc);
-    const analysis = analyzeAnswers();
+    // Badge
+    let label, color, bgColor, borderColor;
+    if (pct <= 0.4) { label = "TERRAIN CRITIQUE"; color = "#ef4444"; bgColor = "rgba(239,68,68,0.12)"; borderColor = "rgba(239,68,68,0.3)"; }
+    else if (pct <= 0.6) { label = "TERRAIN DÉSÉQUILIBRÉ"; color = "#f59e0b"; bgColor = "rgba(245,158,11,0.12)"; borderColor = "rgba(245,158,11,0.3)"; }
+    else if (pct <= 0.8) { label = "TERRAIN STABLE"; color = "#3b82f6"; bgColor = "rgba(59,130,246,0.12)"; borderColor = "rgba(59,130,246,0.3)"; }
+    else { label = "TERRAIN AVANCÉ"; color = "#22c55e"; bgColor = "rgba(34,197,94,0.12)"; borderColor = "rgba(34,197,94,0.3)"; }
 
-    const common = {
-      intro: `Ok ${prenom}, voici ce que Mao a analysé de toi.`,
-      footer:
-        "Objectif : énergie stable, digestion calme, peau/cheveux qui suivent.",
-    };
+    const intro = `Ok ${prenom}, voici ce que Mao a analysé de toi.`;
 
-    if (pct <= 0.5) {
-      return {
-        themeKey: "brume",
-        label: "TERRAIN CRITIQUE",
-        title: "",
-        subtitle: "",
-        story: `Comprendre les signaux du corps. Le corps communique constamment à travers des signaux subtils. Fatigue persistante, digestion difficile, sommeil perturbé, ce ne sont pas des détails. Ce sont des alertes qu'il ne faut pas ignorer. Ces déséquilibres s'installent progressivement, par accumulation de petits facteurs : alimentation inadaptée, stress chronique, manque de lumière ou de repos. Le problème : plus ils s'enracinent, plus ils deviennent difficiles à inverser. Ce qui se corrige en quelques semaines aujourd'hui peut prendre des mois demain.
+    // Helpers
+    const sc = (keyword) => { const r = answers.find(x => x.question.toLowerCase().includes(keyword)); return r ? r.score : 3; };
+    const catAvg = (cat) => { const r = answers.filter(x => x.category === cat); return r.length ? r.reduce((s, x) => s + x.score, 0) / r.length : 3; };
 
-Ce qui se passe concrètement
-Quand l'énergie cellulaire diminue, plusieurs systèmes compensent. Le foie travaille davantage pour gérer les toxines intestinales et hormonales. Les glandes surrénales produisent plus de cortisol pour maintenir la glycémie. La thyroïde peut ralentir. Ces mécanismes d'adaptation ont une limite, et quand ils lâchent, la chute s'accélère.
+    // Flags
+    const lowEnergie = catAvg("energie") < 0;
+    const lowSommeil = catAvg("sommeil") < 0;
+    const lowDigestion = catAvg("digestion") < 0;
+    const lowFoie = catAvg("foie") < 0;
+    const lowGraisses = sc("cuisines avec quoi") < 0;
+    const mixGraisses = sc("cuisines avec quoi") === 0;
+    const lowNerveux = sc("stress") < 0;
+    const lowThyroide = catAvg("thyroide") < 0 && catAvg("circulation") < 0;
+    const lowHormones = catAvg("hormones") < 0;
+    const lowCheveux = catAvg("cheveux") < 0;
+    const lowMetabo = catAvg("metabolisme") < 0;
+    const lowPeau = catAvg("peau") < 0;
+    const lowInflammation = catAvg("inflammation") < 0;
+    const lowCafe = sc("café") < 0;
+    const flagCount = [lowEnergie, lowSommeil, lowDigestion, lowFoie, lowGraisses, lowNerveux, lowThyroide, lowHormones, lowCheveux, lowMetabo, lowPeau, lowInflammation].filter(Boolean).length;
 
-L'intestin joue un rôle central : comme l'a montré Metchnikoff dès le début du XXe siècle, les toxines intestinales peuvent perturber l'ensemble du métabolisme. Un transit lent favorise la fermentation bactérienne et la production de substances inflammatoires. Chaque jour passé dans cet état creuse la dette. L'inflammation s'installe, les carences s'aggravent, le terrain se fragilise.
+    const parts = [];
 
-Le temps joue contre toi, mais les leviers existent. Ils sont simples mais puissants pour inverser la trajectoire : restaurer un apport nutritionnel adapté pour relancer l’énergie cellulaire, réduire la charge inflammatoire par une alimentation plus digeste, soutenir le foie et l’intestin afin de diminuer la production de toxines, et réintroduire des rythmes biologiques cohérents en passant par le sommeil, ou encore l'exposition à la lumière. La gestion du stress joue également un rôle clé : en abaissant le cortisol chronique, on soulage directement les surrénales et la thyroïde. Ces ajustements agissent en cascade. Pris tôt, ils permettent au corps de sortir du mode survie et de réactiver ses capacités naturelles de réparation. Mais chaque semaine d'inaction compte. La dette métabolique s'accumule silencieusement, et le corps n'oublie rien. Agir maintenant, c'est raccourcir le chemin. Attendre, c'est le rallonger.`,
-        highlights: [],
-        plan: [],
-        mantra: "",
-        trap: "",
-        tip: "",
-        hasIclosedLink: true,
-        iclosedUrl: "https://app.iclosed.io/e/maobrut/ancestral",
-        ...common,
-      };
+    // ═══ ACCROCHE ═══
+    if (pct <= 0.4) {
+      parts.push("Ton corps envoie pas mal de signaux en même temps, et ils semblent se renforcer entre eux. C'est pas une fatalité, mais ça veut dire qu'il y a des bases à reprendre.");
+    } else if (pct <= 0.6) {
+      parts.push("Y'a des choses qui tournent, mais le corps compense. Les signaux sont là, et ils pointent un peu tous dans la même direction.");
+    } else if (pct <= 0.8) {
+      parts.push("Les bases sont plutôt solides. Quelques points méritent attention, et les corriger maintenant pourrait tout amplifier.");
+    } else {
+      parts.push("Ce que tu fais a l'air de bien fonctionner. L'énergie suit, la récupération aussi.");
     }
 
-    if (pct <= 0.75) {
-      return {
-        themeKey: "aube",
-        label: "TERRAIN DÉSÉQUILIBRÉ",
-        title: "",
-        subtitle: "",
-        story: `Un écart qui se creuse. Ton alimentation actuelle s'éloigne de ce que ton corps attend physiologiquement. Il compense encore, mais les premiers signes apparaissent : digestion perturbée, fatigue qui s’intalle, inconforts qui deviennent chroniques. Ces déséquilibres surviennent quand l'organisme reçoit des aliments qu'il n'a jamais appris à gérer au fil de l'évolution.Revenir à une alimentation cohérente avec ta physiologie n'est pas accessoire. C'est fondamental. Une alimentation simple, dense, bien préparée. Le foie est souvent le premier à souffrir. Organe central de filtration et de régulation hormonale, il encaisse les huiles industrielles, les sucres raffinés, les produits ultra-transformés. Le soutenir ne veut pas dire le "détoxifier" avec des cures passagères. Cela veut dire lui redonner ses cofacteurs au quotidien : choline, graisses saturées, antioxydants liposolubles.Sans correction, les troubles digestifs, métaboliques ou inflammatoires ne sont pas une hypothèse. Ils sont une suite logique. Le moment d'agir est toujours avant l'effondrement, pas après. Les populations traditionnelles maîtrisaient sans le théoriser l'art de se nourrir. Pas d'excès de végétaux crus ou mal préparés. Ce modèle a permis une résilience biologique que la modernité a largement effacée. 
-Pour revenir à cette logique, il faut d'abord comprendre. Ce que tu manges. Comment tu le prépares. Ce que tes organes peuvent gérer aujourd'hui. C'est ce que propose la formation.Et si tu veux aller à l'essentiel, un appel avec l'équipe permet d'analyser ta situation et de poser un plan adapté à ton profil. Agir maintenant limite la dette métabolique. Repousser, c'est rendre la correction plus lente, plus difficile, parfois irréversible.`,
-        highlights: [],
-        plan: [],
-        mantra: "",
-        trap: "",
-        tip: "",
-        hasIclosedLink: true,
-        iclosedUrl: "https://app.iclosed.io/e/maobrut/ancestral",
-        ...common,
-      };
+    // ═══ BLOC FOIE ═══
+    if (lowFoie) {
+      let foieTxt = "Le foie semble être un point central chez toi. C'est lui qui filtre, qui aide à digérer les graisses, qui gère pas mal de choses en coulisses. Quand il fatigue, ça peut ralentir beaucoup de processus.";
+      if (lowDigestion) {
+        foieTxt += " Et quand le foie et la digestion sont en difficulté en même temps, ça peut créer un cercle vicieux.";
+      }
+      if (lowHormones) {
+        foieTxt += " C'est aussi lui qui aide à éliminer le surplus d'hormones. Quand il est surchargé, ça peut jouer sur l'équilibre hormonal.";
+      }
+      parts.push(foieTxt);
     }
 
-    if (pct <= 0.875) {
-      return {
-        themeKey: "aube",
-        label: "TERRAIN STABLE",
-        title: "",
-        subtitle: "",
-        story: `Tu as déjà bâti des fondations solides : tes habitudes, ta direction, ta compréhension de ton propre corps. C'est plus que ce que la plupart osent initier. Mais il te manque encore un étage, tu peux aller plus loin. Tu pourrais te sentir vraiment en forme. Ne plus t'écrouler après manger. Dormir profondément et te réveiller reposé. Garder la tête claire jusqu'au soir. Ce qui fait souvent la différence, ce n'est pas de manger "équilibré", c'est de manger plus dense et digeste.  Des aliments qui nourissent vraiment : des aliments oubliés que consommaient nos arrères grand parents. Bouillon d’os, abats, légumineuses fermentés chez les végétariens, plantes comme l'ortie ou le pissenlit. Peut-être que tu en consommes déjà. La question, c'est : est-ce suffisant, assez régulier, bien préparé ? C'est dans ces détails que tout se joue.Si aujourd'hui tu sens des baisses d'énergie après tes repas, un brouillard, des inconforts diffus… ce n'est pas normal. Ce sont des signaux. Des appels précis de ton métabolisme à toi. Il ne te demande pas plus d'effort. Il te demande plus de justesse.Imagine : te lever avec une clarté mentale nette, traverser tes journées sans ce creux de 15h, digérer sans y penser, sentir ton énergie tenir jusqu'au soir. C'est ça, un métabolisme qui tourne pour toi et non contre toi.La formation t'apprend exactement ça : décoder ce que ton corps te dit, identifier les aliments qui te rechargent vraiment, structurer tes repas pour que chaque bouchée serve ta vitalité. Pas de dogme. Juste une lecture fine de tes propres signaux.Ce que tu as mis en place est précieux. Ce que tu vas intégrer maintenant peut tout amplifier. Dès aujourd’hui, les gens intélligents investissent sur eux-même.
-`,
-        highlights: [],
-        plan: [],
-        mantra: "",
-        trap: "",
-        tip: "",
-        hasIclosedLink: true,
-        iclosedUrl: "https://app.iclosed.io/e/maobrut/ancestral",
-        ...common,
-      };
+    // ═══ BLOC DIGESTION ═══
+    if (lowDigestion && !lowFoie) {
+      parts.push("La digestion, c'est la base. Quand elle tourne pas bien, le corps a du mal à récupérer ce dont il a besoin dans ce que tu manges. L'énergie, le stress, la récupération : tout peut en pâtir.");
+    } else if (lowDigestion && lowFoie) {
+      parts.push("Foie et digestion en difficulté en même temps, c'est souvent là que ça coince le plus. Le corps a du mal à tirer profit de ce que tu lui donnes.");
     }
-    
-    return {
-      themeKey: "solaire",
-      label: "TERRAIN AVANCÉ",
-      title: "",
-      subtitle: "",
-      story: `Ce que tu fais fonctionne. tu as une bonne digestion, tu assimiles bien, tu convertis bien ce que tu manges en énergie. Résultat : ton corps est en forme. Pas de fatigue qui traîne, pas de digestion compliquée, pas de prise de poids qui sort de nulle part. Tu ne subis pas ta vie. Il reste peut-être des détails à affiner. Pas forcément manger plus ou différemment, mais mieux comprendre pourquoi ça marche. Savoir quoi ajuster si un jour ton corps réagit autrement. Une  formation peut t'aider à avoir cette clarté.Continue comme ça. Ce genre d'habitudes, ça se perd vite si on relâche. Mais ce  que tu as mis en place, ça vaut la peine de le garder.
-`,
-      highlights: [],
-      plan: [],
-      mantra: "",
-      trap: "",
-      tip: "",
-      hasIclosedLink: true,
-      iclosedUrl: "https://app.iclosed.io/e/maobrut/ancestral",
-      ...common,
-    };
-  }
 
-  const prof = personality();
-  const theme = prof ? THEME_PRESETS[prof.themeKey] : THEME_PRESETS.aube;
+    // ═══ BLOC GRAISSES ═══
+    if (lowGraisses) {
+      let graisseTxt = "Les huiles que tu utilises au quotidien pourraient jouer contre toi. Tournesol, colza, margarine : elles ont tendance à entretenir une inflammation de fond dans le corps.";
+      if (lowThyroide) {
+        graisseTxt += " Ça peut aussi freiner le métabolisme.";
+      } else if (lowFoie) {
+        graisseTxt += " Et c'est le foie qui doit gérer tout ça en plus du reste.";
+      }
+      graisseTxt += " Passer au beurre/ghee en cuisson, olive à froid et coco en haute température, c'est souvent le changement le plus simple avec le plus d'impact.";
+      parts.push(graisseTxt);
+    } else if (mixGraisses && flagCount >= 2) {
+      parts.push("Côté graisses, tu mélanges encore bonnes et mauvaises huiles. Passer à 100% graisses stables (beurre, ghee, olive, coco) pourrait consolider le reste.");
+    }
 
-  function resetAll() {
-    hasSentRef.current = false;
-    setStep(0);
-    setScore(0);
-    setAnswers([]);
-    setFinished(false);
-    setQuestionTransitioning(false);
-    setShowCompleted(false);
-    setOpenAnswer("");
+    // ═══ BLOC ÉNERGIE + CAFÉ ═══
+    if (lowEnergie && lowDigestion) {
+      parts.push("L'énergie a du mal à tenir, et c'est probablement lié à la digestion. Si le corps n'arrive pas à bien convertir ce que tu manges, il puise dans ses réserves." + (lowCafe ? " Le café masque le signal, mais il règle rien sur le fond." : ""));
+    } else if (lowEnergie && !lowDigestion) {
+      parts.push("L'énergie dépend de plusieurs choses : ce que tu absorbes, comment le foie filtre, comment le métabolisme tourne. Quand un de ces maillons ralentit, le corps peut compenser par le stress au lieu de fonctionner tranquillement.");
+    }
+
+    // ═══ BLOC NERVEUX ═══
+    if (lowNerveux) {
+      let nervTxt = "Le stress qui tourne en boucle, la difficulté à se concentrer, le besoin de manger sous pression : ça peut être le signe que le corps manque de certains nutriments essentiels (magnésium, zinc, vitamines B).";
+      if (lowDigestion || lowFoie) {
+        nervTxt += " Et quand la digestion" + (lowFoie ? " ou le foie" : "") + " sont en difficulté, ces nutriments passent moins bien. Remettre le digestif en ordre, c'est souvent la première étape.";
+      } else {
+        nervTxt += " La qualité des graisses au quotidien peut aussi jouer là-dessus.";
+      }
+      parts.push(nervTxt);
+    }
+
+    // ═══ BLOC THYROÏDE ═══
+    if (lowThyroide && (lowCheveux || lowMetabo || lowEnergie)) {
+      let thyTxt = "Frilosité, extrémités froides";
+      if (lowCheveux) thyTxt += ", perte de cheveux";
+      if (lowMetabo) thyTxt += ", difficulté à stabiliser le poids";
+      thyTxt += " : ce genre de combinaison peut évoquer un métabolisme qui tourne au ralenti. C'est un axe à explorer.";
+      if (!lowFoie && !lowDigestion) {
+        parts.push(thyTxt);
+      }
+    }
+
+    // ═══ BLOC SOMMEIL ═══
+    if (lowSommeil) {
+      parts.push("Le sommeil ne semble pas faire son travail de récupération. C'est la nuit que le corps se régénère, et quand cette phase est perturbée, ça se ressent sur tout le reste.");
+    }
+
+    // ═══ BLOC HORMONES ═══
+    if (lowHormones && !lowFoie) {
+      parts.push("Les déséquilibres hormonaux sont rarement isolés. Le foie, l'intestin et le métabolisme jouent tous un rôle. Quand un de ces maillons faiblit, ça peut se répercuter sur le cycle.");
+    }
+
+    // ═══ BLOC PEAU + INFLAMMATION ═══
+    if (lowPeau && lowInflammation && lowDigestion) {
+      parts.push("La peau et les réactions cutanées sont souvent liées à ce qui se passe à l'intérieur, notamment au niveau digestif. Traiter la peau de l'extérieur sans s'occuper du reste, ça donne rarement des résultats durables.");
+    } else if (lowPeau && !lowDigestion) {
+      parts.push("L'état de la peau reflète souvent ce qui se passe à l'intérieur. La qualité des graisses et le fonctionnement digestif peuvent jouer un rôle direct.");
+    }
+
+    // ═══ CLOSING ═══
+    if (pct <= 0.4) {
+      parts.push("Tout ça peut évoluer. Mais c'est mieux de s'en occuper maintenant." + (lowFoie ? " Le point de départ, c'est souvent le foie." : lowDigestion ? " Le point de départ, c'est souvent la digestion." : " Le point de départ, c'est revenir aux fondamentaux."));
+    } else if (pct <= 0.6) {
+      parts.push("Le bon moment pour agir, c'est quand le corps envoie ses premiers signaux, pas quand il lâche." + (lowFoie ? " Et le premier levier, c'est souvent le foie." : ""));
+    } else if (pct <= 0.8) {
+      if (flagCount <= 1 && mixGraisses) {
+        parts.push("Un ajustement ciblé pourrait suffire à passer un cap.");
+      } else {
+        parts.push("Ce que tu as mis en place est précieux. Quelques ajustements pourraient tout amplifier.");
+      }
+    } else {
+      if (parts.length <= 2) {
+        parts.push("Continue comme ça, c'est solide.");
+      }
+    }
+
+    return { label, color, bgColor, borderColor, intro, story: parts.join("\n\n") };
   }
 
   function restartFromStart() {
-    hasSentRef.current = false;
-    setName("");
-    setLastName("");
-    setPhonePrefix("");
-    setAge("");
-    setPhone("");
-    setSex("");
-    setConsentGiven(false);
-    setConsentAnimating(false);
-    setStep(0);
-    setScore(0);
-    setAnswers([]);
-    setFinished(false);
-    setQuestionTransitioning(false);
-    setShowCompleted(false);
-    setOpenAnswer("");
+    hasSentRef.current = false; setName(""); setEmail(""); setPhonePrefix("+33"); setAge(""); setPhone(""); setSex("");
+    setConsentGiven(false); setConsentAnimating(false); setStep(0); setScore(0); setAnswers([]); setFinished(false);
+    setQuestionTransitioning(false); setShowCompleted(false); setOpenAnswer(""); setShowConsentPage(false);
+    setConditionalBuilt(false); setConditionalTriggered({ sibo: false, dysbiose: false, candidose: false, foie: false, nerveux: false });
   }
 
+  const prof = personality();
+  const analysis = finished ? analyzeAnswers() : null;
+  const specialBlocks = finished && analysis ? buildSpecialBlocks(analysis.categoryAverages) : [];
+
+  // Count only real questions for display
+  const realQuestionCount = questionsArray.filter(q => q.type !== "transition").length;
+  const answeredCount = answers.length;
+
+  const fadeOut = { animation: "fadeOutUp 0.3s ease-out forwards" };
+  const fadeIn = { animation: "fadeInUp 0.35s ease-out forwards" };
+  const currentQ = questionsArray[step];
+
   return (
-    <div style={styles.page}>
-      {/* Background */}
-      <div style={{ ...styles.bgPhoto, backgroundImage: `url(${BG_IMAGE})` }} />
-      <div style={{ ...styles.overlay, background: "rgba(0,0,0,0.3)" }} />
+    <div style={{ minHeight: "100vh", width: "100%", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif", padding: "16px", boxSizing: "border-box", overflow: "hidden" }}>
+      {/* Background image */}
+      <div style={{ position: "fixed", inset: 0, backgroundImage: `url(${BG_IMAGE})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", zIndex: -3, transform: "scale(1.03)", filter: "saturate(1.05) contrast(1.02)" }} />
+      <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.3)", zIndex: -1 }} />
+      <style>{`
+        @keyframes fadeInUp { 0% { opacity:0; transform:translateY(15px); } 100% { opacity:1; transform:translateY(0); } }
+        @keyframes fadeOutUp { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-15px); } }
+        @keyframes pulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.08); } }
+        @keyframes sweepX { 0% { transform:scaleX(0); opacity:0.8; } 100% { transform:scaleX(1); opacity:0.55; } }
+        .btn-option { transition: all 0.15s ease; }
+        .btn-option:hover { background: #475569 !important; border-color: rgba(255,255,255,0.2) !important; transform: translateY(-1px); }
+        .btn-option:active { transform: scale(0.98); }
+        .btn-cta { transition: all 0.25s ease; }
+        .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(96,165,250,0.35); }
+        .sweep-overlay { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(120,120,120,0.65); transform-origin:center; animation: sweepX 0.45s ease-out forwards; pointer-events:none; border-radius:14px; }
+        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.4); }
+        .scroll-thin::-webkit-scrollbar { width: 6px; }
+        .scroll-thin::-webkit-scrollbar-track { background: transparent; }
+        .scroll-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }
+      `}</style>
 
-      <div style={{ ...styles.card, ...(indicatifDropdownOpen ? { overflowY: "hidden", overflow: "hidden" } : {}) }}>
+      <div style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: 460, maxHeight: "92vh", overflowY: "auto", overflowX: "hidden", background: "rgba(2,6,23,0.55)", backdropFilter: "blur(16px)", padding: "clamp(16px,4vw,24px)", borderRadius: 20, textAlign: "center", boxShadow: "0 24px 64px rgba(0,0,0,0.6)", color: "white", boxSizing: "border-box" }} className="scroll-thin">
+
+        {/* ═══ FORMULAIRE INITIAL ═══ */}
         {!showConsentPage ? (
-          <div className={initialFormAnimating ? "question-fade-out" : ""}>
-            <div style={styles.kicker}>TON PROFIL ALIMENTAIRE</div>
-            <h2 style={{ margin: "8px 0 0" }}>Avant de commencer</h2>
-
-            <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
-              <input
-                style={styles.input}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ton prénom"
-                type="text"
-                autoComplete="given-name"
-              />
-              <input
-                style={styles.input}
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                placeholder="Ton nom"
-                type="text"
-                autoComplete="family-name"
-              />
-
-              <input
-                style={styles.input}
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                placeholder="Ton âge"
-                type="number"
-                min="1"
-                max="120"
-                autoComplete="age"
-              />
-
+          <div style={initialFormAnimating ? fadeOut : fadeIn}>
+            <div style={{ fontSize: 11, letterSpacing: 1.5, opacity: 0.8, textTransform: "uppercase", fontWeight: 700 }}>TON PROFIL ALIMENTAIRE</div>
+            <h2 style={{ margin: "8px 0 0", fontSize: "clamp(1.2em,4vw,1.6em)" }}>Avant de commencer</h2>
+            <div style={{ marginTop: 18, display: "grid", gap: 12 }}>
+              <input style={inputStyle} value={name} onChange={e => setName(e.target.value)} placeholder="Ton prénom et nom" />
+              <input style={{ ...inputStyle, borderColor: email.trim() && !isEmailValid ? "rgba(239,68,68,0.6)" : undefined }} value={email} onChange={e => setEmail(e.target.value)} placeholder="Ton email (obligatoire)" type="email" />
+              <input style={inputStyle} value={age} onChange={e => setAge(e.target.value)} placeholder="Ton âge" type="number" min="1" max="120" />
+              {/* Téléphone */}
               <div>
-                <label style={{ display: "block", textAlign: "left", fontSize: 13, opacity: 0.9, marginBottom: 6 }}>
-                  Ton numéro de téléphone
-                </label>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "stretch",
-                    borderRadius: 14,
-                    border: "1px solid rgba(255,255,255,0.14)",
-                    background: "rgba(15,23,42,0.55)",
-                    overflow: "visible",
-                    position: "relative",
-                  }}
-                  ref={indicatifDropdownRef}
-                >
+                <label style={{ display: "block", textAlign: "left", fontSize: 13, opacity: 0.85, marginBottom: 6 }}>Ton numéro de téléphone</label>
+                <div style={{ display: "flex", borderRadius: 14, border: "1px solid rgba(255,255,255,0.14)", background: "rgba(15,23,42,0.55)", position: "relative" }} ref={indicatifDropdownRef}>
                   <div style={{ position: "relative", flexShrink: 0 }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIndicatifDropdownOpen((o) => !o);
-                        if (!indicatifDropdownOpen) setIndicatifSearch("");
-                      }}
-                      style={{
-                        ...styles.input,
-                        width: "max-content",
-                        minWidth: 180,
-                        maxWidth: 240,
-                        border: "none",
-                        borderRadius: "12px 0 0 12px",
-                        borderRight: "1px solid rgba(255,255,255,0.14)",
-                        background: "transparent",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: 8,
-                        textAlign: "left",
-                      }}
-                      aria-label="Choisir l'indicatif"
-                    >
-                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {selectedIndicatifLabel}
-                      </span>
-                      <span style={{ opacity: 0.8 }}>{indicatifDropdownOpen ? "▲" : "▼"}</span>
+                    <button type="button" onClick={() => { setIndicatifDropdownOpen(o => !o); if (!indicatifDropdownOpen) setIndicatifSearch(""); }}
+                      style={{ ...inputStyle, width: "max-content", minWidth: 160, border: "none", borderRadius: "12px 0 0 12px", borderRight: "1px solid rgba(255,255,255,0.14)", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6, textAlign: "left" }}>
+                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14 }}>{selectedIndicatifLabel}</span>
+                      <span style={{ opacity: 0.7, fontSize: 10 }}>{indicatifDropdownOpen ? "\u25b2" : "\u25bc"}</span>
                     </button>
                     {indicatifDropdownOpen && (
-                      <div
-                        onWheel={(e) => e.stopPropagation()}
-                        style={{
-                          position: "absolute",
-                          top: "100%",
-                          left: 0,
-                          right: 0,
-                          marginTop: 6,
-                          background: "rgba(15,23,42,0.98)",
-                          border: "1px solid rgba(255,255,255,0.18)",
-                          borderRadius: 12,
-                          boxShadow: "0 10px 40px rgba(0,0,0,0.5)",
-                          zIndex: 1000,
-                          maxHeight: 320,
-                          minHeight: 180,
-                          display: "flex",
-                          flexDirection: "column",
-                          overflow: "hidden",
-                        }}
-                      >
-                        <input
-                          type="text"
-                          placeholder="Rechercher ton pays"
-                          value={indicatifSearch}
-                          onChange={(e) => setIndicatifSearch(e.target.value)}
-                          onKeyDown={(e) => e.stopPropagation()}
-                          style={{
-                            ...styles.input,
-                            margin: 10,
-                            marginBottom: 6,
-                            flexShrink: 0,
-                          }}
-                          autoFocus
-                        />
-                        <div
-                          className="indicatif-list-scroll"
-                          onWheel={(e) => e.stopPropagation()}
-                          style={{
-                            overflowY: "scroll",
-                            flex: 1,
-                            minHeight: 132,
-                            padding: "0 10px 10px",
-                            WebkitOverflowScrolling: "touch",
-                          }}
-                        >
-                          {filteredCountries.length === 0 ? (
-                            <p style={{ padding: "12px", margin: 0, fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
-                              Aucun pays trouvé pour « {indicatifSearch.trim()} »
-                            </p>
-                          ) : null}
-                          {filteredCountries.map((c) => (
-                            <button
-                              key={c.dial}
-                              type="button"
-                              onClick={() => {
-                                setPhonePrefix(c.dial);
-                                setPhoneError("");
-                                setPhoneValidationAttempted(false);
-                                setIndicatifDropdownOpen(false);
-                              }}
-                              style={{
-                                display: "block",
-                                width: "100%",
-                                padding: "10px 12px",
-                                border: "none",
-                                borderRadius: 8,
-                                background: "transparent",
-                                color: "white",
-                                textAlign: "left",
-                                cursor: "pointer",
-                                fontSize: 14,
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = "transparent";
-                              }}
-                            >
+                      <div style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: 4, background: "rgba(15,23,42,0.98)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 12, boxShadow: "0 10px 40px rgba(0,0,0,0.5)", zIndex: 1000, maxHeight: 280, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                        <input type="text" placeholder="Rechercher ton pays" value={indicatifSearch} onChange={e => setIndicatifSearch(e.target.value)} style={{ ...inputStyle, margin: 8, marginBottom: 4, flexShrink: 0 }} autoFocus />
+                        <div className="scroll-thin" style={{ overflowY: "auto", flex: 1, padding: "0 8px 8px" }}>
+                          {filteredCountries.length === 0 && <p style={{ padding: 10, margin: 0, fontSize: 13, opacity: 0.5 }}>Aucun pays trouvé</p>}
+                          {filteredCountries.map(c => (
+                            <button key={c.dial + c.name} type="button" onClick={() => { setPhonePrefix(c.dial); setIndicatifDropdownOpen(false); }}
+                              style={{ display: "block", width: "100%", padding: "9px 10px", border: "none", borderRadius: 8, background: "transparent", color: "white", textAlign: "left", cursor: "pointer", fontSize: 13 }}
+                              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
+                              onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                               {c.name} {c.dial}
                             </button>
                           ))}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setPhonePrefix("OTHER");
-                              setPhoneError("");
-                              setPhoneValidationAttempted(false);
-                              setIndicatifDropdownOpen(false);
-                            }}
-                            style={{
-                              display: "block",
-                              width: "100%",
-                              padding: "10px 12px",
-                              border: "none",
-                              borderRadius: 8,
-                              background: "transparent",
-                              color: "white",
-                              textAlign: "left",
-                              cursor: "pointer",
-                              fontSize: 14,
-                              borderTop: "1px solid rgba(255,255,255,0.1)",
-                              marginTop: 4,
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = "transparent";
-                            }}
-                          >
-                            Autre
-                          </button>
+                          <button type="button" onClick={() => { setPhonePrefix("OTHER"); setIndicatifDropdownOpen(false); }}
+                            style={{ display: "block", width: "100%", padding: "9px 10px", border: "none", borderRadius: 8, background: "transparent", color: "white", textAlign: "left", cursor: "pointer", fontSize: 13, borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: 4 }}>Autre</button>
                         </div>
-                        <p style={{ margin: 0, padding: "8px 12px 10px", fontSize: 12, color: "rgba(255,255,255,0.6)", textAlign: "center", flexShrink: 0, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-                          ↓ Faites défiler pour plus de pays
-                        </p>
                       </div>
                     )}
                   </div>
-                  <input
-                    style={{
-                      ...styles.input,
-                      flex: 1,
-                      border: "none",
-                      borderRadius: "0 12px 12px 0",
-                      background: "transparent",
-                      ...(phoneError ? { borderLeft: "1px solid #ef4444" } : {}),
-                    }}
-                    value={phone}
-                    onChange={(e) => {
-                      let v = e.target.value;
-                      if (dialCode) {
-                        const digits = v.replace(/\D/g, "");
-                        if (digits.startsWith("0")) {
-                          setPhone(digits.replace(/^0+/, ""));
-                          if (phoneValidationAttempted && digits.replace(/^0+/, "").length >= 9) setPhoneValidationAttempted(false);
-                          return;
-                        }
-                      }
-                      setPhone(v);
-                      if (phoneValidationAttempted && v.replace(/\D/g, "").length >= 9) {
-                        setPhoneValidationAttempted(false);
-                      }
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        setPhoneValidationAttempted(true);
-                      }
-                    }}
-                    onBlur={() => {
-                      if (phone.length > 0) setPhoneValidationAttempted(true);
-                    }}
-                    placeholder={phonePrefix === "OTHER" ? "Numéro avec indicatif" : (dialCode ? "6 12 34 56 78" : "Numéro")}
-                    type="tel"
-                    autoComplete="tel-national"
-                  />
+                  <input style={{ ...inputStyle, flex: 1, border: "none", borderRadius: "0 12px 12px 0", background: "transparent" }}
+                    value={phone} onChange={e => { let v = e.target.value; if (dialCode) { const d = v.replace(/\D/g, ""); if (d.startsWith("0")) { setPhone(d.replace(/^0+/, "")); return; } } setPhone(v); }}
+                    placeholder={phonePrefix === "OTHER" ? "Numéro avec indicatif" : "6 12 34 56 78"} type="tel" />
                 </div>
-                {phoneError && (
-                  <p style={{ color: "#ef4444", fontSize: 13, margin: "6px 0 0 0", textAlign: "left" }}>
-                    ⚠️ {phoneError}
-                  </p>
-                )}
               </div>
-
-              <div style={styles.sexRow}>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    document.activeElement?.blur();
-                    setSex("homme");
-                    if (phone.length > 0) {
-                      setTimeout(() => setPhoneValidationAttempted(true), 100);
-                    }
-                  }}
-                  style={{
-                    ...styles.sexBtn,
-                    ...(sex === "homme" ? styles.sexBtnActive : null),
-                  }}
-                >
-                  Homme
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    document.activeElement?.blur();
-                    setSex("femme");
-                    if (phone.length > 0) {
-                      setTimeout(() => setPhoneValidationAttempted(true), 100);
-                    }
-                  }}
-                  style={{
-                    ...styles.sexBtn,
-                    ...(sex === "femme" ? styles.sexBtnActive : null),
-                  }}
-                >
-                  Femme
-                </button>
+              {/* Sexe */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                {["homme", "femme"].map(s => (
+                  <button key={s} type="button" onClick={() => setSex(s)}
+                    style={{ padding: "12px 14px", borderRadius: 14, border: `1px solid ${sex === s ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.12)"}`, background: sex === s ? "#475569" : "rgba(15,23,42,0.35)", color: "white", cursor: "pointer", fontSize: 14, fontWeight: sex === s ? 600 : 400, transition: "all 0.2s" }}>
+                    {s.charAt(0).toUpperCase() + s.slice(1)}
+                  </button>
+                ))}
               </div>
-
-              <p style={styles.note}>
-                Tu dois remplir <b>prénom + nom + téléphone</b> (avec indicatif) et choisir <b>Homme/Femme</b>.
-              </p>
-              <button
-                type="button"
-                onClick={goToConsentPage}
-                disabled={!canStart}
-                style={{
-                  marginTop: 20,
-                  width: "100%",
-                  padding: "14px 20px",
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: canStart ? "white" : "rgba(255,255,255,0.5)",
-                  background: canStart ? "linear-gradient(135deg, #3b82f6, #2563eb)" : "rgba(255,255,255,0.1)",
-                  border: canStart ? "none" : "1px solid rgba(255,255,255,0.2)",
-                  borderRadius: 12,
-                  cursor: canStart ? "pointer" : "not-allowed",
-                  boxShadow: canStart ? "0 4px 14px rgba(59, 130, 246, 0.4)" : "none",
-                }}
-              >
+              <p style={{ margin: 0, opacity: 0.65, fontSize: 12, lineHeight: 1.4 }}>Tu dois remplir <b>prénom/nom + email valide + téléphone</b> et choisir <b>Homme/Femme</b>.</p>
+              <button type="button" onClick={goToConsentPage} disabled={!canStart}
+                style={{ marginTop: 8, width: "100%", padding: "14px 20px", fontSize: 16, fontWeight: 600, color: canStart ? "white" : "rgba(255,255,255,0.45)", background: canStart ? "linear-gradient(135deg, #3b82f6, #2563eb)" : "rgba(255,255,255,0.08)", border: canStart ? "none" : "1px solid rgba(255,255,255,0.15)", borderRadius: 12, cursor: canStart ? "pointer" : "not-allowed", boxShadow: canStart ? "0 4px 16px rgba(59,130,246,0.4)" : "none", transition: "all 0.25s" }}>
                 Continuer
               </button>
             </div>
           </div>
-        ) : !consentGiven ? (
-          <div className={consentAnimating ? "consent-fade-out" : "questionnaire-fade-in"}>
-            <div style={styles.kicker}>AVANT DE CONTINUER...</div>
-            <h2 style={{ margin: "12px 0 0", fontSize: 20 }}>Avant de continuer...</h2>
 
-            <p style={styles.consentText}>
-              Les prochaines questions abordent des aspects plus personnels de ta vie. Nous comprenons que certains sujets peuvent être sensibles.
-              <br /><br />
-              Tes réponses resteront strictement confidentielles et anonymes. Tu es libre de passer toute question qui ne te convient pas, ou d'arrêter à tout moment.
+        /* ═══ CONSENTEMENT ═══ */
+        ) : !consentGiven ? (
+          <div style={consentAnimating ? fadeOut : fadeIn}>
+            <div style={{ fontSize: 11, letterSpacing: 1.5, opacity: 0.8, textTransform: "uppercase", fontWeight: 700 }}>AVANT DE CONTINUER...</div>
+            <h2 style={{ margin: "12px 0 0", fontSize: 20 }}>Avant de continuer...</h2>
+            <p style={{ marginTop: 16, lineHeight: 1.65, opacity: 0.92, textAlign: "left", fontSize: 14 }}>
+              Les prochaines questions abordent des aspects plus personnels de ta vie. Tes réponses resteront strictement confidentielles.
               <br /><br />
               <strong>Tu recevras un message personnalisé de ma part</strong> après avoir terminé le questionnaire.
               <br /><br />
               <strong>Souhaites-tu poursuivre ?</strong>
             </p>
-
             <div style={{ marginTop: 20, display: "grid", gap: 10 }}>
-              <button
-                style={styles.consentButton}
-                onClick={() => {
-                  if (consentNoTimeoutRef.current) {
-                    clearTimeout(consentNoTimeoutRef.current);
-                    consentNoTimeoutRef.current = null;
-                  }
-                  setConsentChoice('yes');
-                  setConsentAnimating(true);
-                  setTimeout(() => {
-                    setConsentGiven(true);
-                    setConsentAnimating(false);
-                    setConsentChoice(null);
-                  }, 400);
-                }}
-              >
-                <span className={consentChoice === 'yes' ? 'consent-check-box' : ''} 
-                      style={{ 
-                        display: 'inline-block',
-                        color: consentChoice === 'yes' ? '#22c55e' : 'inherit',
-                        fontWeight: consentChoice === 'yes' ? 'bold' : 'normal'
-                      }}>
-                  {consentChoice === 'yes' ? '✓' : '☐'}
-                </span> Oui, je me sens à l'aise pour continuer
+              <button style={{ ...consentBtnStyle, background: "rgba(15,23,42,0.55)" }}
+                onClick={() => { setConsentChoice("yes"); setConsentAnimating(true); setTimeout(() => { setConsentGiven(true); setConsentAnimating(false); setConsentChoice(null); }, 400); }}>
+                <span style={{ color: consentChoice === "yes" ? "#22c55e" : "inherit", fontWeight: consentChoice === "yes" ? "bold" : "normal" }}>{consentChoice === "yes" ? "\u2713" : "\u2610"}</span> Oui, je me sens à l'aise pour continuer
               </button>
-              <button
-                style={{ ...styles.consentButton, background: "rgba(239, 68, 68, 0.25)", border: "1px solid rgba(239, 68, 68, 0.35)" }}
-                onClick={() => {
-                  setConsentChoice('no');
-                  if (consentNoTimeoutRef.current) clearTimeout(consentNoTimeoutRef.current);
-                  consentNoTimeoutRef.current = setTimeout(() => {
-                    consentNoTimeoutRef.current = null;
-                    alert("Merci pour ta visite. Prends soin de toi !");
-                    restartFromStart();
-                  }, 800);
-                }}
-              >
-                <span className={consentChoice === 'no' ? 'consent-cross-box' : ''} 
-                      style={{ 
-                        display: 'inline-block',
-                        color: consentChoice === 'no' ? '#ef4444' : 'inherit',
-                        fontWeight: consentChoice === 'no' ? 'bold' : 'normal'
-                      }}>
-                  {consentChoice === 'no' ? '✗' : '☐'}
-                </span> Non, je préfère m'arrêter ici
+              <button style={{ ...consentBtnStyle, background: "rgba(239,68,68,0.2)", border: "1px solid rgba(239,68,68,0.3)" }}
+                onClick={() => { setConsentChoice("no"); setTimeout(() => { alert("Merci pour ta visite. Prends soin de toi !"); restartFromStart(); }, 800); }}>
+                <span style={{ color: consentChoice === "no" ? "#ef4444" : "inherit", fontWeight: consentChoice === "no" ? "bold" : "normal" }}>{consentChoice === "no" ? "\u2717" : "\u2610"}</span> Non, je préfère m'arrêter ici
               </button>
             </div>
           </div>
+
+        /* ═══ LOADING ═══ */
         ) : showCompleted ? (
-          <div className="completed-message">
-            <div style={styles.completedContainer}>
-              <div className="completed-icon-pulse" style={styles.completedIcon}>✓</div>
-              <h2 style={{ margin: "16px 0 0", fontSize: 28 }}>Questionnaire terminé !</h2>
-              <p style={{ margin: "20px 0 24px", opacity: 0.9, fontSize: 16 }}>
-                Ton profil a été analysé avec soin.
-              </p>
-              
-              <p style={{ margin: "0 0 16px", fontSize: 17, fontWeight: 600, opacity: 0.95 }}>
-                Prêt·e à voir ton évaluation personnelle ? 🎯
-              </p>
-              
-              {/* Barre de progression */}
-              <div style={styles.progressBarContainer}>
-                <div 
-                  style={{
-                    ...styles.progressBarFill,
-                    width: `${loadingProgress}%`
-                  }}
-                />
+          <div style={fadeIn}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "50px 20px" }}>
+              <div style={{ width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, rgba(34,197,94,0.2) 0%, rgba(16,185,129,0.2) 100%)", border: "2px solid rgba(34,197,94,0.45)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, color: "#22c55e", fontWeight: "bold", animation: "pulse 1.2s ease-in-out infinite" }}>{"\u2713"}</div>
+              <h2 style={{ margin: "16px 0 0", fontSize: 26 }}>Questionnaire terminé !</h2>
+              <p style={{ margin: "16px 0 20px", opacity: 0.85, fontSize: 15 }}>Ton profil a été analysé avec soin.</p>
+              <div style={{ width: "100%", height: 8, borderRadius: 999, background: "rgba(255,255,255,0.1)", overflow: "hidden" }}>
+                <div style={{ height: "100%", background: "linear-gradient(90deg, #60a5fa, #3b82f6)", borderRadius: 999, transition: "width 0.1s ease-out", width: `${loadingProgress}%`, boxShadow: "0 0 12px rgba(96,165,250,0.5)" }} />
               </div>
-              
-              <p style={{ margin: "12px 0 0", opacity: 0.75, fontSize: 14 }}>
-                Chargement de ton analyse personnalisée...
-              </p>
+              <p style={{ margin: "12px 0 0", opacity: 0.65, fontSize: 13 }}>Chargement de ton analyse personnalisée...</p>
             </div>
           </div>
+
+        /* ═══ TRANSITION ═══ */
+        ) : !finished && currentQ && currentQ.type === "transition" ? (
+          <div style={questionTransitioning ? fadeOut : fadeIn}>
+            <div style={{ padding: "30px 10px" }}>
+              <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(59,130,246,0.15)", border: "2px solid rgba(59,130,246,0.35)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 16px" }}>🔍</div>
+              <p style={{ fontSize: 15, lineHeight: 1.6, opacity: 0.92 }}>{currentQ.message}</p>
+              <button onClick={advanceTransition} className="btn-cta"
+                style={{ marginTop: 20, padding: "14px 32px", borderRadius: 12, background: "linear-gradient(135deg, #3b82f6, #2563eb)", border: "none", color: "white", fontSize: 15, fontWeight: 600, cursor: "pointer", boxShadow: "0 4px 16px rgba(59,130,246,0.4)" }}>
+                Continuer
+              </button>
+            </div>
+          </div>
+
+        /* ═══ QUESTIONS ═══ */
         ) : !finished ? (
-          <div className={questionTransitioning ? "question-fade-out" : "questionnaire-fade-in"}>
-            <div style={styles.kicker}>TA CARTE ANCESTRALE</div>
+          <div style={questionTransitioning ? fadeOut : fadeIn}>
+            <div style={{ fontSize: 11, letterSpacing: 1.5, opacity: 0.8, textTransform: "uppercase", fontWeight: 700 }}>TA CARTE ANCESTRALE</div>
+            <h2 style={{ margin: "10px 0 0", fontSize: "clamp(1.1em,3.8vw,1.4em)", lineHeight: 1.3 }}>{currentQ?.question}</h2>
 
-            <h2 style={{ margin: "10px 0 0" }}>{questions[step]?.question}</h2>
-
-            {questions[step]?.type === "open" ? (
+            {currentQ?.type === "open" ? (
               <div style={{ marginTop: 16 }}>
-                <textarea
-                  value={openAnswer}
-                  onChange={(e) => setOpenAnswer(e.target.value)}
-                  placeholder="Tape ta réponse ici..."
-                  rows={6}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    fontSize: "15px",
-                    fontFamily: "inherit",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: "8px",
-                    background: "rgba(255,255,255,0.05)",
-                    color: "white",
-                    resize: "vertical",
-                  }}
-                />
-                <button
-                  onClick={submitOpenAnswer}
-                  disabled={!openAnswer.trim()}
-                  style={{
-                    ...styles.button,
-                    marginTop: 12,
-                    opacity: openAnswer.trim() ? 1 : 0.5,
-                    cursor: openAnswer.trim() ? "pointer" : "not-allowed",
-                  }}
-                >
+                <textarea value={openAnswer} onChange={e => setOpenAnswer(e.target.value)} placeholder="Tape ta réponse ici..." rows={5}
+                  style={{ width: "100%", padding: 12, fontSize: 15, fontFamily: "inherit", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 10, background: "rgba(255,255,255,0.05)", color: "white", resize: "vertical", boxSizing: "border-box", outline: "none" }} />
+                <button onClick={submitOpenAnswer} disabled={!openAnswer.trim()}
+                  style={{ ...optionBtnStyle, marginTop: 12, opacity: openAnswer.trim() ? 1 : 0.4, cursor: openAnswer.trim() ? "pointer" : "not-allowed", background: openAnswer.trim() ? "#3b82f6" : "#334155", fontWeight: 600 }}>
                   Suivant →
                 </button>
               </div>
             ) : (
-              <div style={styles.options}>
-                {questions[step]?.options?.map((opt, i) => (
-                  <button 
-                    key={i} 
-                    style={{
-                      ...styles.button,
-                    }} 
-                    onClick={(e) => answer(opt, i, e)}
-                    disabled={clickedOptionIndex !== null}
-                  >
-                    {clickedOptionIndex === i && (
-                      <div className="button-sweep-overlay" />
-                    )}
+              <div style={{ display: "grid", gap: 10, marginTop: 16 }}>
+                {currentQ?.options?.map((opt, i) => (
+                  <button key={i} className="btn-option" style={{ ...optionBtnStyle, position: "relative", overflow: "hidden" }}
+                    onClick={() => answer(opt, i)} disabled={clickedOptionIndex !== null}>
+                    {clickedOptionIndex === i && <div className="sweep-overlay" />}
                     {opt.text}
                   </button>
                 ))}
               </div>
             )}
 
-            <div style={{ position: 'relative', marginTop: 16 }}>
-            <p style={styles.progress}>
-              Question {step + 1} / {questions.length}
-            </p>
-              
-              <button
-                onClick={goBack}
-                style={styles.backButton}
-                title={step === 0 ? "Retour au consentement" : "Retour à la question précédente"}
-              >
+            <div style={{ position: "relative", marginTop: 16 }}>
+              <p style={{ margin: 0, opacity: 0.65, textAlign: "center", fontSize: 14 }}>Question {answeredCount + 1} / {realQuestionCount}</p>
+              <button onClick={goBack}
+                style={{ position: "absolute", left: 0, bottom: -2, padding: "7px 14px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.18)", background: "rgba(51,65,85,0.6)", color: "white", cursor: "pointer", fontSize: 13, fontWeight: 500 }}>
                 ← Retour
               </button>
             </div>
           </div>
+
+        /* ═══ RÉSULTATS ═══ */
         ) : (
-          <>
-            <div style={styles.kicker}>TA CARTE ANCESTRALE</div>
+          <div style={fadeIn}>
+            <div style={{ fontSize: 11, letterSpacing: 1.5, opacity: 0.8, textTransform: "uppercase", fontWeight: 700 }}>TA CARTE ANCESTRALE</div>
+            <p style={{ fontSize: 13, opacity: 0.8, marginTop: 12, marginBottom: 16 }}>{prof?.intro}</p>
 
-            <div style={{ ...styles.smallIntro, textAlign: "center", marginTop: 12, marginBottom: 16 }}>
-              {prof?.intro}
-            </div>
-
+            {/* Avatar + Badge */}
             <div className="result-header">
               <div className="inline-avatar">
-                <Avatar sex={sex} variant={prof?.themeKey} label={prof?.label} />
+                <Avatar sex={sex} label={prof?.label} />
               </div>
-
               <div className="result-header-content">
-                <h2 style={{ margin: "6px 0 0", textAlign: "center" }}>{prof?.label}</h2>
-                <p style={{ opacity: 0.9, marginTop: 10, fontSize: 17, fontWeight: 600, textAlign: "center" }}>
-                  Ton score global : <b>{score}</b> / {maxScore}
-                </p>
+                <div style={{ display: "inline-block", padding: "10px 24px", borderRadius: 14, background: prof?.bgColor, border: `1px solid ${prof?.borderColor}`, marginBottom: 8 }}>
+                  <span style={{ fontSize: 16, fontWeight: 800, color: prof?.color, letterSpacing: 1 }}>{prof?.label}</span>
+                </div>
+                <p style={{ opacity: 0.9, fontSize: 16, fontWeight: 600, margin: "8px 0 0" }}>Ton score global : <b>{Math.round(((score - questionsArray.filter(q => q.type !== "transition").length * -4) / (maxScore - questionsArray.filter(q => q.type !== "transition").length * -4)) * 100)}%</b></p>
               </div>
             </div>
 
-            <TextWithLinks text={prof?.story} style={styles.resultText} />
-
-            {prof?.highlights && prof.highlights.length > 0 && (
-              <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
-                <div style={styles.blockTitle}>Signes typiques</div>
-                <ul style={styles.ul}>
-                  {prof.highlights.map((x, idx) => (
-                    <li key={idx} style={styles.li}>
-                      {x}
-                    </li>
+            {/* Barres visuelles par catégorie */}
+            {analysis && (() => {
+              const barCats = [
+                { key: "energie", label: "Énergie" },
+                { key: "sommeil", label: "Sommeil" },
+                { key: "digestion", label: "Digestion" },
+                { key: "foie", label: "Foie" },
+                { key: "graisses", label: "Graisses" },
+                { key: "nerveux", label: "Nerveux" },
+                { key: "metabolisme", label: "Métabolisme" },
+                { key: "immunite", label: "Immunité" },
+                { key: "inflammation", label: "Inflammation" },
+                { key: "mineralisation", label: "Minéralisation" },
+                { key: "peau", label: "Peau" },
+                { key: "cheveux", label: "Cheveux" },
+                { key: "circulation", label: "Circulation" },
+                { key: "thyroide", label: "Thyroïde" },
+              ];
+              if (sex === "femme") barCats.push({ key: "hormones", label: "Hormones" });
+              const avgs = analysis.categoryAverages;
+              const items = barCats.filter(c => avgs[c.key] !== undefined).map(c => ({ ...c, pct: Math.round(((avgs[c.key] + 4) / 7) * 100) }));
+              items.sort((a, b) => a.pct - b.pct);
+              const barColor = (pct) => pct <= 35 ? "#ef4444" : pct <= 55 ? "#f59e0b" : pct <= 75 ? "#3b82f6" : "#22c55e";
+              return (
+                <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 12px", textAlign: "left" }}>
+                  {items.map(c => (
+                    <div key={c.key} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ fontSize: 10, opacity: 0.6, width: 72, flexShrink: 0, textAlign: "right" }}>{c.label}</span>
+                      <div style={{ flex: 1, height: 4, borderRadius: 999, background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
+                        <div style={{ height: "100%", width: `${c.pct}%`, borderRadius: 999, background: barColor(c.pct) }} />
+                      </div>
+                      <span style={{ fontSize: 9, fontWeight: 600, color: barColor(c.pct), width: 26, flexShrink: 0 }}>{c.pct}%</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
+              );
+            })()}
+
+            {/* Story */}
+            <p style={{ marginTop: 12, lineHeight: 1.55, opacity: 0.92, textAlign: "left", whiteSpace: "pre-line", fontSize: 14 }}>{prof?.story}</p>
+
+            {/* Blocs spéciaux */}
+            {specialBlocks.length > 0 && (
+              <div style={{ marginTop: 20 }}>
+                <p style={{ fontWeight: 700, fontSize: 15, marginBottom: 10, textAlign: "left", letterSpacing: 0.3 }}>Analyse ciblée</p>
+                {specialBlocks.map((block, i) => (
+                  <div key={i} style={{ marginBottom: 12, padding: 14, borderRadius: 14, background: block.level === "info" ? "rgba(59,130,246,0.08)" : `${block.color}11`, border: `1px solid ${block.color}44`, textAlign: "left" }}>
+                    <p style={{ margin: "0 0 6px", fontWeight: 700, fontSize: 14, color: block.color }}>
+                      {block.title} {block.level !== "info" && <span style={{ fontSize: 11, opacity: 0.8 }}>({block.level})</span>}
+                    </p>
+                    <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5, opacity: 0.9, whiteSpace: "pre-line" }}>{block.text}</p>
+                    {block.table && (
+                      <table style={{ width: "100%", marginTop: 10, borderCollapse: "collapse", fontSize: 12 }}>
+                        <thead>
+                          <tr>{block.table.headers.map((h, j) => <th key={j} style={{ padding: "6px 8px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", fontWeight: 600, textAlign: "left" }}>{h}</th>)}</tr>
+                        </thead>
+                        <tbody>
+                          {block.table.rows.map((row, j) => (
+                            <tr key={j}>{row.map((cell, k) => <td key={k} style={{ padding: "5px 8px", border: "1px solid rgba(255,255,255,0.08)" }}>{cell}</td>)}</tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
 
-            {prof?.plan && prof.plan.length > 0 && (
-              <div style={{ ...styles.block, borderColor: theme.blockBorder }}>
-                <div style={styles.blockTitle}>3 priorités</div>
-                <ul style={styles.ul}>
-                  {prof.plan.map((x, idx) => (
-                    <li key={idx} style={styles.li}>
-                      {x}
-                    </li>
-                  ))}
-                </ul>
-                {prof?.mantra && <div style={styles.mantra}>{prof.mantra}</div>}
-                {prof?.trap && <div style={styles.trap}>Attention : {prof.trap}</div>}
+            {/* Points faibles classiques */}
+            {analysis?.weakCategories?.length > 0 && (
+              <div style={{ marginTop: 16, padding: 14, borderRadius: 14, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", textAlign: "left" }}>
+                <p style={{ margin: "0 0 8px", fontWeight: 700, fontSize: 14, color: "#fca5a5" }}>Autres points à travailler :</p>
+                {analysis.weakCategories.slice(0, 5).map(cat => {
+                  const desc = categoryDescriptions[cat];
+                  return desc ? <p key={cat} style={{ margin: "6px 0", fontSize: 13, lineHeight: 1.45, opacity: 0.9 }}>
+                    <strong style={{ color: "#fca5a5" }}>{desc.name.charAt(0).toUpperCase() + desc.name.slice(1)}</strong> : {desc.issues}
+                  </p> : null;
+                })}
               </div>
             )}
 
-            {prof?.tip && <p style={styles.tip}>{prof.tip}</p>}
-            <p style={styles.footer}>{prof?.footer}</p>
+            <p style={{ marginTop: 16, opacity: 0.8, textAlign: "left", lineHeight: 1.45, fontSize: 13 }}>Objectif : énergie stable, digestion calme, peau/cheveux qui suivent.</p>
 
-            {prof?.hasIclosedLink ? (
-              <a
-                href="https://calendly.com/d/cxhk-x8n-nzw/bilan-ancestral"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "block",
-                  marginTop: 16,
-                  padding: "16px 20px",
-                  borderRadius: 12,
-                  background: "linear-gradient(135deg, rgba(96, 165, 250, 0.25) 0%, rgba(59, 130, 246, 0.25) 100%)",
-                  border: "1px solid rgba(96, 165, 250, 0.4)",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  color: "white",
-                  fontWeight: 700,
-                  fontSize: 16,
-                  transition: "all 0.3s ease",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(96, 165, 250, 0.35) 0%, rgba(59, 130, 246, 0.35) 100%)";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 8px 20px rgba(96, 165, 250, 0.3)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(96, 165, 250, 0.25) 0%, rgba(59, 130, 246, 0.25) 100%)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                <div>📞 Prendre un rdv pour mettre en place ton plan d'action ancestral</div>
-              </a>
-            ) : null}
+            {/* CTAs */}
+            <a href="https://calendly.com/d/cxhk-x8n-nzw/bilan-ancestral" target="_blank" rel="noopener noreferrer" className="btn-cta"
+              style={{ display: "block", marginTop: 20, padding: "16px 20px", borderRadius: 12, background: "linear-gradient(135deg, rgba(96,165,250,0.22) 0%, rgba(59,130,246,0.22) 100%)", border: "1px solid rgba(96,165,250,0.4)", textAlign: "center", textDecoration: "none", color: "white", fontWeight: 700, fontSize: 16 }}>
+              Ton plan d'action ancestral personnalisé
+            </a>
+            <a href="https://www.skool.com/ancestral/about?ref=480fbb005e714961b5e08f536c4ff579" target="_blank" rel="noopener noreferrer" className="btn-cta"
+              style={{ display: "block", marginTop: 10, padding: "16px 20px", borderRadius: 12, background: "linear-gradient(135deg, rgba(239,68,68,0.2) 0%, rgba(220,38,38,0.2) 100%)", border: "1px solid rgba(239,68,68,0.35)", textAlign: "center", textDecoration: "none", color: "white", fontWeight: 700, fontSize: 16 }}>
+              Découvrir la formation ancestrale 7 jours offerts
+            </a>
 
-            {prof?.hasIclosedLink && (
-              <a
-                href="https://www.skool.com/ancestral/about?ref=480fbb005e714961b5e08f536c4ff579"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "block",
-                  marginTop: 12,
-                  padding: "16px 20px",
-                  borderRadius: 12,
-                  background: "linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(220, 38, 38, 0.25) 100%)",
-                  border: "1px solid rgba(239, 68, 68, 0.4)",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  color: "white",
-                  fontWeight: 700,
-                  fontSize: 16,
-                  transition: "all 0.3s ease",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(239, 68, 68, 0.35) 0%, rgba(220, 38, 38, 0.35) 100%)";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 8px 20px rgba(239, 68, 68, 0.3)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(220, 38, 38, 0.25) 100%)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                Découvrir la formation ancestrale
-              </a>
-            )}
+            <p style={{ marginTop: 16, opacity: 0.75, textAlign: "center", fontSize: 13 }}>
+              Tu as une question ? WhatsApp de Mao :{" "}
+              <a href="https://wa.me/33749834339" target="_blank" rel="noopener noreferrer" style={{ color: "#25d366", textDecoration: "underline", fontWeight: 600 }}>07 49 83 43 39</a>
+            </p>
 
-            {!prof?.hasIclosedLink && (
-              <div style={{
-                marginTop: 16,
-                padding: "14px 16px",
-                borderRadius: 12,
-                background: "rgba(96, 165, 250, 0.15)",
-                border: "1px solid rgba(96, 165, 250, 0.3)",
-                textAlign: "center",
-              }}>
-                <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>
-                  <strong>Numéro mobile pour contacter Mao :</strong>
-                  <br />
-                  <a 
-                    href="tel:+33749834339"
-                    style={{
-                      color: "#60a5fa",
-                      textDecoration: "none",
-                      fontWeight: 700,
-                      fontSize: 16,
-                      letterSpacing: "0.5px",
-                    }}
-                  >
-                    07 49 83 43 39
-                  </a>
-                </p>
-              </div>
-            )}
-
-            {/* Numéro WhatsApp pour les profils avec lien iClosed */}
-            {prof?.hasIclosedLink && (
-              <>
-              <p style={{ 
-                marginTop: 16, 
-                opacity: 0.85, 
-                textAlign: "center",
-                  fontSize: 13,
-                  fontWeight: 500,
-                  marginBottom: 6
-                }}>
-                  Tu as une question ?
-                </p>
-                <p style={{ 
-                  marginTop: 0, 
-                  opacity: 0.85, 
-                  textAlign: "center",
-                  fontSize: 13,
-                lineHeight: 1.5
-              }}>
-                Numéro WhatsApp de Mao :{" "}
-                <a 
-                  href="https://wa.me/33749834339"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    color: "#25d366",
-                    textDecoration: "underline",
-                    fontWeight: 600,
-                  }}
-                >
-                  07 49 83 43 39
-                </a>
-              </p>
-              </>
-            )}
-
-            {/* Carrousel de témoignages */}
             <TestimonialsCarousel />
-          </>
+
+            <button onClick={restartFromStart} style={{ marginTop: 20, padding: "10px 20px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.06)", color: "white", cursor: "pointer", fontSize: 13, opacity: 0.7 }}>
+              Recommencer
+            </button>
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-/** Composant pour rendre les URLs cliquables dans le texte */
-function TextWithLinks({ text, style }) {
-  if (!text) return null;
-
-  // Regex pour détecter les URLs
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const parts = text.split(urlRegex);
-
+// ═══════════════════════════════════════════════════════
+// AVATAR
+// ═══════════════════════════════════════════════════════
+function Avatar({ sex, label }) {
+  const base = sex === "femme" ? "femme" : "homme";
+  let suffix = "ancien";
+  if (label) {
+    if (label.includes("CRITIQUE")) suffix = "sedimente";
+    else if (label.includes("STABLE")) suffix = "equilibre";
+    else if (label.includes("DÉSÉQUILIBRÉ")) suffix = "transitionnel";
+    else suffix = "ancien";
+  }
+  const src = `/avatars/${base}-${suffix}.png`;
   return (
-    <p style={style}>
-      {parts.map((part, index) => {
-        // Si c'est une URL, créer un lien
-        if (part.match(urlRegex)) {
-          return (
-            <a
-              key={index}
-              href={part}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: "#60a5fa",
-                textDecoration: "underline",
-                fontWeight: 600,
-              }}
-            >
-              Réserver un appel →
-            </a>
-          );
-        }
-        // Sinon, afficher le texte normalement (en préservant les sauts de ligne)
-        return part.split('\n').map((line, i, arr) => (
-          <span key={`${index}-${i}`}>
-            {line}
-            {i < arr.length - 1 && <br />}
-          </span>
-        ));
-      })}
-    </p>
+    <img src={src} alt="Avatar" style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom center", display: "block" }} />
   );
 }
 
-/** Carrousel de témoignages */
+// ═══════════════════════════════════════════════════════
+// TÉMOIGNAGES (avec touch/swipe)
+// ═══════════════════════════════════════════════════════
 function TestimonialsCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [idx, setIdx] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
-
   const testimonials = [
-    {
-      name: "Sarah",
-      text: "Depuis que je suis tes conseils et ton alimentation j'ai enfin réussi à dormir 6h par nuit cela ne m'était pas arrivé depuis plus de 30 ans. Je dormais maximum 2h et j'étais fatiguée toute la journée. C'est vraiment incroyable ce changement donc merci merci merci 🙏"
-    },
-    {
-      name: "Marc",
-      text: "J'ai commencé d'appliquer ce que tu expliques il y a environ 3/4 mois. L'alimentation ancestrale/brute est juste incroyable."
-    },
-    {
-      name: "Laura",
-      text: "Il y a 3 ans, on m'a détecté des lésions au niveau de l'utérus, papillomavirus. En novembre j'ai fait un contrôle, que je fais tous les 6 mois pour contrôler que les lésions ne deviennent pas cancéreuses. Hier, j'ai eu le résultat et le test est revenu négatif!!! 3 ans que je me bats contre ces lésions et en l'espace de quelques mois certainement dû à cette alimentation, les lésions ont disparu!!! 🎉"
-    },
-    {
-      name: "Thomas",
-      text: "Depuis que je mange comme ça j'ai pleins pleins de cheveux qui repoussent j'avais un début de calvitie mais ça repousse c'est génial adieu la greffe de cheveux en turquie bonjour patate douce 🍠"
-    },
-    {
-      name: "Julie",
-      text: "Les patates c'est magiques vraiment je suis en train de tester d'en manger chaque jour c'est affolant l'énergie que j'ai, la vitalité, le dynamisme, merci pour ton contenu, je dis tjrs aux gens de te suivre parce qu'en étudiant depuis de nombreuses années la nutrition pour moi tu as toutes les clefs et les vérités, donc gros merci, continue 🙏"
-    },
-    {
-      name: "Alexandre",
-      text: "Comme expliqué en pantalon avant nutrition ancestrale : 40 voir carrément 42, après 1 mois : 40 proche 38 💪\n\nÇa fonctionne !!! 🤣 je remet mes costards"
-    },
-    {
-      name: "Emma",
-      text: "En 3 semaines à manger à ma faim etc j'ai perdu 1,5kg et j'ai des grosses lèvres 😂"
-    },
-    {
-      name: "Sophie",
-      text: "Depuis que je te suis je me réajuste et rééquilibre petit à petit ❤️ Mais plus de fringale, plus de privation, plus de dévorage de tablette de chocolat. Après des années de TCA ça fait du bien 🙏"
-    },
-    {
-      name: "Marie",
-      text: "J'avoue que je suis ton compte depuis qq mois aussi et je trouve des explications sur l'alimentation précises, claires et sans chichis. Tu es une personne simple, authentique et surtout intègre. Merci pour les partages car chacun prend ce qui lui fait sens à travers tes conseils. A bon entendeur...😉"
-    },
-    {
-      name: "Pierre",
-      text: "Je ne sais pas si c'est l'alimentation vivante que j'ai repris depuis quelques semaines ou les patates vapeurs remplies de bon beurre de lait crû mais mes douleurs musculaires et articulaires s'atténuent drastiquement 👌"
-    },
-    {
-      name: "Chloé",
-      text: "Mao tu t'en rend peut être pas compte mais ma vie est réellement entrain de changer tu expliques si bien les choses que depuis 2-3 mois où je suis arrivée je ne vois plus les choses de la même manière j'avais commencer un travail de recherche compréhension de la nourriture mais j'étais encore très loin du compte je te trouves ultra pédagogue c'est super important pour moi et ça a créer une confiance vis à vis de toi tu expliques tu ne vend pas tu ne prend pas de raccourcie c'est excellent 💙"
-    },
-    {
-      name: "Léa",
-      text: "Idem pour moi, merci Maoris, j'ai fait un pêcher de m'en priver toutes ces années !! Après avoir essayé pleins de diets pour mes pauvres intestins : Montignac, Delabos, keto, Paléo, auto-immun protocol, sans lectines,... J'en oublie certains, les patates y a pas mieux 😮"
-    },
-    {
-      name: "Lucas",
-      text: "Salut mec, je voulais te signaler que je te suis depuis peu de temps et que j'essaye d'appliquer les principes que tu évoques ! Et en l'espace de qqls jours, je peux noter des changements ben terme d'énergie. Sans prise de tête, juste en mangeant frugal et le plus ancestral. C'est cool ce que tu fais sur cette page, bonne continuation 🤌"
-    },
-    {
-      name: "Camille",
-      text: "Le plus significatif fut une déchirure qui s'est guéri extrêmement vite par rapport à ce que le médecin m'avait dit (mon kiné fut étonné aussi). J'ai un sommeil de meilleure qualité, je récupère beaucoup plus rapidement, ma peau s'est embellie et surtout je sens un regain d'énergie global. De même, il y a eu un effet sur le moral qui est beaucoup plus stable ✨"
-    }
+    { name: "Sarah", text: "Depuis que je suis tes conseils et ton alimentation j'ai enfin réussi à dormir 6h par nuit cela ne m'était pas arrivé depuis plus de 30 ans. Je dormais maximum 2h et j'étais fatiguée toute la journée. C'est vraiment incroyable ce changement donc merci merci merci 🙏" },
+    { name: "Marc", text: "J'ai commencé d'appliquer ce que tu expliques il y a environ 3/4 mois. L'alimentation ancestrale/brute est juste incroyable." },
+    { name: "Laura", text: "Il y a 3 ans, on m'a détecté des lésions au niveau de l'utérus, papillomavirus. En novembre j'ai fait un contrôle, que je fais tous les 6 mois pour contrôler que les lésions ne deviennent pas cancéreuses. Hier, j'ai eu le résultat et le test est revenu négatif!!! 3 ans que je me bats contre ces lésions et en l'espace de quelques mois certainement dû à cette alimentation, les lésions ont disparu!!! 🎉" },
+    { name: "Thomas", text: "Depuis que je mange comme ça j'ai pleins pleins de cheveux qui repoussent j'avais un début de calvitie mais ça repousse c'est génial adieu la greffe de cheveux en turquie bonjour patate douce 🍠" },
+    { name: "Julie", text: "Les patates c'est magiques vraiment je suis en train de tester d'en manger chaque jour c'est affolant l'énergie que j'ai, la vitalité, le dynamisme, merci pour ton contenu, je dis tjrs aux gens de te suivre parce qu'en étudiant depuis de nombreuses années la nutrition pour moi tu as toutes les clefs et les vérités, donc gros merci, continue 🙏" },
+    { name: "Alexandre", text: "Comme expliqué en pantalon avant nutrition ancestrale : 40 voir carrément 42, après 1 mois : 40 proche 38 💪 Ça fonctionne !!! 🤣 je remet mes costards" },
+    { name: "Emma", text: "En 3 semaines à manger à ma faim etc j'ai perdu 1,5kg et j'ai des grosses lèvres 😂" },
+    { name: "Sophie", text: "Depuis que je te suis je me réajuste et rééquilibre petit à petit ❤️ Mais plus de fringale, plus de privation, plus de dévorage de tablette de chocolat. Après des années de TCA ça fait du bien 🙏" },
+    { name: "Marie", text: "J'avoue que je suis ton compte depuis qq mois aussi et je trouve des explications sur l'alimentation précises, claires et sans chichis. Tu es une personne simple, authentique et surtout intègre. Merci pour les partages car chacun prend ce qui lui fait sens à travers tes conseils. A bon entendeur...😉" },
+    { name: "Pierre", text: "Je ne sais pas si c'est l'alimentation vivante que j'ai repris depuis quelques semaines ou les patates vapeurs remplies de bon beurre de lait crû mais mes douleurs musculaires et articulaires s'atténuent drastiquement 👌" },
+    { name: "Chloé", text: "Mao tu t'en rend peut être pas compte mais ma vie est réellement entrain de changer tu expliques si bien les choses que depuis 2-3 mois où je suis arrivée je ne vois plus les choses de la même manière j'avais commencer un travail de recherche compréhension de la nourriture mais j'étais encore très loin du compte je te trouves ultra pédagogue c'est super important pour moi et ça a créer une confiance vis à vis de toi tu expliques tu ne vend pas tu ne prend pas de raccourcie c'est excellent 💙" },
+    { name: "Léa", text: "Idem pour moi, merci Maoris, j'ai fait un pêcher de m'en priver toutes ces années !! Après avoir essayé pleins de diets pour mes pauvres intestins : Montignac, Delabos, keto, Paléo, auto-immun protocol, sans lectines,... J'en oublie certains, les patates y a pas mieux 😮" },
+    { name: "Lucas", text: "Salut mec, je voulais te signaler que je te suis depuis peu de temps et que j'essaye d'appliquer les principes que tu évoques ! Et en l'espace de qqls jours, je peux noter des changements ben terme d'énergie. Sans prise de tête, juste en mangeant frugal et le plus ancestral. C'est cool ce que tu fais sur cette page, bonne continuation 🤌" },
+    { name: "Camille", text: "Le plus significatif fut une déchirure qui s'est guéri extrêmement vite par rapport à ce que le médecin m'avait dit (mon kiné fut étonné aussi). J'ai un sommeil de meilleure qualité, je récupère beaucoup plus rapidement, ma peau s'est embellie et surtout je sens un regain d'énergie global. De même, il y a eu un effet sur le moral qui est beaucoup plus stable ✨" },
   ];
-
-  // Distance minimale de swipe (en pixels)
-  const minSwipeDistance = 50;
-
-  const goToNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
-  };
-
-  const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? testimonials.length - 1 : prevIndex - 1
-    );
-  };
-
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
+  const next = () => setIdx(i => (i + 1) % testimonials.length);
+  const prev = () => setIdx(i => i === 0 ? testimonials.length - 1 : i - 1);
+  const onTouchStart = (e) => { setTouchEnd(null); setTouchStart(e.targetTouches[0].clientX); };
+  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      goToNext();
-    } else if (isRightSwipe) {
-      goToPrevious();
-    }
+    const dist = touchStart - touchEnd;
+    if (dist > 50) next();
+    else if (dist < -50) prev();
   };
-
-  // Gestion du swipe avec le trackpad (wheel event)
-  const handleWheel = (e) => {
-    // Détection du swipe horizontal sur trackpad
+  const onWheel = (e) => {
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
       e.preventDefault();
-      if (e.deltaX > 30) {
-        goToNext();
-      } else if (e.deltaX < -30) {
-        goToPrevious();
-      }
+      if (e.deltaX > 30) next();
+      else if (e.deltaX < -30) prev();
     }
   };
-
   return (
-    <div style={{
-      marginTop: 32,
-      padding: "20px 0",
-      textAlign: "center",
-    }}>
-      <p style={{
-        fontSize: 16,
-        fontWeight: 600,
-        marginBottom: 12,
-        color: "rgba(255, 255, 255, 0.9)",
-        padding: "0 16px",
-      }}>
-        Je les ai accompagnés voici leurs résultats
-      </p>
-      <h3 style={{
-        fontSize: 18,
-        fontWeight: 700,
-        marginBottom: 24,
-        color: "rgba(255, 255, 255, 0.95)",
-        textTransform: "uppercase",
-        letterSpacing: "1px",
-        padding: "0 16px",
-      }}>
-        Ils ont testé l'approche ancestrale
-      </h3>
-      
-      <div 
-        style={{
-          position: "relative",
-          width: "100%",
-          maxWidth: "480px",
-          margin: "0 auto",
-          padding: "0 16px",
-          minHeight: "300px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        onWheel={handleWheel}
-      >
-        {/* Bouton précédent (gauche) */}
-        <button
-          onClick={goToPrevious}
-          style={{
-            position: "absolute",
-            left: "-15px",
-            top: "50%",
-            transform: "translateY(-50%)",
-            background: "rgba(0, 0, 0, 0.3)",
-            border: "none",
-            outline: "none",
-            color: "white",
-            fontSize: "24px",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-            zIndex: 10,
-            padding: "12px 10px",
-            lineHeight: "1",
-            borderRadius: "50%",
-            width: "40px",
-            height: "40px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            userSelect: "none",
-            WebkitTapHighlightColor: "transparent",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(0, 0, 0, 0.5)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(0, 0, 0, 0.3)";
-          }}
-          aria-label="Témoignage précédent"
-        >
-          ‹
-        </button>
-
-        {/* Carte de témoignage style WhatsApp ultra réaliste */}
-        <div
-          key={currentIndex}
-          style={{
-            background: "#ffffff",
-            borderRadius: "8px",
-            padding: "6px 10px 8px 10px",
-            display: "inline-block",
-            animation: "fadeIn 0.4s ease-in",
-            alignSelf: "flex-start",
-            maxWidth: "85%",
-            boxShadow: "0 1px 0.5px rgba(0, 0, 0, 0.13)",
-            position: "relative",
-          }}
-        >
-          <p style={{
-            fontSize: "14.2px",
-            lineHeight: "19px",
-            color: "#111b21",
-            margin: 0,
-            textAlign: "left",
-            whiteSpace: "pre-line",
-            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-            wordWrap: "break-word",
-          }}>
-            {testimonials[currentIndex].text}
-          </p>
+    <div style={{ marginTop: 28, textAlign: "center" }}>
+      <p style={{ fontSize: 15, fontWeight: 700, marginBottom: 16, opacity: 0.9, letterSpacing: 0.5, textTransform: "uppercase" }}>Ils ont testé l'approche ancestrale</p>
+      <div style={{ position: "relative", width: "100%", minHeight: 140, display: "flex", alignItems: "center", justifyContent: "center" }}
+        onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onWheel={onWheel}>
+        <button onClick={prev} style={arrowBtnStyle} aria-label="Précédent">{"\u2039"}</button>
+        <div key={idx} style={{ background: "#fff", borderRadius: 8, padding: "10px 14px", maxWidth: "80%", boxShadow: "0 1px 3px rgba(0,0,0,0.15)", animation: "fadeInUp 0.35s ease-out" }}>
+          <p style={{ fontSize: 13.5, lineHeight: "19px", color: "#111b21", margin: 0, textAlign: "left", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", whiteSpace: "pre-line" }}>{testimonials[idx].text}</p>
+          <p style={{ fontSize: 11, color: "#65758b", margin: "6px 0 0", textAlign: "right", fontWeight: 600 }}>- {testimonials[idx].name}</p>
         </div>
-
-        {/* Bouton suivant (droite) */}
-        <button
-          onClick={goToNext}
-          style={{
-            position: "absolute",
-            right: "-15px",
-            top: "50%",
-            transform: "translateY(-50%)",
-            background: "rgba(0, 0, 0, 0.3)",
-            border: "none",
-            outline: "none",
-            color: "white",
-            fontSize: "24px",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-            zIndex: 10,
-            padding: "12px 10px",
-            lineHeight: "1",
-            borderRadius: "50%",
-            width: "40px",
-            height: "40px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            userSelect: "none",
-            WebkitTapHighlightColor: "transparent",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(0, 0, 0, 0.5)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(0, 0, 0, 0.3)";
-          }}
-          aria-label="Témoignage suivant"
-        >
-          ›
-        </button>
+        <button onClick={next} style={{ ...arrowBtnStyle, left: "auto", right: -8 }} aria-label="Suivant">{"\u203a"}</button>
       </div>
-
-      <div style={{
-        marginTop: 16,
-        display: "flex",
-        gap: 6,
-        justifyContent: "center",
-        flexWrap: "wrap",
-      }}>
-        {testimonials.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              border: "none",
-              background: index === currentIndex 
-                ? "rgba(96, 165, 250, 0.8)" 
-                : "rgba(255, 255, 255, 0.2)",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              padding: 0,
-            }}
-            aria-label={`Témoignage ${index + 1}`}
-          />
+      <div style={{ marginTop: 12, display: "flex", gap: 5, justifyContent: "center" }}>
+        {testimonials.map((_, i) => (
+          <button key={i} onClick={() => setIdx(i)} style={{ width: 7, height: 7, borderRadius: "50%", border: "none", background: i === idx ? "rgba(96,165,250,0.8)" : "rgba(255,255,255,0.2)", cursor: "pointer", padding: 0, transition: "all 0.25s" }} />
         ))}
       </div>
     </div>
   );
 }
 
-/** Avatar via image PNG */
-function Avatar({ sex, variant = "solaire", label }) {
-  const base = sex === "femme" ? "femme" : "homme";
-
-  let suffix = "ancien";
-  if (variant === "brume") suffix = "sedimente";
-  // Distinguer entre Déséquilibré et Stable (tous deux ont themeKey "aube")
-  if (variant === "aube") {
-    if (label && label.includes("STABLE")) {
-      suffix = "equilibre"; // Avatar equilibre pour stable
-    } else {
-      suffix = "transitionnel"; // Avatar transitionnel pour déséquilibré
-    }
-  }
-
-  const src = `/avatars/${base}-${suffix}.png`;
-
-  return (
-    <img
-      src={src}
-      alt="Avatar"
-      style={{
-        width: "100%",
-        height: "100%",
-        objectFit: "contain",
-        objectPosition: "bottom center",
-        display: "block",
-      }}
-    />
-  );
-}
-
-const styles = {
-  page: {
-    minHeight: "100dvh",
-    height: "100dvh",
-    width: "100%",
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 0,
-    margin: 0,
-    overflow: "hidden",
-    fontFamily:
-      "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial",
-    boxSizing: "border-box",
-  },
-
-  bgPhoto: {
-    position: "fixed",
-    inset: 0,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-    zIndex: -3,
-    transform: "scale(1.03)",
-    filter: "saturate(1.05) contrast(1.02)",
-  },
-
-  bgGlow: {
-    position: "fixed",
-    inset: 0,
-    zIndex: -2,
-  },
-
-  overlay: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(2,6,23,0.45)",
-    zIndex: -1,
-  },
-
-  card: {
-    position: "relative",
-    zIndex: 1,
-    width: "clamp(320px, 96vw, 460px)",
-    maxHeight: "96dvh",
-    margin: "auto",
-    overflowY: "auto",
-    overflowX: "hidden",
-    WebkitOverflowScrolling: "touch",
-    touchAction: "pan-y",
-    scrollBehavior: "smooth",
-    background: "rgba(2, 6, 23, 0.45)",
-    padding: "clamp(16px, 4vw, 22px)",
-    borderRadius: 18,
-    textAlign: "center",
-    boxShadow: "0 22px 60px rgba(0,0,0,0.65)",
-    border: "none",
-    backdropFilter: "blur(12px)",
-    color: "white",
-  },
-
-  kicker: {
-    fontSize: 12,
-    letterSpacing: 1.2,
-    opacity: 0.9,
-    textTransform: "uppercase",
-    fontWeight: 700,
-  },
-
-  headerRow: {
-    marginTop: 10,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 10,
-  },
-
-  miniPill: {
-    fontSize: 12,
-    opacity: 0.9,
-    padding: "6px 10px",
-    borderRadius: 999,
-    border: "1px solid rgba(255,255,255,0.12)",
-    background: "rgba(15,23,42,0.35)",
-  },
-
-  linkBtn: {
-    border: "none",
-    background: "transparent",
-    color: "rgba(255,255,255,0.85)",
-    cursor: "pointer",
-    fontSize: 12,
-    textDecoration: "underline",
-  },
-
-  subtitle: {
-    marginTop: 8,
-    opacity: 0.88,
-    lineHeight: 1.3,
-  },
-
-  options: {
-    display: "grid",
-    gap: 10,
-    marginTop: 16,
-  },
-
-  // Couleur plus sobre/pro (remplace le bleu clair)
-  button: {
-    width: "100%",
-    padding: "12px 14px",
-    borderRadius: 14,
-    border: "1px solid rgba(255,255,255,0.10)",
-    background: "#334155", // slate
-    color: "white",
-    cursor: "pointer",
-    fontSize: 15,
-    lineHeight: 1.2,
-    position: "relative",
-    overflow: "hidden",
-    transition: "all 0.2s ease",
-  },
-
-  progress: {
-    marginTop: 0,
-    opacity: 0.75,
-    textAlign: 'center',
-  },
-
-  backButton: {
-    position: 'absolute',
-    left: 0,
-    bottom: 0,
-    padding: '8px 16px',
-    borderRadius: 10,
-    border: '1px solid rgba(255,255,255,0.2)',
-    background: 'rgba(51, 65, 85, 0.7)',
-    color: 'white',
-    cursor: 'pointer',
-    fontSize: 14,
-    fontWeight: 500,
-    transition: 'all 0.2s ease',
-  },
-
-  input: {
-    width: "100%",
-    padding: "12px 14px",
-    borderRadius: 14,
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(15,23,42,0.55)",
-    color: "white",
-    outline: "none",
-    fontSize: 16,
-  },
-
-  sexRow: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: 10,
-  },
-
-  sexBtn: {
-    padding: "12px 14px",
-    borderRadius: 14,
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(15,23,42,0.35)",
-    color: "white",
-    cursor: "pointer",
-    fontSize: 14,
-  },
-
-  sexBtnActive: {
-    background: "#475569", // slate plus sobre
-    border: "1px solid rgba(255,255,255,0.18)",
-  },
-
-  note: {
-    margin: 0,
-    opacity: 0.75,
-    fontSize: 12,
-    lineHeight: 1.35,
-  },
-
-  resultHeader: {
-    marginTop: 16,
-    textAlign: "center",
-    display: "flex",
-    flexDirection: "column",
-    gap: 16,
-    alignItems: "center",
-  },
-
-  inlineAvatar: {
-    width: "min(120px, 35vw)",
-    maxWidth: 120,
-    aspectRatio: "469 / 532",
-  },
-
-  smallIntro: {
-    fontSize: 12,
-    opacity: 0.85,
-    lineHeight: 1.35,
-  },
-
-  resultText: {
-    marginTop: 12,
-    marginBottom: 8,
-    lineHeight: 1.45,
-    opacity: 0.96,
-    textAlign: "left",
-    whiteSpace: "pre-line",
-    fontSize: 14,
-  },
-
-  block: {
-    marginTop: 10,
-    padding: 12,
-    borderRadius: 16,
-    border: "1px solid rgba(255,255,255,0.12)",
-    background: "rgba(15,23,42,0.25)",
-    textAlign: "left",
-  },
-
-  blockTitle: {
-    fontWeight: 800,
-    marginBottom: 8,
-  },
-
-  ul: {
-    margin: 0,
-    paddingLeft: 18,
-    opacity: 0.95,
-  },
-
-  li: {
-    marginBottom: 6,
-    lineHeight: 1.35,
-  },
-
-  mantra: {
-    marginTop: 10,
-    opacity: 0.98,
-    fontWeight: 700,
-  },
-
-  trap: {
-    marginTop: 10,
-    opacity: 0.9,
-  },
-
-  tip: {
-    marginTop: 14,
-    lineHeight: 1.5,
-    opacity: 0.98,
-    textAlign: "left",
-    fontWeight: 700,
-  },
-
-  footer: {
-    marginTop: 10,
-    opacity: 0.85,
-    textAlign: "left",
-    lineHeight: 1.4,
-  },
-
-  consentText: {
-    marginTop: 16,
-    lineHeight: 1.6,
-    opacity: 0.95,
-    textAlign: "left",
-    fontSize: 14,
-  },
-
-  consentButton: {
-    width: "100%",
-    padding: "14px 16px",
-    borderRadius: 14,
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(15,23,42,0.55)",
-    color: "white",
-    cursor: "pointer",
-    fontSize: 14,
-    lineHeight: 1.4,
-    textAlign: "left",
-    transition: "all 0.2s ease",
-  },
-
-  completedContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "40px 20px",
-  },
-
-  completedIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: "50%",
-    background: "linear-gradient(135deg, rgba(34, 197, 94, 0.25) 0%, rgba(16, 185, 129, 0.25) 100%)",
-    border: "2px solid rgba(34, 197, 94, 0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: 40,
-    color: "#22c55e",
-    fontWeight: "bold",
-  },
-
-  revealButton: {
-    width: "100%",
-    padding: "18px 24px",
-    borderRadius: 16,
-    border: "2px solid rgba(96, 165, 250, 0.5)",
-    background: "linear-gradient(135deg, rgba(96, 165, 250, 0.25) 0%, rgba(59, 130, 246, 0.25) 100%)",
-    color: "white",
-    cursor: "pointer",
-    fontSize: 17,
-    fontWeight: 700,
-    lineHeight: 1.4,
-    textAlign: "center",
-    transition: "all 0.3s ease",
-    boxShadow: "0 4px 15px rgba(96, 165, 250, 0.3)",
-  },
-
-  progressBarContainer: {
-    width: "100%",
-    height: 8,
-    borderRadius: 999,
-    background: "rgba(255, 255, 255, 0.1)",
-    overflow: "hidden",
-    position: "relative",
-  },
-
-  progressBarFill: {
-    height: "100%",
-    background: "linear-gradient(90deg, #60a5fa, #3b82f6)",
-    borderRadius: 999,
-    transition: "width 0.1s ease-out",
-    boxShadow: "0 0 10px rgba(96, 165, 250, 0.5)",
-  },
-};
-
+// ═══ STYLES ═══
+const inputStyle = { width: "100%", padding: "11px 14px", borderRadius: 14, border: "1px solid rgba(255,255,255,0.14)", background: "rgba(15,23,42,0.55)", color: "white", outline: "none", fontSize: 15, boxSizing: "border-box" };
+const optionBtnStyle = { width: "100%", padding: "12px 14px", borderRadius: 14, border: "1px solid rgba(255,255,255,0.1)", background: "#334155", color: "white", cursor: "pointer", fontSize: 14.5, lineHeight: 1.25, textAlign: "left" };
+const consentBtnStyle = { width: "100%", padding: "14px 16px", borderRadius: 14, border: "1px solid rgba(255,255,255,0.14)", color: "white", cursor: "pointer", fontSize: 14, lineHeight: 1.4, textAlign: "left", transition: "all 0.2s" };
+const arrowBtnStyle = { position: "absolute", left: -8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.3)", border: "none", color: "white", fontSize: 22, cursor: "pointer", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10, padding: 0, lineHeight: 1 };
