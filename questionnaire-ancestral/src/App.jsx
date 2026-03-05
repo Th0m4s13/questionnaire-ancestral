@@ -18,186 +18,186 @@ const CORE_QUESTIONS = [
   { question: "Le matin au réveil, tu te sens comment ?", category: "energie", options: [
     { text: "En pleine forme, prêt à attaquer la journée", score: 3 },
     { text: "Il me faut un moment pour me réveiller vraiment", score: 2 },
-    { text: "Je suis déjà fatigué au lever", score: -2 },
-    { text: "Je me lève vidé, comme si je n'avais pas dormi", score: -4 },
+    { text: "Je suis déjà fatigué au lever", score: -1 },
+    { text: "Je me lève vidé, comme si je n'avais pas dormi", score: -2 },
   ]},
   { question: "Ton niveau d'énergie en journée est :", category: "energie", options: [
     { text: "Stable du matin au soir", score: 3 },
     { text: "Variable mais gérable", score: 2 },
-    { text: "En dents de scie, avec des coups de mou", score: -2 },
-    { text: "Épuisement constant, même sans effort", score: -4 },
+    { text: "En dents de scie, avec des coups de mou", score: -1 },
+    { text: "Épuisement constant, même sans effort", score: -2 },
   ]},
   { question: "Quel est ton rapport au café ou au thé ?", category: "energie", options: [
     { text: "Je ne bois pas de café/thé", score: 3 },
     { text: "J'en bois par plaisir, je peux m'en passer sans souci", score: 2 },
     { text: "J'en bois tous les jours, mais c'est une habitude, pas un besoin", score: 0 },
-    { text: "J'en ai besoin pour démarrer, sans ça je suis à plat", score: -2 },
-    { text: "Plusieurs par jour sinon je ne tiens pas", score: -4 },
+    { text: "J'en ai besoin pour démarrer, sans ça je suis à plat", score: -1 },
+    { text: "Plusieurs par jour sinon je ne tiens pas", score: -2 },
   ]},
   // ═══ CIRCULATION / THYROÏDE ═══
   { question: "Tes mains et pieds sont :", category: "circulation", options: [
     { text: "Toujours bien chauds", score: 3 },
     { text: "Froids parfois, selon la saison", score: 2 },
-    { text: "Souvent froids même à l'intérieur", score: -2 },
-    { text: "Gelés en permanence, même sous la couette", score: -4 },
+    { text: "Souvent froids même à l'intérieur", score: -1 },
+    { text: "Gelés en permanence, même sous la couette", score: -2 },
   ]},
   { question: "Tu as tendance à avoir froid par rapport aux gens autour de toi ?", category: "thyroide", options: [
     { text: "Non, température normale", score: 3 },
     { text: "Un peu plus frileux que les autres", score: 2 },
-    { text: "Oui, je mets toujours une couche de plus", score: -2 },
-    { text: "Constamment froid, même quand les autres vont bien", score: -4 },
+    { text: "Oui, je mets toujours une couche de plus", score: -1 },
+    { text: "Constamment froid, même quand les autres vont bien", score: -2 },
   ]},
   // ═══ SOMMEIL ═══
   { question: "Tu dors :", category: "sommeil", options: [
     { text: "Profondément et sans réveils", score: 3 },
     { text: "Légèrement, je me réveille parfois", score: 2 },
-    { text: "Je me réveille plusieurs fois", score: -2 },
-    { text: "Je dors très mal ou j'ai de l'insomnie", score: -4 },
+    { text: "Je me réveille plusieurs fois", score: -1 },
+    { text: "Je dors très mal ou j'ai de l'insomnie", score: -2 },
   ]},
   { question: "Combien d'heures de sommeil te faut-il pour récupérer ?", category: "sommeil", options: [
     { text: "5-6h et je suis en pleine forme", score: 3 },
     { text: "7-8h, sinon je tiens pas", score: 2 },
-    { text: "9-10h et je suis encore fatigué", score: -2 },
-    { text: "Peu importe la durée, je suis toujours épuisé", score: -4 },
+    { text: "9-10h et je suis encore fatigué", score: -1 },
+    { text: "Peu importe la durée, je suis toujours épuisé", score: -2 },
   ]},
   // ═══ DIGESTION (screening) ═══
   { question: "Tu ressens des ballonnements ou gaz :", category: "digestion", options: [
     { text: "Jamais", score: 3 },
     { text: "Parfois, après certains plats", score: 2 },
-    { text: "Quasiment tous les jours", score: -2 },
-    { text: "Constamment, avec douleurs", score: -4 },
+    { text: "Quasiment tous les jours", score: -1 },
+    { text: "Constamment, avec douleurs", score: -2 },
   ]},
   { question: "Ta langue le matin est :", category: "digestion", options: [
     { text: "Rose et propre", score: 3 },
     { text: "Un peu blanche parfois", score: 2 },
-    { text: "Blanche quasi tout le temps", score: -2 },
-    { text: "Épaisse, pâteuse, chargée tous les jours", score: -4 },
+    { text: "Blanche quasi tout le temps", score: -1 },
+    { text: "Épaisse, pâteuse, chargée tous les jours", score: -2 },
   ]},
   { question: "Tu as des réactions après certains aliments (laitiers, gluten, fruits...) ?", category: "digestion", options: [
     { text: "Jamais", score: 3 },
     { text: "Parfois, mais c'est léger", score: 2 },
-    { text: "Oui, j'évite certains aliments pour ça", score: -2 },
-    { text: "Oui, plusieurs groupes d'aliments me rendent mal", score: -4 },
+    { text: "Oui, j'évite certains aliments pour ça", score: -1 },
+    { text: "Oui, plusieurs groupes d'aliments me rendent mal", score: -2 },
   ]},
   { question: "Tes selles sont :", category: "digestion", options: [
     { text: "Formées, régulières, 1 à 2 fois par jour", score: 3 },
     { text: "Plutôt normales mais parfois molles ou irrégulières", score: 2 },
-    { text: "Souvent molles ou alternance constipation/diarrhée", score: -2 },
-    { text: "Liquides, constipation chronique ou très irrégulières", score: -4 },
+    { text: "Souvent molles ou alternance constipation/diarrhée", score: -1 },
+    { text: "Liquides, constipation chronique ou très irrégulières", score: -2 },
   ]},
   // ═══ FOIE ═══
   { question: "Tu digères bien les repas gras (fromage, friture, avocat) ?", category: "foie", options: [
     { text: "Bien, aucun souci", score: 3 },
     { text: "Lourdeur passagère mais ça passe", score: 2 },
-    { text: "Lourdeur longue, envie de sieste après", score: -2 },
-    { text: "Nausées, dégoût des graisses, ou douleur à droite sous les côtes", score: -4 },
+    { text: "Lourdeur longue, envie de sieste après", score: -1 },
+    { text: "Nausées, dégoût des graisses, ou douleur à droite sous les côtes", score: -2 },
   ]},
   { question: "Le matin au réveil, ta bouche est :", category: "foie", options: [
     { text: "Fraîche, rien de particulier", score: 3 },
     { text: "Un peu sèche", score: 2 },
-    { text: "Pâteuse ou amère", score: -2 },
-    { text: "Très amère, avec nausées ou mauvaise haleine persistante", score: -4 },
+    { text: "Pâteuse ou amère", score: -1 },
+    { text: "Très amère, avec nausées ou mauvaise haleine persistante", score: -2 },
   ]},
   // ═══ GRAISSES ═══
   { question: "Tu cuisines avec quoi principalement ?", category: "graisses", options: [
     { text: "Beurre, ghee, huile de coco ou huile d'olive", score: 3 },
     { text: "Un mélange (bonnes et mauvaises huiles)", score: 0 },
-    { text: "Huile de tournesol, colza ou 'huile végétale'", score: -2 },
-    { text: "Margarine, huile de friture, ou je ne sais pas", score: -4 },
+    { text: "Huile de tournesol, colza ou 'huile végétale'", score: -1 },
+    { text: "Margarine, huile de friture, ou je ne sais pas", score: -2 },
   ]},
   // ═══ IMMUNITÉ ═══
   { question: "Tu es tombé malade combien de fois cette année ?", category: "immunite", options: [
     { text: "Jamais", score: 3 },
     { text: "1 ou 2 fois", score: 2 },
-    { text: "Plus de 3 fois", score: -2 },
-    { text: "Constamment, ou infections longues", score: -4 },
+    { text: "Plus de 3 fois", score: -1 },
+    { text: "Constamment, ou infections longues", score: -2 },
   ]},
   { question: "Tes blessures cicatrisent :", category: "immunite", options: [
     { text: "Rapidement", score: 3 },
     { text: "Un peu lentement", score: 2 },
-    { text: "Lentement et mal", score: -2 },
-    { text: "Très lentement, infections fréquentes", score: -4 },
+    { text: "Lentement et mal", score: -1 },
+    { text: "Très lentement, infections fréquentes", score: -2 },
   ]},
   // ═══ INFLAMMATION ═══
   { question: "Tu as des douleurs articulaires ou musculaires :", category: "inflammation", options: [
     { text: "Jamais", score: 3 },
     { text: "Rarement", score: 2 },
-    { text: "Régulièrement", score: -2 },
-    { text: "Tous les jours ou invalidantes", score: -4 },
+    { text: "Régulièrement", score: -1 },
+    { text: "Tous les jours ou invalidantes", score: -2 },
   ]},
   { question: "Tu as des allergies, eczéma, urticaire ou réactions cutanées ?", category: "inflammation", options: [
     { text: "Non", score: 3 },
     { text: "Un peu, saisonnièrement", score: 2 },
-    { text: "Régulièrement dans l'année", score: -2 },
-    { text: "Quasi en permanence", score: -4 },
+    { text: "Régulièrement dans l'année", score: -1 },
+    { text: "Quasi en permanence", score: -2 },
   ]},
   // ═══ MINÉRALISATION ═══
   { question: "Tes dents et gencives vont comment ?", category: "mineralisation", options: [
     { text: "Solides, jamais de caries ou saignement", score: 3 },
     { text: "Quelques saignements ou caries récentes", score: 2 },
-    { text: "Caries fréquentes, gencives sensibles", score: -2 },
-    { text: "Douleurs dentaires ou dents qui se déchaussent", score: -4 },
+    { text: "Caries fréquentes, gencives sensibles", score: -1 },
+    { text: "Douleurs dentaires ou dents qui se déchaussent", score: -2 },
   ]},
   { question: "Tes ongles sont :", category: "mineralisation", options: [
     { text: "Durs, lisses", score: 3 },
     { text: "Cassants ou striés", score: 2 },
-    { text: "Qui se dédoublent souvent", score: -2 },
-    { text: "Très mous, avec tâches ou anomalies", score: -4 },
+    { text: "Qui se dédoublent souvent", score: -1 },
+    { text: "Très mous, avec tâches ou anomalies", score: -2 },
   ]},
   // ═══ PEAU ═══
   { question: "Ta peau est :", category: "peau", options: [
     { text: "Souple, hydratée", score: 3 },
     { text: "Sèche parfois", score: 2 },
-    { text: "Très sèche, qui pèle", score: -2 },
-    { text: "Acné ou inflammation chronique", score: -4 },
-    { text: "Eczéma", score: -4 },
+    { text: "Très sèche, qui pèle", score: -1 },
+    { text: "Acné ou inflammation chronique", score: -2 },
+    { text: "Eczéma", score: -2 },
   ]},
   { question: "Tu as des boutons, acné ou kystes sous-cutanés ?", category: "peau", options: [
     { text: "Jamais, peau toujours nette", score: 3 },
     { text: "Quelques-uns occasionnellement", score: 2 },
-    { text: "Fréquemment, selon stress ou alimentation", score: -2 },
-    { text: "Constamment, peau inflammée ou douloureuse", score: -4 },
+    { text: "Fréquemment, selon stress ou alimentation", score: -1 },
+    { text: "Constamment, peau inflammée ou douloureuse", score: -2 },
   ]},
   // ═══ CHEVEUX ═══
   { question: "Tu remarques une perte de cheveux ?", category: "cheveux", options: [
     { text: "Non", score: 3 },
     { text: "Peu, surtout lors de la douche", score: 2 },
     { text: "Légère, périodique", score: 0 },
-    { text: "Oui, depuis plusieurs mois", score: -2 },
-    { text: "Chute constante, zones dégarnies", score: -4 },
+    { text: "Oui, depuis plusieurs mois", score: -1 },
+    { text: "Chute constante, zones dégarnies", score: -2 },
   ]},
   // ═══ MÉTABOLISME ═══
   { question: "Es-tu attiré par le sucre ?", category: "metabolisme", options: [
     { text: "Jamais", score: 3 },
     { text: "De temps en temps", score: 2 },
-    { text: "Tous les jours", score: -2 },
-    { text: "Plusieurs fois par jour, besoin urgent", score: -4 },
+    { text: "Tous les jours", score: -1 },
+    { text: "Plusieurs fois par jour, besoin urgent", score: -2 },
   ]},
   { question: "Ton poids est :", category: "metabolisme", options: [
     { text: "Stable depuis longtemps, sans effort particulier", score: 3 },
     { text: "Plutôt stable mais je fais attention", score: 2 },
-    { text: "Je prends facilement et j'ai du mal à perdre", score: -2 },
-    { text: "En prise constante malgré mes efforts, ou effet yoyo", score: -4 },
+    { text: "Je prends facilement et j'ai du mal à perdre", score: -1 },
+    { text: "En prise constante malgré mes efforts, ou effet yoyo", score: -2 },
   ]},
   // ═══ CANDIDOSE SCREENING ═══
   { question: "Tu as des mycoses (cutanées, vaginales, buccales, pieds) ?", category: "candidose", options: [
     { text: "Jamais", score: 3 },
     { text: "Une fois dans ma vie", score: 2 },
-    { text: "Ça revient régulièrement", score: -2 },
-    { text: "Quasi en permanence malgré les traitements", score: -4 },
+    { text: "Ça revient régulièrement", score: -1 },
+    { text: "Quasi en permanence malgré les traitements", score: -2 },
   ]},
   { question: "Combien de cures d'antibiotiques as-tu prises dans ta vie ?", category: "candidose", options: [
     { text: "Aucune ou presque", score: 3 },
     { text: "Quelques-unes", score: 2 },
-    { text: "Plusieurs, cures régulières", score: -2 },
-    { text: "Beaucoup, cures longues ou répétées", score: -4 },
+    { text: "Plusieurs, cures régulières", score: -1 },
+    { text: "Beaucoup, cures longues ou répétées", score: -2 },
   ]},
   // ═══ NERVEUX ═══
   { question: "Face au stress, tu réagis comment ?", category: "nerveux", options: [
     { text: "Je gère bien, ça ne m'affecte pas longtemps", score: 3 },
     { text: "Ça me travaille un peu mais je passe à autre chose", score: 2 },
-    { text: "Je rumine, ça tourne en boucle dans ma tête", score: -2 },
-    { text: "Ça me paralyse, je mange plus ou je dors mal", score: -4 },
+    { text: "Je rumine, ça tourne en boucle dans ma tête", score: -1 },
+    { text: "Ça me paralyse, je mange plus ou je dors mal", score: -2 },
   ]},
 ];
 
@@ -205,8 +205,8 @@ const FEMALE_QUESTIONS = [
   { question: "Ton cycle menstruel est-il :", category: "hormones", options: [
     { text: "Régulier, sans douleur ni symptômes", score: 3 },
     { text: "Régulier mais avec quelques douleurs/irritabilité", score: 2 },
-    { text: "Irrégulier, douleurs ou fatigue marquée", score: -2 },
-    { text: "Très irrégulier, acné, gonflements, saignements abondants", score: -4 },
+    { text: "Irrégulier, douleurs ou fatigue marquée", score: -1 },
+    { text: "Très irrégulier, acné, gonflements, saignements abondants", score: -2 },
     { text: "Sous contraceptif hormonal (pilule, implant, stérilet hormonal)", score: -1 },
     { text: "Ménopausée / en périménopause", score: 0 },
   ]},
@@ -219,26 +219,26 @@ const SIBO_QUESTIONS = [
   { question: "Ton ventre gonfle après les repas ?", category: "sibo", options: [
     { text: "Jamais", score: 3 },
     { text: "Parfois, surtout après un gros repas", score: 2 },
-    { text: "Quasi systématiquement, surtout sous le nombril", score: -2 },
-    { text: "Au point de déboutonner, avec douleur", score: -4 },
+    { text: "Quasi systématiquement, surtout sous le nombril", score: -1 },
+    { text: "Au point de déboutonner, avec douleur", score: -2 },
   ]},
   { question: "Après manger, tu ressens un brouillard mental ?", category: "sibo", options: [
     { text: "Jamais, tête claire", score: 3 },
     { text: "Rarement, après un repas très lourd", score: 2 },
-    { text: "Souvent, difficulté à me concentrer", score: -2 },
-    { text: "Systématiquement, comme anesthésié", score: -4 },
+    { text: "Souvent, difficulté à me concentrer", score: -1 },
+    { text: "Systématiquement, comme anesthésié", score: -2 },
   ]},
   { question: "Tes gaz sont plutôt :", category: "sibo", options: [
     { text: "Rares et inodores", score: 3 },
     { text: "Réguliers mais pas d'odeur forte", score: 2 },
-    { text: "Fréquents et parfois odorants", score: -2 },
-    { text: "Très fréquents et odorants (œuf pourri, putréfaction)", score: -4 },
+    { text: "Fréquents et parfois odorants", score: -1 },
+    { text: "Très fréquents et odorants (œuf pourri, putréfaction)", score: -2 },
   ]},
   { question: "As-tu déjà eu une intoxication alimentaire sévère ?", category: "sibo", options: [
     { text: "Jamais", score: 3 },
     { text: "Oui une fois, sans séquelles", score: 2 },
-    { text: "Plusieurs fois", score: -2 },
-    { text: "Oui, et mes problèmes digestifs ont commencé après", score: -4 },
+    { text: "Plusieurs fois", score: -1 },
+    { text: "Oui, et mes problèmes digestifs ont commencé après", score: -2 },
   ]},
 ];
 
@@ -246,26 +246,26 @@ const DYSBIOSE_QUESTIONS = [
   { question: "Tu tolères les aliments fermentés (choucroute, kéfir, kombucha) ?", category: "dysbiose", options: [
     { text: "Oui, aucun souci", score: 3 },
     { text: "Je n'en consomme pas", score: 2 },
-    { text: "Ça me ballonne ou me donne des gaz", score: -2 },
-    { text: "Réaction forte : douleurs, diarrhée ou maux de tête", score: -4 },
+    { text: "Ça me ballonne ou me donne des gaz", score: -1 },
+    { text: "Réaction forte : douleurs, diarrhée ou maux de tête", score: -2 },
   ]},
   { question: "Tu supportes les oignons, l'ail et les choux ?", category: "dysbiose", options: [
     { text: "Aucun problème", score: 3 },
     { text: "Ça passe en petite quantité", score: 2 },
-    { text: "Ballonnements ou gaz quasi systématiques", score: -2 },
-    { text: "Douleurs ou réactions fortes", score: -4 },
+    { text: "Ballonnements ou gaz quasi systématiques", score: -1 },
+    { text: "Douleurs ou réactions fortes", score: -2 },
   ]},
   { question: "Tu as pris des IPP (anti-acides type oméprazole, Inexium) ?", category: "dysbiose", options: [
     { text: "Jamais", score: 3 },
     { text: "Ponctuellement, quelques semaines", score: 2 },
-    { text: "Pendant plusieurs mois", score: -2 },
-    { text: "Pendant des années ou encore actuellement", score: -4 },
+    { text: "Pendant plusieurs mois", score: -1 },
+    { text: "Pendant des années ou encore actuellement", score: -2 },
   ]},
   { question: "Les légumineuses (lentilles, pois chiches, haricots) te font quoi ?", category: "dysbiose", options: [
     { text: "Aucun souci, bonne digestion", score: 3 },
     { text: "Quelques gaz mais rien de grave", score: 2 },
-    { text: "Ballonnements et inconfort marqué", score: -2 },
-    { text: "Douleurs ou diarrhée", score: -4 },
+    { text: "Ballonnements et inconfort marqué", score: -1 },
+    { text: "Douleurs ou diarrhée", score: -2 },
   ]},
 ];
 
@@ -273,14 +273,14 @@ const CANDIDOSE_QUESTIONS = [
   { question: "Tes envies de sucré ressemblent à quoi ?", category: "candidose", options: [
     { text: "Juste un plaisir de temps en temps", score: 3 },
     { text: "Régulières mais contrôlables", score: 2 },
-    { text: "Fortes, difficiles à résister", score: -2 },
-    { text: "Compulsives, comme une addiction", score: -4 },
+    { text: "Fortes, difficiles à résister", score: -1 },
+    { text: "Compulsives, comme une addiction", score: -2 },
   ]},
   { question: "Après avoir mangé du sucre, tu ressens :", category: "candidose", options: [
     { text: "Rien de particulier", score: 3 },
     { text: "Un petit coup de mou passager", score: 2 },
-    { text: "Fatigue marquée ou brouillard mental", score: -2 },
-    { text: "Crash d'énergie, irritabilité, ou besoin d'en remanger immédiatement", score: -4 },
+    { text: "Fatigue marquée ou brouillard mental", score: -1 },
+    { text: "Crash d'énergie, irritabilité, ou besoin d'en remanger immédiatement", score: -2 },
   ]},
 ];
 
@@ -288,20 +288,20 @@ const FOIE_QUESTIONS = [
   { question: "Tu as des maux de tête fréquents ?", category: "foie", options: [
     { text: "Rarement ou jamais", score: 3 },
     { text: "Occasionnels, liés au stress ou à la fatigue", score: 2 },
-    { text: "Réguliers, surtout sur les tempes ou derrière les yeux", score: -2 },
-    { text: "Fréquents et intenses, parfois avec nausées", score: -4 },
+    { text: "Réguliers, surtout sur les tempes ou derrière les yeux", score: -1 },
+    { text: "Fréquents et intenses, parfois avec nausées", score: -2 },
   ]},
   { question: "L'alcool, même en petite quantité :", category: "foie", options: [
     { text: "Je ne bois pas / très rarement", score: 3 },
     { text: "Aucun souci, je tolère bien", score: 2 },
-    { text: "Un verre suffit à me rendre vaseux ou fatigué le lendemain", score: -2 },
-    { text: "Très mauvaise tolérance : maux de tête, nausées, gueule de bois disproportionnée", score: -4 },
+    { text: "Un verre suffit à me rendre vaseux ou fatigué le lendemain", score: -1 },
+    { text: "Très mauvaise tolérance : maux de tête, nausées, gueule de bois disproportionnée", score: -2 },
   ]},
   { question: "La couleur de tes selles est :", category: "foie", options: [
     { text: "Brun normal", score: 3 },
     { text: "Variable, parfois plus claire", score: 2 },
-    { text: "Souvent claires, beiges ou décolorées", score: -2 },
-    { text: "Très claires, presque blanches, ou grasses (flottent)", score: -4 },
+    { text: "Souvent claires, beiges ou décolorées", score: -1 },
+    { text: "Très claires, presque blanches, ou grasses (flottent)", score: -2 },
   ]},
 ];
 
@@ -309,14 +309,14 @@ const NERVEUX_QUESTIONS = [
   { question: "Quand tu es stressé ou triste, tu manges :", category: "nerveux", options: [
     { text: "Normalement, le stress ne change rien", score: 3 },
     { text: "Un peu plus, surtout du sucré ou du réconfort", score: 2 },
-    { text: "Nettement plus, c'est mon refuge", score: -2 },
-    { text: "Je perds le contrôle, crises compulsives", score: -4 },
+    { text: "Nettement plus, c'est mon refuge", score: -1 },
+    { text: "Je perds le contrôle, crises compulsives", score: -2 },
   ]},
   { question: "Ta concentration et ta mémoire au quotidien :", category: "nerveux", options: [
     { text: "Bonnes, je reste focus sans difficulté", score: 3 },
     { text: "Correctes mais ça demande un effort", score: 2 },
-    { text: "Souvent dans le brouillard, j'oublie des choses", score: -2 },
-    { text: "Très mauvaises, je n'arrive plus à me concentrer", score: -4 },
+    { text: "Souvent dans le brouillard, j'oublie des choses", score: -1 },
+    { text: "Très mauvaises, je n'arrive plus à me concentrer", score: -2 },
   ]},
 ];
 
@@ -518,7 +518,7 @@ export default function QuestionnaireAncestral() {
 
     // Terrain
     const nbQ = questionsArray.filter(q => q.type !== "transition").length;
-    const minScore = nbQ * -4;
+    const minScore = nbQ * -2;
     const pct = nbQ > 0 ? (score - minScore) / (maxScore - minScore) : 0;
     let terrain;
     if (pct <= 0.4) terrain = "TERRAIN CRITIQUE";
@@ -876,7 +876,7 @@ export default function QuestionnaireAncestral() {
   function personality() {
     if (!questionsArray.length || !maxScore) return null;
     const nbQ = questionsArray.filter(q => q.type !== "transition").length;
-    const minScoreVal = nbQ * -4;
+    const minScoreVal = nbQ * -2;
     const pct = nbQ > 0 ? (score - minScoreVal) / (maxScore - minScoreVal) : 0;
     const prenom = name.trim().split(/\s+/)[0] || "toi";
 
@@ -1227,7 +1227,7 @@ export default function QuestionnaireAncestral() {
                 <div style={{ display: "inline-block", padding: "10px 24px", borderRadius: 14, background: prof?.bgColor, border: `1px solid ${prof?.borderColor}`, marginBottom: 8 }}>
                   <span style={{ fontSize: 16, fontWeight: 800, color: prof?.color, letterSpacing: 1 }}>{prof?.label}</span>
                 </div>
-                <p style={{ opacity: 0.9, fontSize: 16, fontWeight: 600, margin: "8px 0 0" }}>Ton score global : <b>{Math.round(((score - questionsArray.filter(q => q.type !== "transition").length * -4) / (maxScore - questionsArray.filter(q => q.type !== "transition").length * -4)) * 100)}%</b></p>
+                <p style={{ opacity: 0.9, fontSize: 16, fontWeight: 600, margin: "8px 0 0" }}>Ton score global : <b>{Math.round(((score - questionsArray.filter(q => q.type !== "transition").length * -2) / (maxScore - questionsArray.filter(q => q.type !== "transition").length * -2)) * 100)}%</b></p>
               </div>
             </div>
 
@@ -1251,7 +1251,7 @@ export default function QuestionnaireAncestral() {
               ];
               if (sex === "femme") barCats.push({ key: "hormones", label: "Hormones" });
               const avgs = analysis.categoryAverages;
-              const items = barCats.filter(c => avgs[c.key] !== undefined).map(c => ({ ...c, pct: Math.round(((avgs[c.key] + 4) / 7) * 100) }));
+              const items = barCats.filter(c => avgs[c.key] !== undefined).map(c => ({ ...c, pct: Math.round(((avgs[c.key] + 2) / 5) * 100) }));
               items.sort((a, b) => a.pct - b.pct);
               const barColor = (pct) => pct <= 35 ? "#ef4444" : pct <= 55 ? "#f59e0b" : pct <= 75 ? "#3b82f6" : "#22c55e";
               return (
