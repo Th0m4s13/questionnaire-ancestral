@@ -394,6 +394,17 @@ export default function QuestionnaireAncestral() {
   const [conditionalTriggered, setConditionalTriggered] = useState({ sibo: false, dysbiose: false, candidose: false, foie: false, nerveux: false });
   const hasSentRef = useRef(false);
 
+  // GA4 : track abandon on page leave
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (!finished && step > 0 && typeof window.gtag === "function") {
+        window.gtag("event", "questionnaire_abandon", { step, total_questions: questionsArray.length });
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [step, finished, questionsArray.length]);
+
   // Build initial questions when sex is selected
   const coreLength = useMemo(() => CORE_QUESTIONS.length + (sex === "femme" ? FEMALE_QUESTIONS.length : 0), [sex]);
 
@@ -498,6 +509,7 @@ export default function QuestionnaireAncestral() {
   useEffect(() => {
     if (!finished || hasSentRef.current) return;
     hasSentRef.current = true;
+    if (typeof window.gtag === "function") window.gtag("event", "questionnaire_completed", { total_questions: questionsArray.filter(q => q.type !== "transition").length });
 
     // Formater le téléphone en international
     const nationalDigits = phone.replace(/\D/g, "").replace(/^0+/, "");
@@ -696,6 +708,7 @@ export default function QuestionnaireAncestral() {
     setTimeout(() => setQuestionTransitioning(true), 400);
     setTimeout(() => {
       const next = step + 1;
+      if (typeof window.gtag === "function") window.gtag("event", "questionnaire_step", { step: next });
       if (next < questionsArray.length) { setStep(next); setQuestionTransitioning(false); setClickedOptionIndex(null); }
       else { setShowCompleted(true); setQuestionTransitioning(false); setClickedOptionIndex(null); }
     }, 750);
@@ -703,7 +716,7 @@ export default function QuestionnaireAncestral() {
 
   function advanceTransition() {
     setQuestionTransitioning(true);
-    setTimeout(() => { setStep(s => s + 1); setQuestionTransitioning(false); }, 400);
+    setTimeout(() => { setStep(s => { if (typeof window.gtag === "function") window.gtag("event", "questionnaire_step", { step: s + 1 }); return s + 1; }); setQuestionTransitioning(false); }, 400);
   }
 
   function submitOpenAnswer() {
@@ -715,6 +728,7 @@ export default function QuestionnaireAncestral() {
     setQuestionTransitioning(true);
     setTimeout(() => {
       const next = step + 1;
+      if (typeof window.gtag === "function") window.gtag("event", "questionnaire_step", { step: next });
       if (next < questionsArray.length) { setStep(next); setQuestionTransitioning(false); }
       else { setShowCompleted(true); setQuestionTransitioning(false); }
     }, 400);
