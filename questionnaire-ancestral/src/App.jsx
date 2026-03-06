@@ -113,12 +113,6 @@ const CORE_QUESTIONS = [
     { text: "Plus de 3 fois", score: -1 },
     { text: "Constamment, ou infections longues", score: -2 },
   ]},
-  { question: "Tes blessures cicatrisent :", category: "immunite", options: [
-    { text: "Rapidement", score: 3 },
-    { text: "Un peu lentement", score: 2 },
-    { text: "Lentement et mal", score: -1 },
-    { text: "Très lentement, infections fréquentes", score: -2 },
-  ]},
   // ═══ INFLAMMATION ═══
   { question: "Tu as des douleurs articulaires ou musculaires :", category: "inflammation", options: [
     { text: "Jamais", score: 3 },
@@ -333,7 +327,6 @@ const CLOSING_QUESTIONS = [
   ]},
   { question: "Quel est ton régime type actuellement ?", category: "alimentation", type: "open", score: 3 },
   { question: "As-tu des antécédents médicaux ? Si oui, lesquels ?", category: "medical", type: "open", score: 3 },
-  { question: "Quel est ton métier et est-il stressant pour toi ?", category: "stress", type: "open", score: 3 },
 ];
 
 // ═══════════════════════════════════════════════════════
