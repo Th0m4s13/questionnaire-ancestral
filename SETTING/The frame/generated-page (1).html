@@ -1,0 +1,1265 @@
+<html lang="fr"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>THE FRAME — Création de Sites Web à Salon-de-Provence</title>
+    <meta name="description" content="Création de sites web sur mesure pour les commerçants de Salon-de-Provence. Design moderne, accompagnement personnalisé.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Orbitron:wght@600;700;800;900&amp;display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+        body { font-family: 'Inter', sans-serif; background: #F5EFE0; color: #1a1a2e; overflow-x: hidden; }
+        html { scroll-behavior: smooth; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #EDE7D9; }
+        ::-webkit-scrollbar-thumb { background: #B89B6A; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #A0845C; }
+
+        .font-logo { font-family: 'Orbitron', sans-serif; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #A0845C 0%, #C4A676 50%, #D4B98A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-text-blue {
+            background: linear-gradient(90deg, #A0845C, #C4A676);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(160, 132, 92, 0.25);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(160, 132, 92, 0.12), 0 0 40px rgba(160, 132, 92, 0.04);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #A0845C, #C4A676);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-gradient::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #C4A676, #A0845C);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .btn-gradient:hover::before { opacity: 1; }
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(160, 132, 92, 0.3), 0 0 60px rgba(196, 166, 118, 0.1);
+        }
+        .btn-gradient span { position: relative; z-index: 1; }
+
+        .btn-outline {
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-outline:hover {
+            border-color: rgba(160, 132, 92, 0.4);
+            background: rgba(160, 132, 92, 0.06);
+            box-shadow: 0 0 30px rgba(160, 132, 92, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .hero-blob {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, -40px) rotate(90deg); }
+            50% { transform: translate(-30px, -20px) rotate(180deg); }
+            75% { transform: translate(10px, 30px) rotate(270deg); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-25px, 35px) scale(1.2); }
+            66% { transform: translate(40px, -15px) scale(0.8); }
+        }
+
+        @keyframes float3 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 40px); }
+        }
+
+        .blob-anim-1 { animation: float1 22s ease-in-out infinite; }
+        .blob-anim-2 { animation: float2 18s ease-in-out infinite reverse; }
+        .blob-anim-3 { animation: float3 25s ease-in-out infinite; }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        .fade-in-delay-1 { transition-delay: 0.12s; }
+        .fade-in-delay-2 { transition-delay: 0.24s; }
+        .fade-in-delay-3 { transition-delay: 0.36s; }
+        .fade-in-delay-4 { transition-delay: 0.48s; }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 1px;
+            background: linear-gradient(90deg, #A0845C, #C4A676);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateX(-50%);
+        }
+        .nav-link:hover::after { width: 100%; }
+        .nav-link:hover { color: #A0845C; }
+
+        .section-bg {
+            position: relative;
+            overflow: hidden;
+        }
+
+        #mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            opacity: 0;
+        }
+        #mobile-menu.open {
+            max-height: 400px;
+            opacity: 1;
+        }
+
+        .project-card {
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .project-card:hover {
+            transform: translateY(-8px);
+        }
+        .project-card:hover .project-img {
+            transform: scale(1.03);
+        }
+        .project-img {
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glow-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(160, 132, 92, 0.2), rgba(196, 166, 118, 0.2), transparent);
+        }
+
+        .input-glass {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        .input-glass:focus {
+            outline: none;
+            border-color: rgba(160, 132, 92, 0.5);
+            box-shadow: 0 0 20px rgba(160, 132, 92, 0.08), 0 0 0 4px rgba(160, 132, 92, 0.06);
+            background: #fff;
+        }
+
+        .icon-glow {
+            transition: all 0.4s ease;
+        }
+        .glass-card:hover .icon-glow {
+            filter: drop-shadow(0 0 12px rgba(160, 132, 92, 0.3));
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(160, 132, 92, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(160, 132, 92, 0); }
+        }
+
+        .star-field {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(160, 132, 92, 0.25);
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
+            animation-delay: var(--delay);
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.4; }
+        }
+
+        .check-icon {
+            color: #A0845C;
+            flex-shrink: 0;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(160, 132, 92, 0.15) 20%, rgba(196, 166, 118, 0.2) 50%, rgba(160, 132, 92, 0.15) 80%, transparent 100%);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- ======================== HERO SECTION ======================== -->
+    <section id="hero" class="relative min-h-screen flex flex-col overflow-hidden" style="background: linear-gradient(180deg, #F5EFE0 0%, #EFE8D8 100%);">
+
+        <!-- Star field -->
+        <div class="star-field" id="starField"></div>
+
+        <!-- Navigation -->
+        <nav class="relative z-50 px-6 sm:px-10 lg:px-16 py-5">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                <a href="#" class="group flex flex-col gap-0.5">
+                    <span class="text-xl sm:text-2xl font-black tracking-widest text-gray-800 uppercase font-logo">THE FRAME</span>
+                </a>
+
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#about" class="nav-link text-xs font-medium text-gray-500 uppercase" style="letter-spacing: 0.15em;">A propos</a>
+                    <a href="#services" class="nav-link text-xs font-medium text-gray-500 uppercase" style="letter-spacing: 0.15em;">Services</a>
+                    <a href="#portfolio" class="nav-link text-xs font-medium text-gray-500 uppercase" style="letter-spacing: 0.15em;">Portfolio</a>
+                    <a href="#contact" class="nav-link text-xs font-medium text-gray-500 uppercase" style="letter-spacing: 0.15em;">Contact</a>
+                </div>
+
+                <button id="mobileMenuBtn" class="md:hidden w-10 h-10 rounded-xl grid place-items-center text-gray-500 hover:text-gray-800 transition-colors glass" onclick="toggleMobileMenu()">
+                    <iconify-icon icon="solar:hamburger-menu-linear" width="20" height="20" id="menuIcon" style="stroke-width: 1.5"></iconify-icon>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="md:hidden mt-4 glass rounded-2xl">
+                <div class="p-5 flex flex-col gap-1">
+                    <a href="#about" onclick="toggleMobileMenu()" class="py-3 px-4 text-sm font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100/50 rounded-xl transition-all flex items-center justify-between uppercase" style="letter-spacing: 0.1em;">
+                        A propos
+                        <iconify-icon icon="solar:arrow-right-linear" width="14" height="14" class="text-gray-400" style="stroke-width: 1.5"></iconify-icon>
+                    </a>
+                    <a href="#services" onclick="toggleMobileMenu()" class="py-3 px-4 text-sm font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100/50 rounded-xl transition-all flex items-center justify-between uppercase" style="letter-spacing: 0.1em;">
+                        Services
+                        <iconify-icon icon="solar:arrow-right-linear" width="14" height="14" class="text-gray-400" style="stroke-width: 1.5"></iconify-icon>
+                    </a>
+                    <a href="#portfolio" onclick="toggleMobileMenu()" class="py-3 px-4 text-sm font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100/50 rounded-xl transition-all flex items-center justify-between uppercase" style="letter-spacing: 0.1em;">
+                        Portfolio
+                        <iconify-icon icon="solar:arrow-right-linear" width="14" height="14" class="text-gray-400" style="stroke-width: 1.5"></iconify-icon>
+                    </a>
+                    <a href="#contact" onclick="toggleMobileMenu()" class="py-3 px-4 text-sm font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100/50 rounded-xl transition-all flex items-center justify-between uppercase" style="letter-spacing: 0.1em;">
+                        Contact
+                        <iconify-icon icon="solar:arrow-right-linear" width="14" height="14" class="text-gray-400" style="stroke-width: 1.5"></iconify-icon>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Content -->
+        <div class="relative z-10 flex-1 flex items-center px-6 sm:px-10 lg:px-16">
+            <div class="max-w-7xl mx-auto w-full py-16 lg:py-20">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+                    <!-- Left Column: Content -->
+                    <div class="lg:col-span-7">
+                        <!-- Main Title -->
+                        <h1 class="fade-in fade-in-delay-1 text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-800 leading-tight mb-8 tracking-tight">
+                            Un site web <br>
+                            <span class="gradient-text">qui vous ressemble</span>
+                        </h1>
+
+                        <!-- Subheading -->
+                        <p class="fade-in fade-in-delay-2 text-base sm:text-lg text-gray-500 leading-relaxed max-w-xl mb-10 font-light">
+                            Création de sites web pensés pour les commerçants.
+                        </p>
+
+                        <!-- CTA Button -->
+                        <div class="fade-in fade-in-delay-3 flex flex-wrap gap-4">
+                            <a href="https://form.typeform.com/to/E4Dv3ZYt" target="_blank" rel="noopener noreferrer" class="btn-gradient rounded-xl px-8 py-3.5 font-medium text-sm inline-flex items-center gap-2.5 text-white">
+                                <span class="flex items-center gap-2.5 uppercase tracking-wide">
+                                    Estimer mon projet
+                                    <iconify-icon icon="solar:arrow-right-up-linear" width="16" height="16" style="stroke-width: 1.5"></iconify-icon>
+                                </span>
+                            </a>
+                            <a href="#contact" class="btn-outline rounded-xl px-8 py-3.5 font-medium text-sm inline-flex items-center gap-2.5 text-gray-600">
+                                Nous contacter
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Animated Orbs/Blobs -->
+                    <div class="lg:col-span-5 relative h-[400px] lg:h-[600px] flex items-center justify-center">
+                        <div class="relative w-full h-full">
+                            <div class="hero-blob blob-anim-1" style="width: 400px; height: 400px; background: radial-gradient(circle, #E8D8C4 0%, #F0E6D6 100%); filter: blur(80px); opacity: 0.5; top: 0; right: 0;"></div>
+                            <div class="hero-blob blob-anim-2" style="width: 300px; height: 300px; background: radial-gradient(circle, #D4C4A8 0%, #E8DCC8 100%); filter: blur(60px); opacity: 0.4; top: 30%; right: 20%;"></div>
+                            <div class="hero-blob blob-anim-3" style="width: 200px; height: 200px; background: radial-gradient(circle, #D6C8B0 0%, #E6DDD0 100%); filter: blur(40px); opacity: 0.4; bottom: 10%; right: 10%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ======================== DIVIDER ======================== -->
+    <div class="section-divider"></div>
+
+    <!-- ======================== ABOUT SECTION ======================== -->
+    <section id="about" class="section-bg relative py-24 sm:py-32 px-6 sm:px-10 lg:px-16" style="background: linear-gradient(180deg, #F5EFE0 0%, #EBE3D3 50%, #F5EFE0 100%);">
+        <div class="orb" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(160, 132, 92, 0.08), transparent 70%); top: 10%; right: -5%; filter: blur(80px);"></div>
+
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+                <!-- Left: Image -->
+                <div class="lg:col-span-5 fade-in">
+                    <div class="relative">
+                        <div class="rounded-3xl overflow-hidden glass-card p-1">
+                            <div class="rounded-2xl overflow-hidden aspect-[4/5] relative">
+                                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&amp;h=1000&amp;fit=crop" alt="Espace de travail" class="w-full h-full object-cover" style="filter: brightness(1.05) saturate(0.9);">
+                                <div class="absolute inset-0" style="background: linear-gradient(180deg, transparent 50%, rgba(253, 251, 247, 0.4) 100%);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Content -->
+                <div class="lg:col-span-7 fade-in fade-in-delay-1">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-800 mb-6">
+                        Créateurs de <span class="gradient-text">Sites Web</span>
+                    </h2>
+
+                    <p class="text-base text-gray-500 leading-relaxed mb-10 max-w-lg font-light">
+                        Nous créons des sites web sur mesure pour les commerçants et entrepreneurs de Salon-de-Provence et ses environs.
+                    </p>
+
+                    <!-- Skills Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-10">
+                        <div>
+                            <h3 class="text-xs font-semibold text-gray-700 uppercase mb-4 flex items-center gap-2" style="letter-spacing: 0.15em;">
+                                <div class="w-1.5 h-1.5 rounded-full" style="background: linear-gradient(135deg, #A0845C, #C4A676);"></div>
+                                Spécialités
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-center gap-2.5 text-sm text-gray-500">
+                                    <iconify-icon icon="solar:check-circle-linear" width="15" height="15" class="check-icon" style="stroke-width: 1.5"></iconify-icon>
+                                    Création de sites vitrines
+                                </li>
+                                <li class="flex items-center gap-2.5 text-sm text-gray-500">
+                                    <iconify-icon icon="solar:check-circle-linear" width="15" height="15" class="check-icon" style="stroke-width: 1.5"></iconify-icon>
+                                    Landing pages optimisées
+                                </li>
+                                <li class="flex items-center gap-2.5 text-sm text-gray-500">
+                                    <iconify-icon icon="solar:check-circle-linear" width="15" height="15" class="check-icon" style="stroke-width: 1.5"></iconify-icon>
+                                    Design moderne et épuré
+                                </li>
+                                <li class="flex items-center gap-2.5 text-sm text-gray-500">
+                                    <iconify-icon icon="solar:check-circle-linear" width="15" height="15" class="check-icon" style="stroke-width: 1.5"></iconify-icon>
+                                    Accompagnement personnalisé
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-semibold text-gray-700 uppercase mb-4 flex items-center gap-2" style="letter-spacing: 0.15em;">
+                                <div class="w-1.5 h-1.5 rounded-full" style="background: linear-gradient(135deg, #C4A676, #A0845C);"></div>
+                                Secteurs
+                            </h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-center gap-2.5 text-sm text-gray-500">
+                                    <iconify-icon icon="solar:check-circle-linear" width="15" height="15" class="check-icon" style="stroke-width: 1.5"></iconify-icon>
+                                    Restaurants &amp; Cafés
+                                </li>
+                                <li class="flex items-center gap-2.5 text-sm text-gray-500">
+                                    <iconify-icon icon="solar:check-circle-linear" width="15" height="15" class="check-icon" style="stroke-width: 1.5"></iconify-icon>
+                                    Boutiques &amp; Commerces
+                                </li>
+                                <li class="flex items-center gap-2.5 text-sm text-gray-500">
+                                    <iconify-icon icon="solar:check-circle-linear" width="15" height="15" class="check-icon" style="stroke-width: 1.5"></iconify-icon>
+                                    Artisans &amp; Services
+                                </li>
+                                <li class="flex items-center gap-2.5 text-sm text-gray-500">
+                                    <iconify-icon icon="solar:check-circle-linear" width="15" height="15" class="check-icon" style="stroke-width: 1.5"></iconify-icon>
+                                    Professionnels indépendants
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#services" class="btn-gradient rounded-xl px-7 py-3 font-medium text-sm inline-flex items-center gap-2 text-white">
+                            <span class="flex items-center gap-2">
+                                Voir nos services
+                                <iconify-icon icon="solar:arrow-right-linear" width="16" height="16" style="stroke-width: 1.5"></iconify-icon>
+                            </span>
+                        </a>
+                        <a href="#contact" class="btn-outline rounded-xl px-7 py-3 font-medium text-sm inline-flex items-center gap-2 text-gray-600">
+                            Nous contacter
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== DIVIDER ======================== -->
+    <div class="section-divider"></div>
+
+    <!-- ======================== SERVICES SECTION ======================== -->
+    <section id="services" class="section-bg relative py-24 sm:py-32 px-6 sm:px-10 lg:px-16" style="background: linear-gradient(180deg, #F5EFE0 0%, #EFE8D8 50%, #F5EFE0 100%);">
+        <div class="orb" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(196, 166, 118, 0.1), transparent 70%); top: 5%; left: -10%; filter: blur(80px);"></div>
+
+        <div class="max-w-6xl mx-auto relative z-10">
+            <!-- Header -->
+            <div class="mb-16 fade-in">
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-800 mb-4">
+                    Nos <span class="gradient-text">Prestations</span>
+                </h2>
+                <p class="text-base text-gray-500 max-w-2xl font-light">
+                    Création, optimisation et accompagnement.
+                </p>
+            </div>
+
+            <!-- Services Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Card 1: Création -->
+                <div class="glass-card rounded-2xl p-7 fade-in">
+                    <div class="w-12 h-12 rounded-xl grid place-items-center mb-6 icon-glow" style="background: linear-gradient(135deg, rgba(160, 132, 92, 0.15), rgba(196, 166, 118, 0.1));">
+                        <iconify-icon icon="solar:monitor-linear" width="22" height="22" class="text-amber-700" style="stroke-width: 1.5"></iconify-icon>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-4" style="background: rgba(160, 132, 92, 0.08); color: #A0845C; border: 1px solid rgba(160, 132, 92, 0.15);">
+                        <iconify-icon icon="solar:monitor-linear" width="12" height="12" style="stroke-width: 1.5"></iconify-icon>
+                        Création
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 tracking-tight">Création de Sites</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed font-light">
+                        Des sites web modernes et intuitifs, conçus sur mesure pour mettre en valeur votre activité et attirer vos clients.
+                    </p>
+                </div>
+
+                <!-- Card 2: Design -->
+                <div class="glass-card rounded-2xl p-7 fade-in fade-in-delay-1">
+                    <div class="w-12 h-12 rounded-xl grid place-items-center mb-6 icon-glow" style="background: linear-gradient(135deg, rgba(196, 166, 118, 0.15), rgba(160, 132, 92, 0.1));">
+                        <iconify-icon icon="solar:pallete-2-linear" width="22" height="22" class="text-amber-700" style="stroke-width: 1.5"></iconify-icon>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-4" style="background: rgba(196, 166, 118, 0.1); color: #A0845C; border: 1px solid rgba(196, 166, 118, 0.2);">
+                        <iconify-icon icon="solar:pallete-2-linear" width="12" height="12" style="stroke-width: 1.5"></iconify-icon>
+                        Design
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 tracking-tight">Design &amp; Identité</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed font-light">
+                        Un design unique qui reflète votre identité. Couleurs, typographie et éléments visuels pensés pour marquer les esprits.
+                    </p>
+                </div>
+
+                <!-- Card 3: Refonte -->
+                <div class="glass-card rounded-2xl p-7 fade-in fade-in-delay-2">
+                    <div class="w-12 h-12 rounded-xl grid place-items-center mb-6 icon-glow" style="background: linear-gradient(135deg, rgba(160, 132, 92, 0.15), rgba(212, 185, 138, 0.1));">
+                        <iconify-icon icon="solar:refresh-linear" width="22" height="22" class="text-amber-700" style="stroke-width: 1.5"></iconify-icon>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-4" style="background: rgba(212, 185, 138, 0.12); color: #A0845C; border: 1px solid rgba(212, 185, 138, 0.2);">
+                        <iconify-icon icon="solar:refresh-linear" width="12" height="12" style="stroke-width: 1.5"></iconify-icon>
+                        Optimisation
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 tracking-tight">Refonte &amp; Optimisation</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed font-light">
+                        Votre site mérite une seconde vie. Nous modernisons et optimisons les sites existants pour de meilleures performances.
+                    </p>
+                </div>
+
+                <!-- Card 4: SEO -->
+                <div class="glass-card rounded-2xl p-7 fade-in">
+                    <div class="w-12 h-12 rounded-xl grid place-items-center mb-6 icon-glow" style="background: linear-gradient(135deg, rgba(160, 132, 92, 0.15), rgba(196, 166, 118, 0.1));">
+                        <iconify-icon icon="solar:chart-2-linear" width="22" height="22" style="stroke-width: 1.5; color: #A0845C;"></iconify-icon>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-4" style="background: rgba(160, 132, 92, 0.08); color: #A0845C; border: 1px solid rgba(160, 132, 92, 0.15);">
+                        <iconify-icon icon="solar:chart-2-linear" width="12" height="12" style="stroke-width: 1.5"></iconify-icon>
+                        Visibilité
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 tracking-tight">SEO &amp; Visibilité</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed font-light">
+                        Apparaissez dans les recherches Google de votre région. Référencement local optimisé pour être trouvé par vos clients.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== DIVIDER ======================== -->
+    <div class="section-divider"></div>
+
+    <!-- ======================== NEW PRICING SECTION ======================== -->
+    <section id="tarifs" class="section-bg relative py-24 sm:py-32 px-6 sm:px-10 lg:px-16" style="background: #F5EFE0;">
+        <div class="orb" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(160, 132, 92, 0.08), transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.6; filter: blur(80px);"></div>
+
+        <div class="max-w-6xl mx-auto relative z-10">
+            <!-- Header -->
+            <div class="mb-16 fade-in text-center md:text-left">
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-800 mb-4">
+                    Formules <span class="gradient-text">Adaptées</span>
+                </h2>
+                <p class="text-base text-gray-500 max-w-2xl font-light mx-auto md:mx-0">
+                    Choisissez la solution idéale pour votre activité.
+                </p>
+            </div>
+
+            <!-- Pricing Grid -->
+            <div id="pricingGrid" class="grid grid-cols-1 lg:grid-cols-3 gap-8" style="align-items: start;">
+
+                <!-- Formule 1: Starter -->
+                <div class="pricing-card group relative rounded-3xl overflow-hidden border border-emerald-200 transition-all duration-500 hover:border-emerald-300 hover:-translate-y-2 cursor-pointer bg-white" onclick="toggleCard(this)">
+                    <div class="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-br from-emerald-50 via-teal-50/50 to-transparent opacity-100 transition-all duration-500"></div>
+
+                    <div class="relative z-10 flex flex-col">
+                        <div class="px-8 pt-12 pb-10 flex flex-col items-center text-center">
+                            <div class="w-16 h-16 mb-6 text-emerald-500 drop-shadow-[0_0_15px_rgba(52,211,153,0.2)] transition-transform duration-500 group-hover:scale-110">
+                                <iconify-icon icon="solar:rocket-2-linear" width="64"></iconify-icon>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 tracking-tight mb-2 uppercase">Formule Vitrine Starter</h3>
+                            <p class="text-sm text-emerald-600/60 font-medium">Pour bien démarrer</p>
+                        </div>
+
+                        <div class="features-list overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" style="max-height:0">
+                             <div class="p-6 border-t border-gray-100 bg-gray-50/50">
+                                 <ul class="space-y-4 mb-8">
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-emerald-500 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Site One-Page moderne</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-emerald-500 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Design Responsive (Mobile)</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-emerald-500 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Formulaire de contact</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-emerald-500 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Hébergement &amp; Nom de domaine inclus (1 an)</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-emerald-500 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Optimisation vitesse de base</span>
+                                    </li>
+                                 </ul>
+                                 <div class="text-center">
+                                    <a href="https://form.typeform.com/to/E4Dv3ZYt" target="_blank" rel="noopener noreferrer" class="inline-block w-full py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 text-sm font-semibold transition-all">Choisir cette offre</a>
+                                 </div>
+                             </div>
+                        </div>
+
+                        <div class="mt-auto bg-gray-50 border-t border-gray-100 p-5 flex items-center justify-between group-hover:bg-emerald-50/50 transition-colors">
+                            <span class="text-xs font-bold text-gray-400 group-hover:text-gray-700 transition-colors uppercase tracking-widest pl-2 trigger-text">Prestations incluses</span>
+                            <div class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center bg-white group-hover:border-emerald-300 group-hover:text-emerald-500 transition-all">
+                                <iconify-icon icon="solar:alt-arrow-down-linear" class="text-gray-400 transition-transform duration-500 arrow-icon group-hover:text-emerald-500"></iconify-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formule 2: Premium -->
+                <div class="pricing-card group relative rounded-3xl overflow-hidden border border-amber-300 transition-all duration-500 hover:border-amber-400 hover:-translate-y-2 cursor-pointer bg-white" onclick="toggleCard(this)">
+                    <div class="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-br from-amber-50 via-amber-50/50 to-transparent opacity-100 transition-all duration-500"></div>
+
+                    <div class="relative z-10 flex flex-col">
+                        <div class="px-8 pt-12 pb-10 flex flex-col items-center text-center">
+                            <div class="w-16 h-16 mb-6 text-amber-700 drop-shadow-[0_0_15px_rgba(96,165,250,0.2)] transition-transform duration-500 group-hover:scale-110">
+                                <iconify-icon icon="solar:medal-ribbon-star-linear" width="64"></iconify-icon>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 tracking-tight mb-2 uppercase">Formule Vitrine Premium</h3>
+                            <p class="text-sm text-amber-800/60 font-medium">La plus populaire</p>
+                        </div>
+
+                        <div class="features-list overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" style="max-height:0">
+                             <div class="p-6 border-t border-gray-100 bg-gray-50/50">
+                                 <ul class="space-y-4 mb-8">
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-amber-700 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Site Multi-pages (jusqu'à 5)</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-amber-700 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Design 100% Personnalisé</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-amber-700 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Blog / Actualités administrable</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-amber-700 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>SEO Avancé &amp; Google My Business</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-amber-700 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Formation prise en main (1h)</span>
+                                    </li>
+                                 </ul>
+                                 <div class="text-center">
+                                    <a href="https://form.typeform.com/to/E4Dv3ZYt" target="_blank" rel="noopener noreferrer" class="inline-block w-full py-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-sm font-semibold transition-all">Choisir cette offre</a>
+                                 </div>
+                             </div>
+                        </div>
+
+                        <div class="mt-auto bg-gray-50 border-t border-gray-100 p-5 flex items-center justify-between group-hover:bg-amber-50/50 transition-colors">
+                            <span class="text-xs font-bold text-gray-400 group-hover:text-gray-700 transition-colors uppercase tracking-widest pl-2">Prestations incluses</span>
+                            <div class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center bg-white group-hover:border-amber-400 group-hover:text-amber-700 transition-all">
+                                <iconify-icon icon="solar:alt-arrow-down-linear" class="text-gray-400 transition-transform duration-500 arrow-icon group-hover:text-amber-700"></iconify-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formule 3: E-commerce -->
+                <div class="pricing-card group relative rounded-3xl overflow-hidden border border-violet-200 transition-all duration-500 hover:border-violet-300 hover:-translate-y-2 cursor-pointer bg-white" onclick="toggleCard(this)">
+                    <div class="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-br from-violet-50 via-purple-50/50 to-transparent opacity-100 transition-all duration-500"></div>
+
+                    <div class="relative z-10 flex flex-col">
+                        <div class="px-8 pt-12 pb-10 flex flex-col items-center text-center">
+                            <div class="w-16 h-16 mb-6 text-violet-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-transform duration-500 group-hover:scale-110">
+                                <iconify-icon icon="solar:bag-heart-linear" width="64"></iconify-icon>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 tracking-tight mb-2 uppercase">Formule E-commerce</h3>
+                            <p class="text-sm text-violet-500/60 font-medium">Vendez en ligne</p>
+                        </div>
+
+                        <div class="features-list overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" style="max-height:0">
+                             <div class="p-6 border-t border-gray-100 bg-gray-50/50">
+                                 <ul class="space-y-4 mb-8">
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-violet-400 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Boutique complète (WooCommerce)</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-violet-400 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Jusqu'à 50 produits intégrés</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-violet-400 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Paiement sécurisé (Stripe / PayPal)</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-violet-400 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Gestion de stock &amp; Espace client</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-sm text-gray-600">
+                                        <iconify-icon icon="solar:check-circle-bold" class="text-violet-400 mt-0.5 flex-shrink-0" width="16"></iconify-icon>
+                                        <span>Emails transactionnels personnalisés</span>
+                                    </li>
+                                 </ul>
+                                 <div class="text-center">
+                                    <a href="https://form.typeform.com/to/E4Dv3ZYt" target="_blank" rel="noopener noreferrer" class="inline-block w-full py-3 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-500 border border-violet-200 text-sm font-semibold transition-all">Choisir cette offre</a>
+                                 </div>
+                             </div>
+                        </div>
+
+                        <div class="mt-auto bg-gray-50 border-t border-gray-100 p-5 flex items-center justify-between group-hover:bg-violet-50/50 transition-colors">
+                            <span class="text-xs font-bold text-gray-400 group-hover:text-gray-700 transition-colors uppercase tracking-widest pl-2">Prestations incluses</span>
+                            <div class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center bg-white group-hover:border-violet-300 group-hover:text-violet-400 transition-all">
+                                <iconify-icon icon="solar:alt-arrow-down-linear" class="text-gray-400 transition-transform duration-500 arrow-icon group-hover:text-violet-400"></iconify-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== DIVIDER ======================== -->
+    <div class="section-divider"></div>
+
+    <!-- ======================== PROCESS SECTION ======================== -->
+    <section class="section-bg relative py-24 sm:py-32 px-6 sm:px-10 lg:px-16" style="background: linear-gradient(180deg, #F5EFE0 0%, #EFE8D8 50%, #F5EFE0 100%);">
+        <div class="orb" style="width: 300px; height: 300px; background: radial-gradient(circle, rgba(160, 132, 92, 0.06), transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); filter: blur(80px);"></div>
+
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="mb-16 fade-in">
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-800 mb-4">
+                    Comment <span class="gradient-text">ça marche</span>
+                </h2>
+                <p class="text-base text-gray-500 max-w-2xl font-light">Un processus simple et transparent.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="fade-in relative">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-10 h-10 rounded-xl grid place-items-center text-sm font-bold text-white flex-shrink-0" style="background: linear-gradient(135deg, #A0845C, #C4A676);">01</div>
+                        <div class="hidden lg:block h-px flex-1" style="background: linear-gradient(90deg, rgba(160, 132, 92, 0.3), transparent);"></div>
+                    </div>
+                    <h3 class="text-base font-semibold text-gray-800 mb-2 tracking-tight">Echange &amp; Brief</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed font-light">Nous discutons de votre projet, vos besoins et vos objectifs. Gratuit et sans engagement.</p>
+                </div>
+                <div class="fade-in fade-in-delay-1 relative">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-10 h-10 rounded-xl grid place-items-center text-sm font-bold text-white flex-shrink-0" style="background: linear-gradient(135deg, #A0845C, #B89B6A);">02</div>
+                        <div class="hidden lg:block h-px flex-1" style="background: linear-gradient(90deg, rgba(160, 132, 92, 0.3), transparent);"></div>
+                    </div>
+                    <h3 class="text-base font-semibold text-gray-800 mb-2 tracking-tight">Maquette &amp; Design</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed font-light">Nous créons une maquette sur mesure. Vous validez le design avant le développement.</p>
+                </div>
+                <div class="fade-in fade-in-delay-2 relative">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-10 h-10 rounded-xl grid place-items-center text-sm font-bold text-white flex-shrink-0" style="background: linear-gradient(135deg, #C4A676, #A0845C);">03</div>
+                        <div class="hidden lg:block h-px flex-1" style="background: linear-gradient(90deg, rgba(196, 166, 118, 0.3), transparent);"></div>
+                    </div>
+                    <h3 class="text-base font-semibold text-gray-800 mb-2 tracking-tight">Développement</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed font-light">Votre site prend vie. Code propre, responsive et optimisé pour la performance.</p>
+                </div>
+                <div class="fade-in fade-in-delay-3">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-10 h-10 rounded-xl grid place-items-center text-sm font-bold text-white flex-shrink-0" style="background: linear-gradient(135deg, #D4B98A, #A0845C);">04</div>
+                    </div>
+                    <h3 class="text-base font-semibold text-gray-800 mb-2 tracking-tight">Lancement</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed font-light">Mise en ligne, formation et support continu. Votre site est prêt à travailler pour vous.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ======================== DIVIDER ======================== -->
+    <div class="section-divider"></div>
+
+    <!-- ======================== CONTACT SECTION ======================== -->
+    <section id="contact" class="section-bg relative py-24 sm:py-32 px-6 sm:px-10 lg:px-16" style="background: linear-gradient(180deg, #F5EFE0 0%, #EBE3D3 50%, #F5EFE0 100%);">
+        <div class="orb" style="width: 450px; height: 450px; background: radial-gradient(circle, rgba(160, 132, 92, 0.08), transparent 70%); top: -5%; right: 10%; filter: blur(80px);"></div>
+        <div class="orb" style="width: 350px; height: 350px; background: radial-gradient(circle, rgba(196, 166, 118, 0.06), transparent 70%); bottom: 10%; left: 5%; filter: blur(80px);"></div>
+
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20">
+                <!-- Left: Info -->
+                <div class="fade-in">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-800 mb-4">
+                        Travaillons <span class="gradient-text">ensemble</span>
+                    </h2>
+                    <p class="text-base text-gray-500 mb-10 max-w-md leading-relaxed font-light">
+                        Vous avez un projet en tête ?
+                    </p>
+
+                    <!-- Contact Links -->
+                    <div class="space-y-3 mb-10">
+                        <a href="mailto:contact.theframe13@gmail.com" class="flex items-center gap-4 p-4 rounded-xl transition-all hover:bg-white/60 group/link">
+                            <div class="w-11 h-11 rounded-xl grid place-items-center flex-shrink-0 transition-all" style="background: linear-gradient(135deg, rgba(160, 132, 92, 0.1), rgba(196, 166, 118, 0.06)); border: 1px solid rgba(160, 132, 92, 0.1);">
+                                <iconify-icon icon="solar:letter-linear" width="18" height="18" class="text-amber-700" style="stroke-width: 1.5"></iconify-icon>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-800 block font-medium">contact.theframe13@gmail.com</span>
+                                <span class="text-xs text-gray-400">Réponse garantie sous 3-5h</span>
+                            </div>
+                        </a>
+                        <a href="#" class="flex items-center gap-4 p-4 rounded-xl transition-all hover:bg-white/60 group/link">
+                            <div class="w-11 h-11 rounded-xl grid place-items-center flex-shrink-0 transition-all" style="background: linear-gradient(135deg, rgba(160, 132, 92, 0.1), rgba(196, 166, 118, 0.06)); border: 1px solid rgba(160, 132, 92, 0.1);">
+                                <iconify-icon icon="solar:calendar-linear" width="18" height="18" class="text-amber-700" style="stroke-width: 1.5"></iconify-icon>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-800 block font-medium">Prendre rendez-vous</span>
+                                <span class="text-xs text-gray-400">Consultation gratuite</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Availability -->
+                    <div class="glass rounded-2xl p-5" style="border-color: rgba(160, 132, 92, 0.15);">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="relative flex h-2.5 w-2.5">
+                                <span class="absolute inline-flex h-full w-full rounded-full opacity-75" style="background: #A0845C; animation: pulse-glow 2s ease-in-out infinite;"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5" style="background: #A0845C;"></span>
+                            </span>
+                            <span class="text-sm font-medium text-amber-800">Disponible maintenant</span>
+                        </div>
+                        <p class="text-xs text-gray-400 pl-5">Nous acceptons actuellement de nouveaux projets. Prochain créneau disponible : dès aujourd'hui.</p>
+                    </div>
+                </div>
+
+                <!-- Right: Questionnaire -->
+                <div class="fade-in fade-in-delay-1">
+                    <div class="glass rounded-2xl p-6 md:p-8" id="questionnaire">
+                        <!-- Progress bar -->
+                        <div class="flex items-center gap-2 mb-8">
+                            <div class="flex-1 h-1 rounded-full bg-gray-200 overflow-hidden">
+                                <div id="progressBar" class="h-full rounded-full transition-all duration-500" style="width: 20%; background: linear-gradient(90deg, #A0845C, #C4A676);"></div>
+                            </div>
+                            <span id="stepCount" class="text-xs text-gray-400 font-medium">1/5</span>
+                        </div>
+
+                        <!-- Step 1: Contact -->
+                        <div class="quiz-step" data-step="1">
+                            <div class="text-sm font-medium text-gray-800 mb-1">Contact</div>
+                            <p class="text-xs text-gray-400 mb-5">Vos coordonnees</p>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-2 uppercase" style="letter-spacing: 0.15em;">Nom / Prenom ou nom de l'entreprise</label>
+                                    <input type="text" name="nom" placeholder="Votre nom ou entreprise" class="input-glass w-full px-4 py-3 rounded-xl text-sm text-gray-800 placeholder:text-gray-300">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-2 uppercase" style="letter-spacing: 0.15em;">Adresse e-mail</label>
+                                    <input type="email" name="email" placeholder="vous@exemple.com" class="input-glass w-full px-4 py-3 rounded-xl text-sm text-gray-800 placeholder:text-gray-300">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-2 uppercase" style="letter-spacing: 0.15em;">Numero de telephone</label>
+                                    <input type="tel" name="telephone" placeholder="06 12 34 56 78" class="input-glass w-full px-4 py-3 rounded-xl text-sm text-gray-800 placeholder:text-gray-300">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Secteur d'activite -->
+                        <div class="quiz-step hidden" data-step="2">
+                            <div class="text-sm font-medium text-gray-800 mb-1">Informations generales</div>
+                            <p class="text-xs text-gray-400 mb-5">Quel est votre secteur d'activite ?</p>
+                            <div class="space-y-3">
+                                <label class="quiz-option flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="radio" name="secteur" value="Commerce" class="hidden">
+                                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-radio"><div class="w-2.5 h-2.5 rounded-full scale-0 transition-transform" style="background: #A0845C;"></div></div>
+                                    <span class="text-sm text-gray-700">Commerce</span>
+                                </label>
+                                <label class="quiz-option flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="radio" name="secteur" value="Artisan" class="hidden">
+                                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-radio"><div class="w-2.5 h-2.5 rounded-full scale-0 transition-transform" style="background: #A0845C;"></div></div>
+                                    <span class="text-sm text-gray-700">Artisan</span>
+                                </label>
+                                <label class="quiz-option flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="radio" name="secteur" value="Independant / Freelance" class="hidden">
+                                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-radio"><div class="w-2.5 h-2.5 rounded-full scale-0 transition-transform" style="background: #A0845C;"></div></div>
+                                    <span class="text-sm text-gray-700">Independant / Freelance</span>
+                                </label>
+                                <label class="quiz-option flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="radio" name="secteur" value="Association" class="hidden">
+                                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-radio"><div class="w-2.5 h-2.5 rounded-full scale-0 transition-transform" style="background: #A0845C;"></div></div>
+                                    <span class="text-sm text-gray-700">Association</span>
+                                </label>
+                                <label class="quiz-option flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="radio" name="secteur" value="Autre" class="hidden">
+                                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-radio"><div class="w-2.5 h-2.5 rounded-full scale-0 transition-transform" style="background: #A0845C;"></div></div>
+                                    <span class="text-sm text-gray-700">Autre</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Objectifs -->
+                        <div class="quiz-step hidden" data-step="3">
+                            <div class="text-sm font-medium text-gray-800 mb-1">Objectifs du site</div>
+                            <p class="text-xs text-gray-400 mb-5">Quel est l'objectif principal ? (plusieurs reponses possibles)</p>
+                            <div class="space-y-3 mb-6">
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="objectif" value="Presenter mon activite" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Presenter mon activite</span>
+                                </label>
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="objectif" value="Trouver de nouveaux clients" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Trouver de nouveaux clients</span>
+                                </label>
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="objectif" value="Vendre en ligne (e-commerce)" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Vendre en ligne (e-commerce)</span>
+                                </label>
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="objectif" value="Ameliorer ma visibilite / mon image" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Ameliorer ma visibilite / mon image</span>
+                                </label>
+                            </div>
+                            <div class="text-sm font-medium text-gray-800 mb-1">Qu'attendez-vous concretement de ce site ?</div>
+                            <p class="text-xs text-gray-400 mb-5">Plusieurs reponses possibles</p>
+                            <div class="space-y-3">
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="attente" value="Plus de clients" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Plus de clients</span>
+                                </label>
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="attente" value="Plus de chiffre d'affaires" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Plus de chiffre d'affaires</span>
+                                </label>
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="attente" value="Plus de credibilite" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Plus de credibilite</span>
+                                </label>
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="attente" value="Gagner du temps (automatisation, formulaires...)" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Gagner du temps (automatisation, formulaires...)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Fonctionnalites -->
+                        <div class="quiz-step hidden" data-step="4">
+                            <div class="text-sm font-medium text-gray-800 mb-1">Fonctionnalites souhaitees</div>
+                            <p class="text-xs text-gray-400 mb-5">Quelles fonctionnalites souhaitez-vous ? (plusieurs reponses possibles)</p>
+                            <div class="space-y-3">
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="fonctionnalite" value="Formulaire de contact" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Formulaire de contact</span>
+                                </label>
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="fonctionnalite" value="Prise de rendez-vous en ligne" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Prise de rendez-vous en ligne</span>
+                                </label>
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="fonctionnalite" value="Paiement en ligne" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Paiement en ligne</span>
+                                </label>
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="fonctionnalite" value="Blog / actualites" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Blog / actualites</span>
+                                </label>
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="fonctionnalite" value="Galerie photos / videos" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Galerie photos / videos</span>
+                                </label>
+                                <label class="quiz-check flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                    <input type="checkbox" name="fonctionnalite" value="Espace client" class="hidden">
+                                    <div class="w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-checkbox"><iconify-icon icon="solar:check-read-linear" width="14" class="opacity-0 transition-opacity" style="color: #A0845C;"></iconify-icon></div>
+                                    <span class="text-sm text-gray-700">Espace client</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Step 5: Design & identite -->
+                        <div class="quiz-step hidden" data-step="5">
+                            <div class="text-sm font-medium text-gray-800 mb-1">Design & identite</div>
+                            <p class="text-xs text-gray-400 mb-5">Parlez-nous de vos preferences visuelles</p>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-2 uppercase" style="letter-spacing: 0.15em;">Avez-vous deja une identite visuelle (logo, couleurs, typographies) ?</label>
+                                    <div class="space-y-3">
+                                        <label class="quiz-option flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                            <input type="radio" name="identite" value="Oui" class="hidden">
+                                            <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-radio"><div class="w-2.5 h-2.5 rounded-full scale-0 transition-transform" style="background: #A0845C;"></div></div>
+                                            <span class="text-sm text-gray-700">Oui</span>
+                                        </label>
+                                        <label class="quiz-option flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer transition-all hover:border-amber-300 hover:bg-amber-50/30">
+                                            <input type="radio" name="identite" value="Non" class="hidden">
+                                            <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center flex-shrink-0 quiz-radio"><div class="w-2.5 h-2.5 rounded-full scale-0 transition-transform" style="background: #A0845C;"></div></div>
+                                            <span class="text-sm text-gray-700">Non, j'aimerais en creer une</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-2 uppercase" style="letter-spacing: 0.15em;">Des sites web que vous aimez bien ? (optionnel)</label>
+                                    <textarea name="sites_inspir" rows="2" placeholder="Collez des liens ou decrivez ce que vous aimez..." class="input-glass w-full px-4 py-3 rounded-xl text-sm text-gray-800 placeholder:text-gray-300 resize-none"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 6: Confirmation -->
+                        <div class="quiz-step hidden" data-step="6">
+                            <div class="text-center py-8">
+                                <div class="w-16 h-16 rounded-full grid place-items-center mx-auto mb-6" style="background: linear-gradient(135deg, rgba(160, 132, 92, 0.15), rgba(196, 166, 118, 0.1));">
+                                    <iconify-icon icon="solar:check-circle-bold" width="32" height="32" style="color: #A0845C;"></iconify-icon>
+                                </div>
+                                <div class="text-lg font-semibold text-gray-800 mb-2">Merci !</div>
+                                <p class="text-sm text-gray-500 font-light">Votre demande a bien ete envoyee. Nous vous recontactons sous 3-5h.</p>
+                            </div>
+                        </div>
+
+                        <!-- Navigation buttons -->
+                        <div id="quizNav" class="flex justify-between items-center mt-8">
+                            <button id="btnPrev" onclick="quizPrev()" class="text-sm text-gray-400 hover:text-gray-700 transition-colors hidden">Retour</button>
+                            <div></div>
+                            <button id="btnNext" onclick="quizNext()" class="btn-gradient rounded-xl px-6 py-3 font-medium text-sm text-white flex items-center gap-2">
+                                <span>Suivant</span>
+                                <iconify-icon icon="solar:arrow-right-linear" width="16" height="16" style="stroke-width: 1.5"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 text-center mt-4">Reponse garantie sous 3-5h</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================== FOOTER ======================== -->
+    <footer style="background: #E5DDD0; border-top: 1px solid rgba(0, 0, 0, 0.06);" class="px-6 sm:px-10 lg:px-16">
+        <div class="max-w-6xl mx-auto py-16">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
+                <div>
+                    <div class="flex flex-col gap-1 mb-4">
+                        <div class="text-2xl font-black tracking-wider text-gray-800 font-logo">THE FRAME</div>
+                        <div class="text-xs text-gray-400 font-medium tracking-wide">Un site qui vous ressemble</div>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed max-w-xs font-light">Création de sites web sur mesure pour les commerçants de Salon-de-Provence.</p>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400 uppercase mb-4 font-semibold" style="letter-spacing: 0.15em;">Navigation</div>
+                    <nav class="flex flex-col gap-2.5">
+                        <a href="#about" class="text-sm text-gray-400 hover:text-gray-800 transition-colors">A propos</a>
+                        <a href="#services" class="text-sm text-gray-400 hover:text-gray-800 transition-colors">Services</a>
+                        <a href="#portfolio" class="text-sm text-gray-400 hover:text-gray-800 transition-colors">Portfolio</a>
+                        <a href="#contact" class="text-sm text-gray-400 hover:text-gray-800 transition-colors">Contact</a>
+                    </nav>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400 uppercase mb-4 font-semibold" style="letter-spacing: 0.15em;">Réseaux</div>
+                    <nav class="flex flex-col gap-2.5">
+                        <a href="#" class="text-sm text-gray-400 hover:text-gray-800 transition-colors flex items-center gap-2">
+                            <iconify-icon icon="solar:camera-linear" width="15" height="15" style="stroke-width: 1.5"></iconify-icon>
+                            Instagram
+                        </a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-gray-800 transition-colors flex items-center gap-2">
+                            <iconify-icon icon="solar:link-circle-linear" width="15" height="15" style="stroke-width: 1.5"></iconify-icon>
+                            LinkedIn
+                        </a>
+                        <a href="mailto:contact.theframe13@gmail.com" class="text-sm text-gray-400 hover:text-gray-800 transition-colors flex items-center gap-2">
+                            <iconify-icon icon="solar:letter-linear" width="15" height="15" style="stroke-width: 1.5"></iconify-icon>
+                            Email
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-xs text-gray-400">© 2026 THE FRAME. Tous droits réservés.</p>
+                <div class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium glass" style="border-color: rgba(160, 132, 92, 0.15);">
+                    <span class="relative flex h-2 w-2">
+                        <span class="absolute inline-flex h-full w-full rounded-full opacity-75" style="background: #A0845C; animation: pulse-glow 2s ease-in-out infinite;"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2" style="background: #A0845C;"></span>
+                    </span>
+                    <span class="text-amber-800">Disponibles pour nouveaux projets</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ======================== SCRIPTS ======================== -->
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menuIcon');
+            menu.classList.toggle('open');
+            icon.setAttribute('icon', menu.classList.contains('open') ? 'solar:close-circle-linear' : 'solar:hamburger-menu-linear');
+        }
+
+        // Quiz logic
+        var quizStep = 1;
+        var quizTotal = 5;
+
+        // Radio options
+        document.querySelectorAll('.quiz-option').forEach(function(opt) {
+            opt.addEventListener('click', function() {
+                var group = opt.querySelector('input').getAttribute('name');
+                var parent = opt.closest('.quiz-step');
+                parent.querySelectorAll('input[name="' + group + '"]').forEach(function(inp) {
+                    var label = inp.closest('.quiz-option');
+                    label.classList.remove('border-amber-400');
+                    label.classList.add('border-gray-200');
+                    label.querySelector('.quiz-radio div').style.transform = 'scale(0)';
+                });
+                opt.classList.remove('border-gray-200');
+                opt.classList.add('border-amber-400');
+                opt.querySelector('.quiz-radio div').style.transform = 'scale(1)';
+                opt.querySelector('input').checked = true;
+            });
+        });
+
+        // Checkbox options
+        document.querySelectorAll('.quiz-check').forEach(function(opt) {
+            opt.addEventListener('click', function() {
+                var inp = opt.querySelector('input');
+                inp.checked = !inp.checked;
+                if (inp.checked) {
+                    opt.classList.remove('border-gray-200');
+                    opt.classList.add('border-amber-400');
+                    opt.querySelector('.quiz-checkbox iconify-icon').classList.remove('opacity-0');
+                    opt.querySelector('.quiz-checkbox iconify-icon').classList.add('opacity-100');
+                } else {
+                    opt.classList.remove('border-amber-400');
+                    opt.classList.add('border-gray-200');
+                    opt.querySelector('.quiz-checkbox iconify-icon').classList.remove('opacity-100');
+                    opt.querySelector('.quiz-checkbox iconify-icon').classList.add('opacity-0');
+                }
+            });
+        });
+
+        function getChecked(name) {
+            var vals = [];
+            document.querySelectorAll('input[name="' + name + '"]:checked').forEach(function(el) { vals.push(el.value); });
+            return vals.join(', ') || 'Non renseigne';
+        }
+
+        function quizNext() {
+            if (quizStep < quizTotal) {
+                document.querySelector('[data-step="' + quizStep + '"]').classList.add('hidden');
+                quizStep++;
+                document.querySelector('[data-step="' + quizStep + '"]').classList.remove('hidden');
+                document.getElementById('progressBar').style.width = (quizStep / quizTotal * 100) + '%';
+                document.getElementById('stepCount').textContent = quizStep + '/' + quizTotal;
+                document.getElementById('btnPrev').classList.remove('hidden');
+                if (quizStep === quizTotal) {
+                    document.getElementById('btnNext').querySelector('span').textContent = 'Envoyer';
+                }
+            } else {
+                var nom = document.querySelector('input[name="nom"]').value;
+                var email = document.querySelector('input[name="email"]').value;
+                var tel = document.querySelector('input[name="telephone"]').value;
+                var secteur = document.querySelector('input[name="secteur"]:checked');
+                var identite = document.querySelector('input[name="identite"]:checked');
+                var inspir = document.querySelector('textarea[name="sites_inspir"]').value;
+
+                var body = '--- CONTACT ---%0A'
+                    + 'Nom : ' + nom + '%0A'
+                    + 'Email : ' + email + '%0A'
+                    + 'Telephone : ' + tel + '%0A%0A'
+                    + '--- SECTEUR ---%0A'
+                    + 'Secteur : ' + (secteur ? secteur.value : 'Non renseigne') + '%0A%0A'
+                    + '--- OBJECTIFS ---%0A'
+                    + 'Objectifs : ' + getChecked('objectif') + '%0A'
+                    + 'Attentes : ' + getChecked('attente') + '%0A%0A'
+                    + '--- FONCTIONNALITES ---%0A'
+                    + 'Fonctionnalites : ' + getChecked('fonctionnalite') + '%0A%0A'
+                    + '--- DESIGN ---%0A'
+                    + 'Identite visuelle : ' + (identite ? identite.value : 'Non renseigne') + '%0A'
+                    + 'Sites inspiration : ' + (inspir || 'Aucun');
+
+                window.open('mailto:contact.theframe13@gmail.com?subject=Nouvelle demande de devis - ' + nom + '&body=' + body);
+
+                document.querySelector('[data-step="' + quizStep + '"]').classList.add('hidden');
+                document.querySelector('[data-step="6"]').classList.remove('hidden');
+                document.getElementById('quizNav').classList.add('hidden');
+                document.getElementById('progressBar').style.width = '100%';
+                document.getElementById('stepCount').textContent = 'Termine';
+            }
+        }
+
+        function quizPrev() {
+            if (quizStep > 1) {
+                document.querySelector('[data-step="' + quizStep + '"]').classList.add('hidden');
+                quizStep--;
+                document.querySelector('[data-step="' + quizStep + '"]').classList.remove('hidden');
+                document.getElementById('progressBar').style.width = (quizStep / quizTotal * 100) + '%';
+                document.getElementById('stepCount').textContent = quizStep + '/' + quizTotal;
+                document.getElementById('btnNext').querySelector('span').textContent = 'Suivant';
+                if (quizStep === 1) document.getElementById('btnPrev').classList.add('hidden');
+            }
+        }
+
+        // Updated Accordion Logic: Only one open at a time
+        function toggleCard(clickedCard) {
+            var clickedContent = clickedCard.querySelector('.features-list');
+            var clickedArrow = clickedCard.querySelector('.arrow-icon');
+            var isOpen = parseInt(clickedContent.style.maxHeight) > 0;
+
+            if (isOpen) {
+                clickedContent.style.maxHeight = '0px';
+                clickedArrow.style.transform = 'rotate(0deg)';
+            } else {
+                clickedContent.style.maxHeight = clickedContent.scrollHeight + 'px';
+                clickedArrow.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Star Field Generator
+        function createStars() {
+            const field = document.getElementById('starField');
+            if (!field) return;
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', (3 + Math.random() * 5) + 's');
+                star.style.setProperty('--delay', (Math.random() * 5) + 's');
+                star.style.width = (1 + Math.random() * 2) + 'px';
+                star.style.height = star.style.width;
+                field.appendChild(star);
+            }
+        }
+
+        // Scroll Fade-in Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+            let ticking = false;
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        const scrollY = window.scrollY;
+                        document.querySelectorAll('.orb').forEach((orb, i) => {
+                            const speed = 0.02 + (i * 0.01);
+                            orb.style.transform += ` translateY(${scrollY * speed}px)`;
+                        });
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+        });
+
+        // Navbar effect on scroll
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.style.background = 'rgba(253, 251, 247, 0.9)';
+                nav.style.backdropFilter = 'blur(20px)';
+                nav.style.borderBottom = '1px solid rgba(0,0,0,0.05)';
+                nav.style.boxShadow = '0 2px 20px rgba(0,0,0,0.04)';
+            } else {
+                nav.style.background = 'transparent';
+                nav.style.backdropFilter = 'none';
+                nav.style.borderBottom = 'none';
+                nav.style.boxShadow = 'none';
+            }
+        });
+    </script>
+
+</body></html>
