@@ -72,6 +72,7 @@ const CORE_QUESTIONS = [
     { text: "Un peu blanche parfois", score: 2 },
     { text: "Blanche quasi tout le temps", score: -1 },
     { text: "Épaisse, pâteuse, chargée tous les jours", score: -2 },
+    { text: "Je ne sais pas", score: 0 },
   ]},
   { question: "Tu as des réactions après certains aliments (laitiers, gluten, fruits...) ?", category: "digestion", options: [
     { text: "Jamais", score: 3 },
