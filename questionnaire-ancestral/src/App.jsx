@@ -387,6 +387,7 @@ export default function QuestionnaireAncestral() {
   const [questionsArray, setQuestionsArray] = useState([]);
   const [conditionalTriggered, setConditionalTriggered] = useState({ sibo: false, dysbiose: false, candidose: false, foie: false, nerveux: false });
   const hasSentRef = useRef(false);
+  const hasPartialSentRef = useRef(false);
 
   // GA4 : track abandon on page leave
   useEffect(() => {
@@ -398,6 +399,52 @@ export default function QuestionnaireAncestral() {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [step, finished, questionsArray.length]);
+
+  // Envoi partiel des données quand l'utilisateur quitte le questionnaire
+  useEffect(() => {
+    const handlePageHide = () => {
+      if (finished || hasPartialSentRef.current) return;
+      if (step === 0 && !name.trim() && !email.trim()) return;
+      hasPartialSentRef.current = true;
+
+      const prenom = name.trim().split(/\s+/)[0] || "";
+      const nom = name.trim().split(/\s+/).slice(1).join(" ") || "";
+      const nationalDigits = phone.replace(/\D/g, "").replace(/^0+/, "");
+      const fullPhoneWithPlus = phonePrefix === "OTHER" ? phone : `${phonePrefix}${nationalDigits}`;
+
+      const totalQuestions = questionsArray.filter(q => q.type !== "transition").length;
+      const answeredCount = answers.length;
+      const pourcentageProg = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
+
+      const reponses = answers.map(a => ({
+        question: a.question,
+        categorie: a.category,
+        score: a.score,
+        reponse: a.reponseTexte,
+      }));
+
+      const payload = new URLSearchParams({
+        statut: "incomplet",
+        progression: `${answeredCount}/${totalQuestions}`,
+        pourcentage_progression: String(pourcentageProg),
+        prenom,
+        nom,
+        email: email.trim(),
+        age: age || "",
+        telephone: fullPhoneWithPlus,
+        sexe: sex || "",
+        score: String(score),
+        reponsesJson: JSON.stringify(reponses),
+        timestamp: new Date().toISOString(),
+      });
+
+      const WEBHOOK_URL = (typeof import.meta !== "undefined" && import.meta.env?.VITE_MAKE_WEBHOOK_URL) || "https://hook.eu1.make.com/yf61fckihxirt84w6r5rhd5813e16s5v";
+      navigator.sendBeacon(WEBHOOK_URL, payload);
+    };
+
+    window.addEventListener("pagehide", handlePageHide);
+    return () => window.removeEventListener("pagehide", handlePageHide);
+  }, [step, finished, name, email, phone, phonePrefix, age, sex, score, answers, questionsArray]);
 
   // Build initial questions when sex is selected
   const coreLength = useMemo(() => CORE_QUESTIONS.length + (sex === "femme" ? FEMALE_QUESTIONS.length : 0), [sex]);
@@ -503,6 +550,7 @@ export default function QuestionnaireAncestral() {
   useEffect(() => {
     if (!finished || hasSentRef.current) return;
     hasSentRef.current = true;
+    hasPartialSentRef.current = true;
     if (typeof window.gtag === "function") window.gtag("event", "questionnaire_completed", { total_questions: questionsArray.filter(q => q.type !== "transition").length });
 
     // Formater le téléphone en international
