@@ -387,81 +387,6 @@ export default function QuestionnaireAncestral() {
   const [questionsArray, setQuestionsArray] = useState([]);
   const [conditionalTriggered, setConditionalTriggered] = useState({ sibo: false, dysbiose: false, candidose: false, foie: false, nerveux: false });
   const hasSentRef = useRef(false);
-  const hasPartialSentRef = useRef(false);
-
-  // Envoi partiel des données quand l'utilisateur quitte le questionnaire
-  useEffect(() => {
-    const handlePageHide = () => {
-      if (finished || hasPartialSentRef.current) return;
-      if (step === 0 && !name.trim() && !email.trim()) return;
-      hasPartialSentRef.current = true;
-
-      const prenom = name.trim().split(/\s+/)[0] || "";
-      const nom = name.trim().split(/\s+/).slice(1).join(" ") || "";
-      const nationalDigits = phone.replace(/\D/g, "").replace(/^0+/, "");
-      const fullPhoneWithPlus = phonePrefix === "OTHER" ? phone : `${phonePrefix}${nationalDigits}`;
-
-      const totalQuestions = questionsArray.filter(q => q.type !== "transition").length;
-      const answeredCount = answers.length;
-      const pourcentageProg = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
-
-      const reponses = answers.map(a => ({
-        question: a.question,
-        categorie: a.category,
-        score: a.score,
-        reponse: a.reponseTexte,
-      }));
-
-      const timestamp = new Date().toISOString();
-
-      const whatsappLines = [
-        "📋 QUESTIONNAIRE ANCESTRAL (INCOMPLET)", "",
-        "👤 INFORMATIONS",
-        `• Prénom: ${prenom || "-"}`,
-        `• Nom: ${nom || "-"}`,
-        `• Email: ${email.trim() || "-"}`,
-        `• Âge: ${age || "-"}`,
-        `• Téléphone: ${fullPhoneWithPlus || "-"}`,
-        `• Sexe: ${sex || "-"}`, "",
-        "📊 PROGRESSION",
-        `• Statut: INCOMPLET`,
-        `• Progression: ${answeredCount}/${totalQuestions} (${pourcentageProg}%)`,
-        `• Score partiel: ${score}`, "",
-        `⏰ Date: ${timestamp}`, "",
-        "🧾 RÉPONSES DONNÉES:",
-        ...reponses.map(r => `- ${r.question}\n  → ${r.reponse}`),
-      ];
-      let whatsappText = whatsappLines.join("\n").trim();
-      if (whatsappText.length > 3800) whatsappText = whatsappText.slice(0, 3780) + "\n…(tronqué)";
-
-      const payload = new URLSearchParams({
-        statut: "incomplet",
-        progression: `${answeredCount}/${totalQuestions}`,
-        pourcentage_progression: String(pourcentageProg),
-        prenom,
-        nom,
-        email: email.trim(),
-        age: age || "",
-        telephone: fullPhoneWithPlus,
-        sexe: sex || "",
-        score: String(score),
-        reponsesJson: JSON.stringify(reponses),
-        whatsappText,
-        timestamp,
-      });
-
-      const WEBHOOK_URL = (typeof import.meta !== "undefined" && import.meta.env?.VITE_MAKE_WEBHOOK_URL) || "https://hook.eu1.make.com/yf61fckihxirt84w6r5rhd5813e16s5v";
-      const blob = new Blob([payload.toString()], { type: "application/x-www-form-urlencoded" });
-      navigator.sendBeacon(WEBHOOK_URL, blob);
-    };
-
-    window.addEventListener("pagehide", handlePageHide);
-    window.addEventListener("beforeunload", handlePageHide);
-    return () => {
-      window.removeEventListener("pagehide", handlePageHide);
-      window.removeEventListener("beforeunload", handlePageHide);
-    };
-  }, [step, finished, name, email, phone, phonePrefix, age, sex, score, answers, questionsArray]);
 
   // Build initial questions when sex is selected
   const coreLength = useMemo(() => CORE_QUESTIONS.length + (sex === "femme" ? FEMALE_QUESTIONS.length : 0), [sex]);
@@ -567,7 +492,6 @@ export default function QuestionnaireAncestral() {
   useEffect(() => {
     if (!finished || hasSentRef.current) return;
     hasSentRef.current = true;
-    hasPartialSentRef.current = true;
 
 
     // Formater le téléphone en international
