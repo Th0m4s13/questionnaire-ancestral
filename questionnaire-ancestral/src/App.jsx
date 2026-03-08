@@ -462,11 +462,16 @@ export default function QuestionnaireAncestral() {
       });
 
       const WEBHOOK_URL = (typeof import.meta !== "undefined" && import.meta.env?.VITE_MAKE_WEBHOOK_URL) || "https://hook.eu1.make.com/yf61fckihxirt84w6r5rhd5813e16s5v";
-      navigator.sendBeacon(WEBHOOK_URL, payload);
+      const blob = new Blob([payload.toString()], { type: "application/x-www-form-urlencoded" });
+      navigator.sendBeacon(WEBHOOK_URL, blob);
     };
 
     window.addEventListener("pagehide", handlePageHide);
-    return () => window.removeEventListener("pagehide", handlePageHide);
+    window.addEventListener("beforeunload", handlePageHide);
+    return () => {
+      window.removeEventListener("pagehide", handlePageHide);
+      window.removeEventListener("beforeunload", handlePageHide);
+    };
   }, [step, finished, name, email, phone, phonePrefix, age, sex, score, answers, questionsArray]);
 
   // Build initial questions when sex is selected
