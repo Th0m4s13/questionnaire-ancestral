@@ -423,6 +423,28 @@ export default function QuestionnaireAncestral() {
         reponse: a.reponseTexte,
       }));
 
+      const timestamp = new Date().toISOString();
+
+      const whatsappLines = [
+        "📋 QUESTIONNAIRE ANCESTRAL (INCOMPLET)", "",
+        "👤 INFORMATIONS",
+        `• Prénom: ${prenom || "-"}`,
+        `• Nom: ${nom || "-"}`,
+        `• Email: ${email.trim() || "-"}`,
+        `• Âge: ${age || "-"}`,
+        `• Téléphone: ${fullPhoneWithPlus || "-"}`,
+        `• Sexe: ${sex || "-"}`, "",
+        "📊 PROGRESSION",
+        `• Statut: INCOMPLET`,
+        `• Progression: ${answeredCount}/${totalQuestions} (${pourcentageProg}%)`,
+        `• Score partiel: ${score}`, "",
+        `⏰ Date: ${timestamp}`, "",
+        "🧾 RÉPONSES DONNÉES:",
+        ...reponses.map(r => `- ${r.question}\n  → ${r.reponse}`),
+      ];
+      let whatsappText = whatsappLines.join("\n").trim();
+      if (whatsappText.length > 3800) whatsappText = whatsappText.slice(0, 3780) + "\n…(tronqué)";
+
       const payload = new URLSearchParams({
         statut: "incomplet",
         progression: `${answeredCount}/${totalQuestions}`,
@@ -435,7 +457,8 @@ export default function QuestionnaireAncestral() {
         sexe: sex || "",
         score: String(score),
         reponsesJson: JSON.stringify(reponses),
-        timestamp: new Date().toISOString(),
+        whatsappText,
+        timestamp,
       });
 
       const WEBHOOK_URL = (typeof import.meta !== "undefined" && import.meta.env?.VITE_MAKE_WEBHOOK_URL) || "https://hook.eu1.make.com/yf61fckihxirt84w6r5rhd5813e16s5v";
