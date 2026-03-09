@@ -193,6 +193,7 @@ const CORE_QUESTIONS = [
     { text: "Ça me travaille un peu mais je passe à autre chose", score: 2 },
     { text: "Je rumine, ça tourne en boucle dans ma tête", score: -1 },
     { text: "Ça me paralyse, je mange plus ou je dors mal", score: -2 },
+    { text: "Je ne mange plus du tout, je perds l'appétit", score: -2 },
   ]},
 ];
 
